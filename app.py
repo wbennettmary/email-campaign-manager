@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file
 from flask_socketio import SocketIO, emit
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import json
 import os
 import threading
@@ -10,6 +11,8 @@ import random
 import requests
 from datetime import datetime
 import uuid
+import csv
+import pandas as pd
 from zoho_bounce_integration import (
     initialize_zoho_bounce_detector, 
     get_zoho_bounce_detector,
@@ -35,6 +38,12 @@ CAMPAIGN_LOGS_FILE = 'campaign_logs.json'
 NOTIFICATIONS_FILE = 'notifications.json'
 BOUNCE_DATA_FILE = 'bounce_data.json'
 DELIVERY_DATA_FILE = 'delivery_data.json'
+DATA_LISTS_FILE = 'data_lists.json'
+DATA_LISTS_DIR = 'data_lists'
+
+# File upload configuration
+ALLOWED_EXTENSIONS = {'csv', 'txt'}
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
 
 def init_data_files():
     """Initialize data files if they don't exist"""
@@ -69,6 +78,14 @@ def init_data_files():
     if not os.path.exists(DELIVERY_DATA_FILE):
         with open(DELIVERY_DATA_FILE, 'w') as f:
             json.dump({}, f)
+    
+    if not os.path.exists(DATA_LISTS_FILE):
+        with open(DATA_LISTS_FILE, 'w') as f:
+            json.dump([], f)
+    
+    # Create data_lists directory if it doesn't exist
+    if not os.path.exists(DATA_LISTS_DIR):
+        os.makedirs(DATA_LISTS_DIR)
 
 # Initialize data files
 init_data_files()
@@ -412,6 +429,153 @@ def check_email_delivery_status(email, campaign_id, account):
             'source': 'error',
             'note': f'Exception occurred: {str(e)}'
         }
+
+# Data Lists Utility Functions
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def validate_email(email):
+    """Basic email validation"""
+    import re
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def extract_emails_from_file(file_path):
+    """Extract emails from uploaded file"""
+    emails = []
+    try:
+        if file_path.endswith('.csv'):
+            # Try to read as CSV
+            try:
+                df = pd.read_csv(file_path)
+                # Look for email column
+                email_columns = [col for col in df.columns if 'email' in col.lower()]
+                if email_columns:
+                    emails = df[email_columns[0]].dropna().astype(str).tolist()
+                else:
+                    # Assume first column contains emails
+                    emails = df.iloc[:, 0].dropna().astype(str).tolist()
+            except:
+                # Fallback to text reading
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    emails = [line.strip() for line in content.split('\n') if line.strip()]
+        else:
+            # Read as text file
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                emails = [line.strip() for line in content.split('\n') if line.strip()]
+        
+        # Filter valid emails
+        valid_emails = []
+        invalid_emails = []
+        for email in emails:
+            if validate_email(email):
+                valid_emails.append(email)
+            else:
+                invalid_emails.append(email)
+        
+        return valid_emails, invalid_emails
+    except Exception as e:
+        print(f"Error extracting emails from file: {e}")
+        return [], []
+
+def get_data_lists():
+    """Get all data lists"""
+    try:
+        with open(DATA_LISTS_FILE, 'r') as f:
+            data_lists = json.load(f)
+        if not isinstance(data_lists, list):
+            data_lists = []
+        return data_lists
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def save_data_lists(data_lists):
+    """Save data lists to file"""
+    try:
+        with open(DATA_LISTS_FILE, 'w') as f:
+            json.dump(data_lists, f, indent=2)
+    except Exception as e:
+        print(f"Error saving data lists: {e}")
+
+def add_data_list(name, geography, isp, emails, filename=None, description=""):
+    """Add a new data list"""
+    try:
+        data_lists = get_data_lists()
+        
+        new_list = {
+            'id': max([lst['id'] for lst in data_lists], default=0) + 1 if data_lists else 1,
+            'name': name,
+            'geography': geography,
+            'isp': isp,
+            'email_count': len(emails),
+            'filename': filename,
+            'description': description,
+            'created_at': datetime.now().isoformat(),
+            'updated_at': datetime.now().isoformat()
+        }
+        
+        data_lists.append(new_list)
+        save_data_lists(data_lists)
+        
+        # Save emails to file
+        if filename:
+            file_path = os.path.join(DATA_LISTS_DIR, filename)
+            with open(file_path, 'w', encoding='utf-8') as f:
+                for email in emails:
+                    f.write(f"{email}\n")
+        
+        return new_list
+    except Exception as e:
+        print(f"Error adding data list: {e}")
+        return None
+
+def get_data_list_emails(list_id):
+    """Get emails from a specific data list"""
+    try:
+        data_lists = get_data_lists()
+        data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
+        
+        if not data_list or not data_list.get('filename'):
+            return []
+        
+        file_path = os.path.join(DATA_LISTS_DIR, data_list['filename'])
+        if not os.path.exists(file_path):
+            return []
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            emails = [line.strip() for line in f.readlines() if line.strip()]
+        
+        return emails
+    except Exception as e:
+        print(f"Error getting data list emails: {e}")
+        return []
+
+def delete_data_list(list_id):
+    """Delete a data list and its file"""
+    try:
+        data_lists = get_data_lists()
+        data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
+        
+        if not data_list:
+            return False
+        
+        # Delete file if it exists
+        if data_list.get('filename'):
+            file_path = os.path.join(DATA_LISTS_DIR, data_list['filename'])
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
+        # Remove from data lists
+        data_lists = [lst for lst in data_lists if lst['id'] != list_id]
+        save_data_lists(data_lists)
+        
+        return True
+    except Exception as e:
+        print(f"Error deleting data list: {e}")
+        return False
 
 @app.route('/')
 @login_required
@@ -1486,6 +1650,228 @@ def api_delivered(campaign_id):
         return jsonify(delivered_emails)
     except Exception as e:
         return jsonify({'error': f'Error getting delivered emails: {str(e)}'}), 500
+
+# Data Lists Routes
+@app.route('/data-lists')
+@login_required
+def data_lists():
+    """Data lists management page"""
+    try:
+        data_lists = get_data_lists()
+        return render_template('data_lists.html', data_lists=data_lists)
+    except Exception as e:
+        flash(f'Error loading data lists: {str(e)}', 'error')
+        return render_template('data_lists.html', data_lists=[])
+
+@app.route('/api/data-lists', methods=['GET', 'POST'])
+@login_required
+def api_data_lists():
+    """API for data lists operations"""
+    if request.method == 'GET':
+        try:
+            data_lists = get_data_lists()
+            return jsonify(data_lists)
+        except Exception as e:
+            return jsonify({'error': f'Error getting data lists: {str(e)}'}), 500
+    
+    elif request.method == 'POST':
+        try:
+            # Handle file upload
+            if 'file' in request.files:
+                file = request.files['file']
+                if file.filename == '':
+                    return jsonify({'error': 'No file selected'}), 400
+                
+                if not allowed_file(file.filename):
+                    return jsonify({'error': 'Invalid file type. Only CSV and TXT files are allowed'}), 400
+                
+                # Save uploaded file
+                filename = secure_filename(f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}")
+                file_path = os.path.join(DATA_LISTS_DIR, filename)
+                file.save(file_path)
+                
+                # Extract emails from file
+                valid_emails, invalid_emails = extract_emails_from_file(file_path)
+                
+                if not valid_emails:
+                    # Delete the file if no valid emails
+                    os.remove(file_path)
+                    return jsonify({'error': 'No valid emails found in the file'}), 400
+                
+                # Get form data
+                name = request.form.get('name', 'Unnamed List')
+                geography = request.form.get('geography', 'Unknown')
+                isp = request.form.get('isp', 'Unknown')
+                description = request.form.get('description', '')
+                
+                # Add data list
+                new_list = add_data_list(
+                    name=name,
+                    geography=geography,
+                    isp=isp,
+                    emails=valid_emails,
+                    filename=filename,
+                    description=description
+                )
+                
+                if new_list:
+                    add_notification(f"Data list '{name}' uploaded successfully with {len(valid_emails)} emails", 'success')
+                    if invalid_emails:
+                        add_notification(f"Warning: {len(invalid_emails)} invalid emails were filtered out", 'warning')
+                    return jsonify(new_list)
+                else:
+                    return jsonify({'error': 'Failed to create data list'}), 500
+            
+            # Handle manual email list
+            else:
+                data = request.get_json()
+                if not data:
+                    return jsonify({'error': 'No data provided'}), 400
+                
+                emails_text = data.get('emails', '')
+                if not emails_text:
+                    return jsonify({'error': 'No emails provided'}), 400
+                
+                # Parse emails
+                emails = [email.strip() for email in emails_text.split('\n') if email.strip()]
+                valid_emails = []
+                invalid_emails = []
+                
+                for email in emails:
+                    if validate_email(email):
+                        valid_emails.append(email)
+                    else:
+                        invalid_emails.append(email)
+                
+                if not valid_emails:
+                    return jsonify({'error': 'No valid emails provided'}), 400
+                
+                # Create filename for manual list
+                filename = f"manual_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                
+                # Add data list
+                new_list = add_data_list(
+                    name=data.get('name', 'Manual List'),
+                    geography=data.get('geography', 'Unknown'),
+                    isp=data.get('isp', 'Unknown'),
+                    emails=valid_emails,
+                    filename=filename,
+                    description=data.get('description', '')
+                )
+                
+                if new_list:
+                    add_notification(f"Manual data list '{data.get('name', 'Manual List')}' created with {len(valid_emails)} emails", 'success')
+                    if invalid_emails:
+                        add_notification(f"Warning: {len(invalid_emails)} invalid emails were filtered out", 'warning')
+                    return jsonify(new_list)
+                else:
+                    return jsonify({'error': 'Failed to create data list'}), 500
+                    
+        except Exception as e:
+            return jsonify({'error': f'Error creating data list: {str(e)}'}), 500
+
+@app.route('/api/data-lists/<int:list_id>', methods=['GET', 'PUT', 'DELETE'])
+@login_required
+def api_data_list(list_id):
+    """API for individual data list operations"""
+    if request.method == 'GET':
+        try:
+            data_lists = get_data_lists()
+            data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
+            
+            if not data_list:
+                return jsonify({'error': 'Data list not found'}), 404
+            
+            # Get emails if requested
+            if request.args.get('include_emails') == 'true':
+                emails = get_data_list_emails(list_id)
+                data_list['emails'] = emails
+            
+            return jsonify(data_list)
+        except Exception as e:
+            return jsonify({'error': f'Error getting data list: {str(e)}'}), 500
+    
+    elif request.method == 'PUT':
+        try:
+            data_lists = get_data_lists()
+            data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
+            
+            if not data_list:
+                return jsonify({'error': 'Data list not found'}), 404
+            
+            data = request.get_json()
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Update fields
+            for field in ['name', 'geography', 'isp', 'description']:
+                if field in data:
+                    data_list[field] = data[field]
+            
+            data_list['updated_at'] = datetime.now().isoformat()
+            
+            save_data_lists(data_lists)
+            add_notification(f"Data list '{data_list['name']}' updated successfully", 'success')
+            
+            return jsonify(data_list)
+        except Exception as e:
+            return jsonify({'error': f'Error updating data list: {str(e)}'}), 500
+    
+    elif request.method == 'DELETE':
+        try:
+            if delete_data_list(list_id):
+                add_notification("Data list deleted successfully", 'success')
+                return jsonify({'message': 'Data list deleted successfully'})
+            else:
+                return jsonify({'error': 'Data list not found'}), 404
+        except Exception as e:
+            return jsonify({'error': f'Error deleting data list: {str(e)}'}), 500
+
+@app.route('/api/data-lists/<int:list_id>/download')
+@login_required
+def download_data_list(list_id):
+    """Download data list as CSV"""
+    try:
+        data_lists = get_data_lists()
+        data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
+        
+        if not data_list:
+            return jsonify({'error': 'Data list not found'}), 404
+        
+        emails = get_data_list_emails(list_id)
+        if not emails:
+            return jsonify({'error': 'No emails found in data list'}), 404
+        
+        # Create CSV content
+        csv_content = "Email\n"
+        for email in emails:
+            csv_content += f'"{email}"\n'
+        
+        # Create response with CSV file
+        from io import StringIO
+        return send_file(
+            StringIO(csv_content),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=f'{data_list["name"]}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        )
+        
+    except Exception as e:
+        return jsonify({'error': f'Error downloading data list: {str(e)}'}), 500
+
+@app.route('/api/data-lists/<int:list_id>/emails')
+@login_required
+def get_data_list_emails_api(list_id):
+    """Get emails from a data list"""
+    try:
+        emails = get_data_list_emails(list_id)
+        return jsonify({
+            'list_id': list_id,
+            'emails': emails,
+            'count': len(emails)
+        })
+    except Exception as e:
+        return jsonify({'error': f'Error getting emails: {str(e)}'}), 500
 
 def send_campaign_emails(campaign, account):
     """Send emails for a campaign in background thread with IMPROVED feedback and bounce detection"""

@@ -277,6 +277,9 @@
             <a href="/accounts" class="nav-link {% if request.endpoint == 'accounts' %}active{% endif %}">
                 <i class="fas fa-users"></i> Accounts
             </a>
+            <a href="/data-lists" class="nav-link {% if request.endpoint == 'data_lists' %}active{% endif %}">
+                <i class="fas fa-list"></i> Data Lists
+            </a>
             <a href="/notifications" class="nav-link {% if request.endpoint == 'notifications' %}active{% endif %}">
                 <i class="fas fa-bell"></i> Notifications
                 {% if notifications_count > 0 %}
