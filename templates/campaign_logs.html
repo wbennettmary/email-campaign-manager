@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}{{ campaign.name }} - Logs{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-bullhorn text-primary"></i>
+            {{ campaign.name }} - Logs
+        </h1>
+        <a href="/campaigns" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Campaigns
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Campaign Information -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Campaign Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> 
+                        <span class="badge {{ get_status_badge_class(campaign.status) }}">
+                            {{ campaign.status|title }}
+                        </span>
+                    </p>
+                    <p><strong>Total Recipients:</strong> {{ campaign.destinataires.split('\n')|length }}</p>
+                    <p><strong>Emails Sent:</strong> {{ campaign.total_sent or 0 }}</p>
+                    <p><strong>Template ID:</strong> {{ campaign.template_id }}</p>
+                    <p><strong>Created:</strong> {{ campaign.created_at }}</p>
+                    {% if campaign.started_at %}
+                    <p><strong>Started:</strong> {{ campaign.started_at }}</p>
+                    {% endif %}
+                    {% if campaign.completed_at %}
+                    <p><strong>Completed:</strong> {{ campaign.completed_at }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line"></i> Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 25px;">
+                        {% set total = campaign.destinataires.split('\n')|length %}
+                        {% set sent = campaign.total_sent or 0 %}
+                        {% set progress = (sent / total * 100) if total > 0 else 0 %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%">
+                            {{ sent }}/{{ total }}
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h4 class="text-success mb-0" id="sent-count">{{ sent }}</h4>
+                            <small class="text-muted">Sent</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-danger mb-0" id="error-count">0</h4>
+                            <small class="text-muted">Errors</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-info mb-0" id="remaining-count">{{ total - sent }}</h4>
+                            <small class="text-muted">Remaining</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Email Logs -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-arrow-right"></i> Live Email Logs
+            </h5>
+            <div class="btn-group">
+                <button class="btn btn-outline-secondary btn-sm" onclick="clearLogs()">
+                    <i class="fas fa-trash"></i> Clear Logs
+                </button>
+                <button class="btn btn-outline-primary btn-sm" onclick="exportLogs()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="border rounded p-3" style="height: 500px; overflow-y: auto; background-color: #f8f9fa;" id="logs-container">
+                {% if logs %}
+                    {% for log in logs %}
+                    <div class="log-entry {{ get_status_badge_class(log.status) }} mb-2 p-2 rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <span class="badge {{ get_status_badge_class(log.status) }} me-2">
+                                    {% if log.status == 'success' %}✅{% elif log.status == 'error' %}❌{% else %}ℹ️{% endif %}
+                                </span>
+                                <span class="fw-bold">{{ format_timestamp(log.timestamp) }}</span>
+                                <span class="ms-2">{{ log.message }}</span>
+                                {% if log.email %}
+                                <br><small class="text-muted">To: {{ log.email }}</small>
+                                {% endif %}
+                                {% if log.subject %}
+                                <br><small class="text-muted">Subject: {{ log.subject }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-muted text-center">
+                        <i class="fas fa-hourglass-half fa-2x mb-2"></i>
+                        <br>Waiting for campaign activity...
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+const socket = io();
+const campaignId = {{ campaign.id }};
+let logs = [];
+let sentCount = {{ campaign.total_sent or 0 }};
+let errorCount = 0;
+let totalEmails = {{ campaign.destinataires.split('\n')|length }};
+
+// Load existing logs from the page
+{% if logs %}
+    {% for log in logs %}
+    logs.push({
+        timestamp: '{{ log.timestamp }}',
+        status: '{{ log.status }}',
+        message: '{{ log.message }}',
+        email: '{{ log.email or "" }}',
+        subject: '{{ log.subject or "" }}',
+        sender: '{{ log.sender or "" }}'
+    });
+    {% endfor %}
+{% endif %}
+
+// Listen for email progress updates
+socket.on('email_progress', function(data) {
+    if (data.campaign_id === campaignId) {
+        addLog(data);
+        updateProgress(data);
+    }
+});
+
+// Listen for campaign completion
+socket.on('campaign_completed', function(data) {
+    if (data.campaign_id === campaignId) {
+        addLog({
+            timestamp: new Date().toISOString(),
+            status: 'info',
+            message: `🏁 Campaign completed! Total sent: ${data.total_sent}/${data.total_attempted}`,
+            type: 'completion'
+        });
+    }
+});
+
+function addLog(data) {
+    const logsContainer = document.getElementById('logs-container');
+    const logEntry = document.createElement('div');
+    
+    const timestamp = new Date(data.timestamp).toLocaleString();
+    const statusIcon = getStatusIcon(data.status);
+    const statusClass = getStatusClass(data.status);
+    
+    logEntry.className = `log-entry ${statusClass} mb-2 p-2 rounded`;
+    logEntry.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <span class="badge ${statusClass} me-2">${statusIcon}</span>
+                <span class="fw-bold">${timestamp}</span>
+                <span class="ms-2">${data.message}</span>
+                ${data.email ? `<br><small class="text-muted">To: ${data.email}</small>` : ''}
+                ${data.subject ? `<br><small class="text-muted">Subject: ${data.subject}</small>` : ''}
+            </div>
+        </div>
+    `;
+    
+    // Clear "waiting" message if it exists
+    if (logsContainer.querySelector('.text-muted.text-center')) {
+        logsContainer.innerHTML = '';
+    }
+    
+    logsContainer.appendChild(logEntry);
+    logsContainer.scrollTop = logsContainer.scrollHeight;
+    
+    // Store in memory
+    logs.push(data);
+}
+
+function updateProgress(data) {
+    if (data.status === 'success') {
+        sentCount++;
+        document.getElementById('sent-count').textContent = sentCount;
+    } else if (data.status === 'error') {
+        errorCount++;
+        document.getElementById('error-count').textContent = errorCount;
+    }
+    
+    const remaining = totalEmails - sentCount - errorCount;
+    document.getElementById('remaining-count').textContent = remaining;
+    
+    // Update progress bar
+    const progress = Math.round((sentCount + errorCount) / totalEmails * 100);
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = `${sentCount + errorCount}/${totalEmails}`;
+    }
+}
+
+function getStatusIcon(status) {
+    switch (status) {
+        case 'success': return '✅';
+        case 'error': return '❌';
+        case 'info': return 'ℹ️';
+        default: return '📝';
+    }
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'success': return 'bg-success text-white';
+        case 'error': return 'bg-danger text-white';
+        case 'info': return 'bg-info text-white';
+        default: return 'bg-secondary text-white';
+    }
+}
+
+function clearLogs() {
+    if (confirm('Clear all logs? This action cannot be undone.')) {
+        document.getElementById('logs-container').innerHTML = `
+            <div class="text-muted text-center">
+                <i class="fas fa-hourglass-half fa-2x mb-2"></i>
+                <br>Waiting for campaign activity...
+            </div>
+        `;
+        logs = [];
+    }
+}
+
+function exportLogs() {
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "Timestamp,Status,Message,Email,Subject\n"
+        + logs.map(log => {
+            return `"${log.timestamp}","${log.status}","${log.message}","${log.email || ''}","${log.subject || ''}"`;
+        }).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `campaign_${campaignId}_logs.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %} 

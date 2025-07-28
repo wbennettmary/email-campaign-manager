@@ -1,0 +1,679 @@
+{% extends "base.html" %}
+
+{% block title %}Live Campaigns{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header with Controls -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-broadcast-tower text-primary"></i>
+            Live Campaigns Monitor
+        </h1>
+        <div class="d-flex gap-2 align-items-center">
+            <!-- Grid Controls -->
+            <div class="d-flex align-items-center me-3">
+                <label class="form-label mb-0 me-2">Grid:</label>
+                <select class="form-select form-select-sm" id="gridSelector" style="width: auto;">
+                    <option value="1">1 per row</option>
+                    <option value="2" selected>2 per row</option>
+                    <option value="3">3 per row</option>
+                    <option value="4">4 per row</option>
+                    <option value="6">6 per row</option>
+                </select>
+            </div>
+            
+            <!-- Auto-refresh Toggle -->
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                <label class="form-check-label" for="autoRefreshToggle">
+                    Auto-refresh
+                </label>
+            </div>
+            
+            <button class="btn btn-outline-primary" onclick="refreshCampaigns()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <a href="/campaigns" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Campaign
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Bar -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0" id="total-campaigns">{{ campaigns|length }}</h4>
+                    <small>Total Active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0" id="total-sent">{{ campaigns|sum(attribute='total_sent') or 0 }}</h4>
+                    <small>Total Sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0" id="total-errors">0</h4>
+                    <small>Total Errors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-0" id="total-remaining">
+                        {% set total_recipients = 0 %}
+                        {% set total_sent = 0 %}
+                        {% for campaign in campaigns %}
+                            {% set total_recipients = total_recipients + (campaign.destinataires.split('\n')|length) %}
+                            {% set total_sent = total_sent + (campaign.total_sent or 0) %}
+                        {% endfor %}
+                        {{ total_recipients - total_sent }}
+                    </h4>
+                    <small>Total Remaining</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaigns Grid -->
+    <div id="campaigns-container">
+        {% if campaigns %}
+            <div class="row" id="campaigns-grid">
+                {% for campaign in campaigns %}
+                <div class="col-lg-6 col-xl-4 mb-4" data-campaign-id="{{ campaign.id }}">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ campaign.name }}</h6>
+                            <span class="badge {{ get_status_badge_class(campaign.status) }}">
+                                {{ campaign.status.title() }}
+                            </span>
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <!-- Progress Stats -->
+                            <div class="row text-center mb-3">
+                                <div class="col-3">
+                                    <div class="text-primary">
+                                        <h5 class="mb-0" id="sent-{{ campaign.id }}">{{ campaign.total_sent or 0 }}</h5>
+                                        <small>Sent</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="text-warning">
+                                        <h5 class="mb-0" id="errors-{{ campaign.id }}">0</h5>
+                                        <small>Errors</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="text-info">
+                                        <h5 class="mb-0" id="remaining-{{ campaign.id }}">{{ (campaign.destinataires.split('\n')|length) - (campaign.total_sent or 0) }}</h5>
+                                        <small>Left</small>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="text-success">
+                                        <h5 class="mb-0" id="progress-{{ campaign.id }}">
+                                            {% set total = campaign.destinataires.split('\n')|length %}
+                                            {% set sent = campaign.total_sent or 0 %}
+                                            {% if total > 0 %}{{ (sent / total * 100)|round|int }}%{% else %}0%{% endif %}
+                                        </h5>
+                                        <small>Progress</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="progress mb-3" style="height: 8px;">
+                                {% set total = campaign.destinataires.split('\n')|length %}
+                                {% set sent = campaign.total_sent or 0 %}
+                                {% set progress = (sent / total * 100) if total > 0 else 0 %}
+                                <div class="progress-bar bg-success" id="progress-bar-{{ campaign.id }}" role="progressbar" style="width: {{ progress }}%"></div>
+                            </div>
+                            
+                            <!-- Live Logs -->
+                            <div class="flex-grow-1">
+                                <h6 class="text-muted mb-2">
+                                    <i class="fas fa-terminal"></i> Recent Activity
+                                </h6>
+                                <div class="border rounded p-2" style="height: 120px; overflow-y: auto; background-color: #f8f9fa; font-size: 0.8rem;" id="logs-{{ campaign.id }}">
+                                    {% if campaign.logs and campaign.logs|length > 0 %}
+                                        {% for log in campaign.logs[-5:] %}
+                                        <div class="activity-entry mb-1 p-1 rounded">
+                                            {% if log.status == 'success' %}
+                                                <span class="text-success fw-bold">✓</span>
+                                                <span class="text-success">Email {{ log.email or 'recipient' }} {{ log.total_sent or 1 }}/{{ log.total_attempted or 1 }} done</span>
+                                            {% elif log.status == 'error' %}
+                                                <span class="text-danger fw-bold">✗</span>
+                                                <span class="text-danger">Email {{ log.email or 'recipient' }} {{ log.total_sent or 0 }}/{{ log.total_attempted or 1 }} error</span>
+                                                {% if log.message %}
+                                                    <br><small class="text-muted">{{ log.message }}</small>
+                                                {% endif %}
+                                            {% elif 'rate limit' in log.message.lower() or '429' in log.message %}
+                                                <span class="text-primary fw-bold">⏱</span>
+                                                <span class="text-primary">Rate limit exceeded - waiting...</span>
+                                            {% elif log.status == 'info' and 'started' in log.message.lower() %}
+                                                <span class="text-info fw-bold">🚀</span>
+                                                <span class="text-info">{{ log.message }}</span>
+                                            {% elif log.status == 'info' and 'completed' in log.message.lower() %}
+                                                <span class="text-success fw-bold">🏁</span>
+                                                <span class="text-success">{{ log.message }}</span>
+                                            {% else %}
+                                                <span class="text-secondary fw-bold">ℹ</span>
+                                                <span class="text-secondary">{{ log.message }}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="text-muted text-center">
+                                            <i class="fas fa-info-circle"></i>
+                                            <br>No activity yet
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Campaign Details -->
+                            <div class="mt-3">
+                                <div class="small text-muted">
+                                    <div><strong>Account:</strong> <span id="account-name-{{ campaign.id }}">Loading...</span></div>
+                                    <div><strong>Template:</strong> {{ campaign.template_id }}</div>
+                                    <div><strong>Started:</strong> {{ campaign.started_at[:19] if campaign.started_at else 'N/A' }}</div>
+                                    {% if campaign.completed_at %}
+                                    <div><strong>Completed:</strong> {{ campaign.completed_at[:19] }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Campaign Actions -->
+                                <div class="d-flex gap-1 mt-2">
+                                    {% if campaign.status == 'running' %}
+                                        <button class="btn btn-warning btn-sm" onclick="pauseCampaign({{ campaign.id }})" title="Pause Campaign">
+                                            <i class="fas fa-pause"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="stopCampaign({{ campaign.id }})" title="Stop Campaign">
+                                            <i class="fas fa-stop"></i>
+                                        </button>
+                                    {% elif campaign.status == 'paused' %}
+                                        <button class="btn btn-success btn-sm" onclick="resumeCampaign({{ campaign.id }})" title="Resume Campaign">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="stopCampaign({{ campaign.id }})" title="Stop Campaign">
+                                            <i class="fas fa-stop"></i>
+                                        </button>
+                                    {% elif campaign.status == 'ready' %}
+                                        <button class="btn btn-success btn-sm" onclick="startCampaign({{ campaign.id }})" title="Start Campaign">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deleteCampaign({{ campaign.id }})" title="Hide from Live View">
+                                        <i class="fas fa-eye-slash"></i>
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" onclick="clearLogs({{ campaign.id }})" title="Clear Logs">
+                                        <i class="fas fa-eraser"></i>
+                                    </button>
+                                    <a href="/campaigns/{{ campaign.id }}/edit" class="btn btn-outline-secondary btn-sm" title="Edit Campaign">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-broadcast-tower fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Active Campaigns</h4>
+                <p class="text-muted">There are currently no running or recently completed campaigns.</p>
+                <a href="/campaigns" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Your First Campaign
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-bell text-primary me-2"></i>
+            <strong class="me-auto">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+const socket = io();
+let campaignLogs = {};
+let autoRefreshInterval;
+let autoRefreshEnabled = true;
+
+// Initialize logs for each campaign
+{% for campaign in campaigns %}
+campaignLogs[{{ campaign.id }}] = {{ campaign.logs|tojson }};
+{% endfor %}
+
+// Load existing logs for each campaign
+{% for campaign in campaigns %}
+// loadCampaignLogs({{ campaign.id }});
+{% endfor %}
+
+// Grid control
+document.getElementById('gridSelector').addEventListener('change', function() {
+    updateGridLayout(this.value);
+});
+
+// Auto-refresh toggle
+document.getElementById('autoRefreshToggle').addEventListener('change', function() {
+    autoRefreshEnabled = this.checked;
+    if (autoRefreshEnabled) {
+        startAutoRefresh();
+    } else {
+        stopAutoRefresh();
+    }
+});
+
+function updateGridLayout(columnsPerRow) {
+    const cards = document.querySelectorAll('.campaign-card');
+    const grid = document.getElementById('campaigns-grid');
+    
+    // Remove existing classes
+    cards.forEach(card => {
+        card.className = 'campaign-card mb-4';
+    });
+    
+    // Add responsive classes based on selection
+    const colClasses = {
+        '1': 'col-12',
+        '2': 'col-12 col-md-6',
+        '3': 'col-12 col-md-6 col-lg-4',
+        '4': 'col-12 col-md-6 col-lg-3',
+        '6': 'col-12 col-md-6 col-lg-4 col-xl-2'
+    };
+    
+    cards.forEach(card => {
+        card.className = `campaign-card ${colClasses[columnsPerRow]} mb-4`;
+    });
+}
+
+function startAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(() => {
+        if (document.querySelectorAll('.campaign-card').length > 0) {
+            updateStatistics();
+        }
+    }, 10000); // Refresh every 10 seconds
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+function addLogToContainer(campaignId, data) {
+    const logsContainer = document.getElementById(`logs-${campaignId}`);
+    if (!logsContainer) return;
+    
+    const activityEntry = document.createElement('div');
+    activityEntry.className = 'activity-entry mb-1 p-1 rounded';
+    
+    let statusIcon, statusClass, message;
+    
+    if (data.status === 'success') {
+        statusIcon = '✓';
+        statusClass = 'text-success';
+        message = `Email ${data.email || 'recipient'} ${data.total_sent || 1}/${data.total_attempted || 1} done`;
+    } else if (data.status === 'error') {
+        statusIcon = '✗';
+        statusClass = 'text-danger';
+        message = `Email ${data.email || 'recipient'} ${data.total_sent || 0}/${data.total_attempted || 1} error`;
+    } else if (data.message && (data.message.toLowerCase().includes('rate limit') || data.message.includes('429'))) {
+        statusIcon = '⏱';
+        statusClass = 'text-primary';
+        message = 'Rate limit exceeded - waiting...';
+    } else if (data.status === 'info' && data.message.toLowerCase().includes('started')) {
+        statusIcon = '🚀';
+        statusClass = 'text-info';
+        message = data.message;
+    } else if (data.status === 'info' && data.message.toLowerCase().includes('completed')) {
+        statusIcon = '🏁';
+        statusClass = 'text-success';
+        message = data.message;
+    } else {
+        statusIcon = 'ℹ';
+        statusClass = 'text-secondary';
+        message = data.message;
+    }
+    
+    activityEntry.innerHTML = `
+        <span class="${statusClass} fw-bold">${statusIcon}</span>
+        <span class="${statusClass}">${message}</span>
+        ${data.status === 'error' && data.message ? `<br><small class="text-muted">${data.message}</small>` : ''}
+    `;
+    
+    logsContainer.appendChild(activityEntry);
+    logsContainer.scrollTop = logsContainer.scrollHeight;
+    
+    // Keep only last 5 entries in live view
+    const entries = logsContainer.querySelectorAll('.activity-entry');
+    if (entries.length > 5) {
+        entries[0].remove();
+    }
+}
+
+// Socket.IO event listeners
+socket.on('email_progress', function(data) {
+    const campaignId = data.campaign_id;
+    if (campaignLogs[campaignId]) {
+        addLogToContainer(campaignId, data);
+        updateProgress(campaignId, data);
+        updateStatistics();
+    }
+});
+
+socket.on('campaign_completed', function(data) {
+    const campaignId = data.campaign_id;
+    if (campaignLogs[campaignId]) {
+        addLogToContainer(campaignId, {
+            timestamp: new Date().toISOString(),
+            status: 'info',
+            message: `🏁 Campaign completed! Total sent: ${data.total_sent}/${data.total_attempted}`,
+            type: 'completion'
+        });
+        
+        // Update UI to show completed status
+        setTimeout(() => {
+            refreshCampaigns();
+        }, 2000);
+    }
+});
+
+socket.on('new_notification', function(notification) {
+    showNotification(notification.message, notification.type);
+});
+
+function updateProgress(campaignId, data) {
+    const totalEmails = parseInt(document.getElementById(`remaining-${campaignId}`).textContent) + 
+                       parseInt(document.getElementById(`sent-${campaignId}`).textContent);
+    
+    let sentCount = parseInt(document.getElementById(`sent-${campaignId}`).textContent);
+    let errorCount = parseInt(document.getElementById(`errors-${campaignId}`).textContent);
+    
+    if (data.status === 'success') {
+        sentCount++;
+        document.getElementById(`sent-${campaignId}`).textContent = sentCount;
+    } else if (data.status === 'error') {
+        errorCount++;
+        document.getElementById(`errors-${campaignId}`).textContent = errorCount;
+    }
+    
+    const remaining = totalEmails - sentCount - errorCount;
+    document.getElementById(`remaining-${campaignId}`).textContent = remaining;
+    
+    const progress = Math.round((sentCount + errorCount) / totalEmails * 100);
+    document.getElementById(`progress-${campaignId}`).textContent = progress + '%';
+    document.getElementById(`progress-bar-${campaignId}`).style.width = progress + '%';
+}
+
+function updateStatistics() {
+    let totalCampaigns = 0;
+    let totalSent = 0;
+    let totalErrors = 0;
+    let totalRemaining = 0;
+    
+    document.querySelectorAll('.campaign-card').forEach(card => {
+        const campaignId = card.dataset.campaignId;
+        if (campaignId) {
+            totalCampaigns++;
+            totalSent += parseInt(document.getElementById(`sent-${campaignId}`)?.textContent || 0);
+            totalErrors += parseInt(document.getElementById(`errors-${campaignId}`)?.textContent || 0);
+            totalRemaining += parseInt(document.getElementById(`remaining-${campaignId}`)?.textContent || 0);
+        }
+    });
+    
+    document.getElementById('total-campaigns').textContent = totalCampaigns;
+    document.getElementById('total-sent').textContent = totalSent;
+    document.getElementById('total-errors').textContent = totalErrors;
+    document.getElementById('total-remaining').textContent = totalRemaining;
+}
+
+function getStatusIcon(status) {
+    switch (status) {
+        case 'success': return '✅';
+        case 'error': return '❌';
+        case 'info': return 'ℹ️';
+        default: return '📝';
+    }
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'success': return 'bg-success text-white';
+        case 'error': return 'bg-danger text-white';
+        case 'info': return 'bg-info text-white';
+        default: return 'bg-secondary text-white';
+    }
+}
+
+function stopCampaign(campaignId) {
+    if (confirm('Are you sure you want to stop this campaign?')) {
+        fetch(`/api/campaigns/${campaignId}/stop`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    refreshCampaigns();
+                }, 1000);
+            } else {
+                showNotification(data.message || 'Error stopping campaign', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error stopping campaign', 'error');
+        });
+    }
+}
+
+function pauseCampaign(campaignId) {
+    if (confirm('Are you sure you want to pause this campaign?')) {
+        fetch(`/api/campaigns/${campaignId}/pause`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    refreshCampaigns();
+                }, 1000);
+            } else {
+                showNotification('Error pausing campaign', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error pausing campaign', 'error');
+        });
+    }
+}
+
+function resumeCampaign(campaignId) {
+    if (confirm('Are you sure you want to resume this campaign?')) {
+        fetch(`/api/campaigns/${campaignId}/resume`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    refreshCampaigns();
+                }, 1000);
+            } else {
+                showNotification('Error resuming campaign', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error resuming campaign', 'error');
+        });
+    }
+}
+
+function startCampaign(campaignId) {
+    if (confirm('Are you sure you want to start this campaign?')) {
+        fetch(`/api/campaigns/${campaignId}/start`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    refreshCampaigns();
+                }, 1000);
+            } else {
+                showNotification(data.message || 'Error starting campaign', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error starting campaign', 'error');
+        });
+    }
+}
+
+function deleteCampaign(campaignId) {
+    if (confirm('Remove this campaign from the Live Campaigns Monitor? The campaign will be hidden from this view but not deleted.')) {
+        // Simply hide the campaign card from the live view
+        const campaignCard = document.querySelector(`[data-campaign-id="${campaignId}"]`);
+        if (campaignCard) {
+            campaignCard.style.display = 'none';
+            showNotification('Campaign removed from Live Campaigns Monitor', 'success');
+        } else {
+            showNotification('Campaign not found in view', 'error');
+        }
+    }
+}
+
+function refreshCampaigns() {
+    window.location.reload();
+}
+
+function clearLogs(campaignId) {
+    if (confirm('Clear activity logs for this campaign? This will only clear the logs, not delete the campaign.')) {
+        fetch(`/api/campaigns/${campaignId}/clear-logs`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                // Clear the logs display immediately
+                const logsContainer = document.getElementById(`logs-${campaignId}`);
+                if (logsContainer) {
+                    logsContainer.innerHTML = `
+                        <div class="text-muted text-center">
+                            <i class="fas fa-info-circle"></i>
+                            <br>No activity yet
+                        </div>
+                    `;
+                }
+            } else {
+                showNotification(data.message || 'Error clearing logs', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error clearing logs', 'error');
+        });
+    }
+}
+
+function exportLogs(campaignId) {
+    const logs = campaignLogs[campaignId] || [];
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "Timestamp,Status,Message,Email,Subject\n"
+        + logs.map(log => {
+            return `"${log.timestamp}","${log.status}","${log.message}","${log.email || ''}","${log.subject || ''}"`;
+        }).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `campaign_${campaignId}_logs.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function showNotification(message, type = 'info') {
+    const toast = document.getElementById('notification-toast');
+    const toastMessage = document.getElementById('toast-message');
+    
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 5000);
+}
+
+// Load account names
+{% for campaign in campaigns %}
+fetch(`/api/accounts/{{ campaign.account_id }}`)
+    .then(response => response.json())
+    .then(account => {
+        const element = document.getElementById('account-name-{{ campaign.id }}');
+        if (element) element.textContent = account.name;
+    })
+    .catch(error => {
+        const element = document.getElementById('account-name-{{ campaign.id }}');
+        if (element) element.textContent = 'Unknown';
+    });
+{% endfor %}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateStatistics();
+    startAutoRefresh();
+});
+</script>
+{% endblock %} 

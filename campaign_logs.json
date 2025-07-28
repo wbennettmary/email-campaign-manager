@@ -1,0 +1,1055 @@
+{
+  "13": [
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:07:50.226288",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'ww' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:07:51.259525",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:07:51.249554",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:07:53.672801",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to armin.sdsdapp@gmail.com",
+      "email": "armin.sdsdapp@gmail.com",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:07:53.664797",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:07:55.919482",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salsssopiuszdapp@gmail.com",
+      "email": "salsssopiuszdapp@gmail.com",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:07:55.912474",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:07:58.156342",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:07:58.148384",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:08:00.113204",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to zexdwiwlejha@outlook.fr",
+      "email": "zexdwiwlejha@outlook.fr",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:08:00.108048",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:08:02.520989",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:08:02.506955",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:08:04.497696",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to fbdo.zezsailins@gmail.com",
+      "email": "fbdo.zezsailins@gmail.com",
+      "subject": "testing again",
+      "sender": "willow",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T16:08:04.491681",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection"
+      }
+    },
+    {
+      "campaign_id": 13,
+      "timestamp": "2025-07-26T16:08:06.225269",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 7/7 | Delivered: 7 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
+      "type": "completion",
+      "total_sent": 7,
+      "total_attempted": 7,
+      "delivered_count": 7,
+      "bounced_count": 0,
+      "error_count": 0,
+      "delivery_rate": 100.0,
+      "bounce_rate": 0.0
+    }
+  ],
+  "14": [
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:06.471556",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'alin' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:07.640822",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "last test",
+      "sender": "alin",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:57:07.636833",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:10.185465",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssdapp.mirolo@gmail.com",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "last test",
+      "sender": "alin",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:57:10.179480",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:12.754439",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "last test",
+      "sender": "alin",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:57:12.740480",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:15.590119",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to aawzdflp74jha@outlook.fr",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "last test",
+      "sender": "alin",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:57:15.584135",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:17.846857",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "last test",
+      "sender": "alin",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:57:17.841869",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:20.791221",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.barishmanes@gmail.com",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "last test",
+      "sender": "alin",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:57:20.782209",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 14,
+      "timestamp": "2025-07-26T23:57:22.275508",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 6/6 | Delivered: 6 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
+      "type": "completion",
+      "total_sent": 6,
+      "total_attempted": 6,
+      "delivered_count": 6,
+      "bounced_count": 0,
+      "error_count": 0,
+      "delivery_rate": 100.0,
+      "bounce_rate": 0.0
+    }
+  ],
+  "15": [
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:41.203680",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'onmicrosft' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:42.047711",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salssapp@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salssapp@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:45.654057",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salssapp@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salssapp@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:49.290106",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salssapp@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salssapp@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:51.795326",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salsssaqzdsdapp@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salsssaqzdsdapp@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:55.405205",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salsssaqzdsdapp@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salsssaqzdsdapp@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:56:59.048897",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salsssaqzdsdapp@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salsssaqzdsdapp@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:01.076808",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salssdapp.mirolo@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:04.650200",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salssdapp.mirolo@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:08.252972",
+      "status": "error",
+      "message": "\u274c FAILED (400) to salssdapp.mirolo@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:10.629877",
+      "status": "error",
+      "message": "\u274c FAILED (400) to jetalpha@outlook.fr | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:14.221708",
+      "status": "error",
+      "message": "\u274c FAILED (400) to jetalpha@outlook.fr | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:17.835915",
+      "status": "error",
+      "message": "\u274c FAILED (400) to jetalpha@outlook.fr | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:20.272176",
+      "status": "error",
+      "message": "\u274c FAILED (400) to aawzdflp74jha@outlook.fr | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:23.928637",
+      "status": "error",
+      "message": "\u274c FAILED (400) to aawzdflp74jha@outlook.fr | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:27.540360",
+      "status": "error",
+      "message": "\u274c FAILED (400) to aawzdflp74jha@outlook.fr | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:29.793164",
+      "status": "error",
+      "message": "\u274c FAILED (400) to lesgavasimind@gmx.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:33.414396",
+      "status": "error",
+      "message": "\u274c FAILED (400) to lesgavasimind@gmx.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:37.037512",
+      "status": "error",
+      "message": "\u274c FAILED (400) to lesgavasimind@gmx.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:39.030201",
+      "status": "error",
+      "message": "\u274c FAILED (400) to abdo.barishmanes@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 1,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:42.670924",
+      "status": "error",
+      "message": "\u274c FAILED (400) to abdo.barishmanes@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 2,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:46.310204",
+      "status": "error",
+      "message": "\u274c FAILED (400) to abdo.barishmanes@gmail.com | Message: the Function API Name given seems to be invalid | Code: INVALID_DATA",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "we are trying to connect",
+      "sender": "sarah",
+      "type": "error",
+      "attempt": 3,
+      "response_code": 400,
+      "api_code": "INVALID_DATA"
+    },
+    {
+      "campaign_id": 15,
+      "timestamp": "2025-07-26T23:57:47.831308",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 0/7 | Delivered: 0 | Bounced: 0 | Errors: 28 | Delivery Rate: 0.0% | Bounce Rate: 0.0%",
+      "type": "completion",
+      "total_sent": 0,
+      "total_attempted": 7,
+      "delivered_count": 0,
+      "bounced_count": 0,
+      "error_count": 28,
+      "delivery_rate": 0.0,
+      "bounce_rate": 0.0
+    }
+  ],
+  "16": [
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:29.745883",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'tt' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:30.734001",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:58:30.725607",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:33.008320",
+      "status": "bounced",
+      "message": "\ud83d\udce7 Email BOUNCED for salsssaqzdsdapp@gmail.com",
+      "email": "salsssaqzdsdapp@gmail.com",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "bounced",
+        "delivery_status": "failed",
+        "bounce_reason": "Email contains \"salsssaqz\" indicator",
+        "timestamp": "2025-07-26T23:58:32.996349",
+        "details": "Email likely to bounce - contains suspicious pattern",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:35.287024",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssdapp.mirolo@gmail.com",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:58:35.269086",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:37.667203",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:58:37.654225",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:40.583648",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to aawzdflp74jha@outlook.fr",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:58:40.570684",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:42.680394",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:58:42.659449",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:44.886051",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.barishmanes@gmail.com",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-26T23:58:44.865110",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 16,
+      "timestamp": "2025-07-26T23:58:46.358376",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 7/7 | Delivered: 6 | Bounced: 1 | Errors: 0 | Delivery Rate: 85.7% | Bounce Rate: 14.3%",
+      "type": "completion",
+      "total_sent": 7,
+      "total_attempted": 7,
+      "delivered_count": 6,
+      "bounced_count": 1,
+      "error_count": 0,
+      "delivery_rate": 85.7,
+      "bounce_rate": 14.3
+    }
+  ],
+  "17": [
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:37.583242",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'retro' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:38.507070",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:00:38.495689",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:40.996892",
+      "status": "bounced",
+      "message": "\ud83d\udce7 Email BOUNCED for salsssaqzdsdapp@gmail.com",
+      "email": "salsssaqzdsdapp@gmail.com",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "bounced",
+        "delivery_status": "failed",
+        "bounce_reason": "Email contains \"salsssaqz\" indicator",
+        "timestamp": "2025-07-27T00:00:40.987915",
+        "details": "Email likely to bounce - contains suspicious pattern",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:43.094993",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssdapp.mirolo@gmail.com",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:00:43.083055",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:45.781254",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:00:45.752369",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:48.246653",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to aawzdflp74jha@outlook.fr",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:00:48.236679",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:51.248005",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:00:51.237034",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:53.678425",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.barishmanes@gmail.com",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:00:53.657486",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 17,
+      "timestamp": "2025-07-27T00:00:55.709230",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 7/7 | Delivered: 6 | Bounced: 1 | Errors: 0 | Delivery Rate: 85.7% | Bounce Rate: 14.3%",
+      "type": "completion",
+      "total_sent": 7,
+      "total_attempted": 7,
+      "delivered_count": 6,
+      "bounced_count": 1,
+      "error_count": 0,
+      "delivery_rate": 85.7,
+      "bounce_rate": 14.3
+    }
+  ],
+  "18": [
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:01:49.265925",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'xnarnin' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:01:50.139683",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:01:50.128199",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:01:53.069443",
+      "status": "bounced",
+      "message": "\ud83d\udce7 Email BOUNCED for salsssaqzdsdapp@gmail.com",
+      "email": "salsssaqzdsdapp@gmail.com",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "bounced",
+        "delivery_status": "failed",
+        "bounce_reason": "Email contains \"salsssaqz\" indicator",
+        "timestamp": "2025-07-27T00:01:53.060467",
+        "details": "Email likely to bounce - contains suspicious pattern",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:01:55.081236",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssdapp.mirolo@gmail.com",
+      "email": "salssdapp.mirolo@gmail.com",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:01:55.054350",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:01:57.730633",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:01:57.715454",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:02:00.334049",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to aawzdflp74jha@outlook.fr",
+      "email": "aawzdflp74jha@outlook.fr",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:02:00.325097",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:02:02.579634",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:02:02.566667",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:02:05.411242",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.barishmanes@gmail.com",
+      "email": "abdo.barishmanes@gmail.com",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-27T00:02:05.402296",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 18,
+      "timestamp": "2025-07-27T00:02:06.587535",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 7/7 | Delivered: 6 | Bounced: 1 | Errors: 0 | Delivery Rate: 85.7% | Bounce Rate: 14.3%",
+      "type": "completion",
+      "total_sent": 7,
+      "total_attempted": 7,
+      "delivered_count": 6,
+      "bounced_count": 1,
+      "error_count": 0,
+      "delivery_rate": 85.7,
+      "bounce_rate": 14.3
+    }
+  ]
+}

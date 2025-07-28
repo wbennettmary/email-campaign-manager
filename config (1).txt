@@ -1,0 +1,32 @@
+void automation.Send_Email_Template1()
+{
+    curl = "https://www.zohoapis.com/crm/v7/settings/email_templates/6876152000000574058";
+
+    getTemplate = invokeurl
+    [
+        url: curl
+        type: GET
+        connection: "re"
+    ];
+
+    EmailTemplateContent = getTemplate.get("email_templates").get(0).get("content");
+
+    // Liste des destinataires
+    destinataires = list();
+    destinataires.add("jaafarmoon@hotmail.com");
+    destinataires.add("faouzia_hammam@hotmail.fr");
+    destinataires.add("moonmjk94@gmail.com");
+
+    sendmail
+    [
+        from: "cc <" + zoho.loginuserid + ">"
+        to: destinataires
+        subject: "Baisse"
+        message: EmailTemplateContent
+    ];
+}
+
+
+Send_Email_Template
+
+Send Email Template

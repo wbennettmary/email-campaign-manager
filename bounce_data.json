@@ -1,0 +1,75 @@
+{
+  "11": [
+    {
+      "email": "salsssaqzdsdapp@gmail.com",
+      "campaign_id": 11,
+      "reason": "Email contains \"salsssaqz\" indicator",
+      "subject": "we are testing now the bounce filtre",
+      "sender": "Pro Send",
+      "timestamp": "2025-07-26T15:51:15.136443",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "salsssaqz47dsdapp@gmail.com",
+      "campaign_id": 11,
+      "reason": "Email contains \"salsssaqz\" indicator",
+      "subject": "we are testing now the bounce filtre",
+      "sender": "Pro Send",
+      "timestamp": "2025-07-26T15:51:17.788765",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "axxzexdflp74jha@outlook.fr",
+      "campaign_id": 11,
+      "reason": "Email contains \"axxzexdflp\" indicator",
+      "subject": "we are testing now the bounce filtre",
+      "sender": "Pro Send",
+      "timestamp": "2025-07-26T15:51:23.337705",
+      "bounce_type": "soft"
+    }
+  ],
+  "14": [
+    {
+      "email": "salsssaqzdsdapp@gmail.com",
+      "campaign_id": 14,
+      "reason": "Email contains \"salsssaqz\" indicator",
+      "subject": "last test",
+      "sender": "alin",
+      "timestamp": "2025-07-26T16:18:32.746560",
+      "bounce_type": "soft"
+    }
+  ],
+  "16": [
+    {
+      "email": "salsssaqzdsdapp@gmail.com",
+      "campaign_id": 16,
+      "reason": "Email contains \"salsssaqz\" indicator",
+      "subject": "lzeroy is a bitch",
+      "sender": "runner",
+      "timestamp": "2025-07-26T23:58:33.003365",
+      "bounce_type": "soft"
+    }
+  ],
+  "17": [
+    {
+      "email": "salsssaqzdsdapp@gmail.com",
+      "campaign_id": 17,
+      "reason": "Email contains \"salsssaqz\" indicator",
+      "subject": "relaunch the box please",
+      "sender": "retro",
+      "timestamp": "2025-07-27T00:00:40.992902",
+      "bounce_type": "soft"
+    }
+  ],
+  "18": [
+    {
+      "email": "salsssaqzdsdapp@gmail.com",
+      "campaign_id": 18,
+      "reason": "Email contains \"salsssaqz\" indicator",
+      "subject": "we are waiting",
+      "sender": "nother",
+      "timestamp": "2025-07-27T00:01:53.065455",
+      "bounce_type": "soft"
+    }
+  ]
+}

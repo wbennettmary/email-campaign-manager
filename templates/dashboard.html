@@ -1,0 +1,473 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Email Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-tachometer-alt text-primary"></i>
+            Dashboard
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshStats()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Accounts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-accounts">{{ total_accounts }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Active Campaigns</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-campaigns">{{ active_campaigns }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bullhorn fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Emails Sent Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="emails-today">{{ emails_today }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Success Rate</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="success-rate">{{ success_rate }}%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                Total Emails Sent</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-sent">{{ total_sent }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-paper-plane fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Total Campaigns</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-campaigns">{{ campaigns|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Completed</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="completed-campaigns">{{ status_counts.get('completed', 0) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Stopped</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="stopped-campaigns">{{ status_counts.get('stopped', 0) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-pause-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Recent Campaigns -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bullhorn"></i> Recent Campaigns
+                    </h6>
+                    <a href="/campaigns" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Create Campaign
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_campaigns %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign</th>
+                                        <th>Status</th>
+                                        <th>Sent</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for campaign in recent_campaigns %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ campaign.name }}</strong>
+                                            <br><small class="text-muted">{{ campaign.template_id }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge {{ get_status_badge_class(campaign.status) }}">
+                                                {{ campaign.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if campaign.total_sent %}
+                                                <span class="text-success">{{ campaign.total_sent }}</span>
+                                            {% else %}
+                                                <span class="text-muted">0</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ campaign.created_at[:10] if campaign.created_at else 'N/A' }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="/campaigns/{{ campaign.id }}/logs" class="btn btn-outline-primary" title="View Logs">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
+                                                <a href="/campaigns/{{ campaign.id }}/edit" class="btn btn-outline-secondary" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% if campaign.status == 'completed' %}
+                                                <button class="btn btn-outline-success" onclick="relaunchCampaign({{ campaign.id }})" title="Relaunch">
+                                                    <i class="fas fa-redo"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-bullhorn fa-3x mb-3"></i>
+                            <h5>No Campaigns Yet</h5>
+                            <p>Create your first campaign to get started!</p>
+                            <a href="/campaigns" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Create Campaign
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-line"></i> Recent Activity
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="activity-log" style="max-height: 300px; overflow-y: auto;">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p>No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/accounts" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add New Account
+                        </a>
+                        <a href="/campaigns" class="btn btn-success">
+                            <i class="fas fa-bullhorn me-2"></i>Create Campaign
+                        </a>
+                        <a href="/live-campaigns" class="btn btn-info">
+                            <i class="fas fa-broadcast-tower me-2"></i>Live Campaigns
+                        </a>
+                        <button class="btn btn-outline-secondary" onclick="refreshStats()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Notifications -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bell"></i> Recent Notifications
+                    </h6>
+                    <a href="/notifications" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_notifications %}
+                        <div class="list-group list-group-flush">
+                            {% for notification in recent_notifications %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        <i class="fas {{ get_notification_icon(notification.type) }} text-{{ notification.type }}"></i>
+                                        {{ notification.message[:50] }}{% if notification.message|length > 50 %}...{% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ notification.timestamp[:16] }}</small>
+                                </div>
+                                {% if not notification.read %}
+                                <span class="badge bg-warning">New</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                            <p>No notifications</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-server"></i> System Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-success mb-0">{{ active_campaigns }}</h4>
+                                <small class="text-muted">Running</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-info mb-0">{{ total_accounts }}</h4>
+                            <small class="text-muted">Accounts</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> Last updated: <span id="last-updated">Just now</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+// Initialize Socket.IO connection
+const socket = io();
+
+// Listen for email progress updates
+socket.on('email_progress', function(data) {
+    addActivityLog(data.message, data.status);
+    updateStats();
+});
+
+// Listen for campaign completion
+socket.on('campaign_completed', function(data) {
+    addActivityLog(`Campaign ${data.campaign_id} completed. Total emails sent: ${data.total_sent}`, 'success');
+    updateStats();
+});
+
+function addActivityLog(message, status) {
+    const activityLog = document.getElementById('activity-log');
+    const timestamp = new Date().toLocaleTimeString();
+    
+    // Remove "no activity" message if it exists
+    const noActivity = activityLog.querySelector('.text-center.text-muted');
+    if (noActivity) {
+        noActivity.remove();
+    }
+    
+    const logEntry = document.createElement('div');
+    logEntry.className = `alert alert-${status === 'success' ? 'success' : status === 'error' ? 'danger' : 'info'} alert-sm mb-2`;
+    logEntry.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <small class="text-muted">${timestamp}</small><br>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-sm" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    activityLog.insertBefore(logEntry, activityLog.firstChild);
+    
+    // Keep only last 20 entries
+    const entries = activityLog.querySelectorAll('.alert');
+    if (entries.length > 20) {
+        entries[entries.length - 1].remove();
+    }
+}
+
+function updateStats() {
+    // Fetch updated statistics
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-accounts').textContent = data.total_accounts;
+            document.getElementById('active-campaigns').textContent = data.active_campaigns;
+            document.getElementById('emails-today').textContent = data.emails_today;
+            document.getElementById('success-rate').textContent = data.success_rate + '%';
+            document.getElementById('total-sent').textContent = data.total_sent;
+            document.getElementById('total-campaigns').textContent = data.total_campaigns;
+            document.getElementById('completed-campaigns').textContent = data.status_counts.completed || 0;
+            document.getElementById('stopped-campaigns').textContent = data.status_counts.stopped || 0;
+            
+            // Update last updated time
+            document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+        })
+        .catch(error => console.error('Error updating stats:', error));
+}
+
+function refreshStats() {
+    updateStats();
+    // Show refresh feedback
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 1000);
+}
+
+function relaunchCampaign(campaignId) {
+    if (confirm('Are you sure you want to relaunch this campaign?')) {
+        fetch(`/api/campaigns/${campaignId}/relaunch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                addActivityLog(data.message, 'success');
+            } else {
+                addActivityLog('Campaign relaunched successfully!', 'success');
+            }
+            updateStats();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            addActivityLog('Error relaunching campaign', 'error');
+        });
+    }
+}
+
+// Load initial stats
+document.addEventListener('DOMContentLoaded', function() {
+    updateStats();
+    
+    // Auto-refresh stats every 30 seconds
+    setInterval(updateStats, 30000);
+});
+</script>
+{% endblock %} 

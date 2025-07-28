@@ -1,0 +1,136 @@
+2025-07-26 15:24:03 | FAILED | To: salssapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:07 | FAILED | To: salssapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:15 | FAILED | To: salssapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7 | Details: Request error: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2025-07-26 15:24:18 | FAILED | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:24 | FAILED | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:28 | FAILED | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:31 | FAILED | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:35 | FAILED | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:41 | FAILED | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:43 | FAILED | To: jetalpha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:47 | FAILED | To: jetalpha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:51 | FAILED | To: jetalpha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:54 | FAILED | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:24:58 | FAILED | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:25:02 | FAILED | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:25:04 | FAILED | To: lesgavasimind@gmx.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:25:08 | FAILED | To: lesgavasimind@gmx.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:25:12 | FAILED | To: lesgavasimind@gmx.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:01 | FAILED | To: salssapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:05 | FAILED | To: salssapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:09 | FAILED | To: salssapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:12 | FAILED | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:16 | FAILED | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:20 | FAILED | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:23 | FAILED | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:27 | FAILED | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:31 | FAILED | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:33 | FAILED | To: jetalpha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:37 | FAILED | To: jetalpha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:41 | FAILED | To: jetalpha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:44 | FAILED | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:48 | FAILED | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:52 | FAILED | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:54 | FAILED | To: lesgavasimind@gmx.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:28:58 | FAILED | To: lesgavasimind@gmx.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:29:02 | FAILED | To: lesgavasimind@gmx.com | From: peter | Subject: marlin is here are you | Campaign: 7
+2025-07-26 15:31:58 | FAILED () | To: salssapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:02 | FAILED () | To: salssapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:07 | FAILED () | To: salssapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:10 | FAILED () | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:14 | FAILED () | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:18 | FAILED () | To: salsssaqzdsdapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:21 | FAILED () | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:25 | FAILED () | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:30 | FAILED () | To: salsssaqz47dsdapp@gmail.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:32 | FAILED () | To: jetalpha@outlook.fr | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:36 | FAILED () | To: jetalpha@outlook.fr | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:40 | FAILED () | To: jetalpha@outlook.fr | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:43 | FAILED () | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:47 | FAILED () | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:52 | FAILED () | To: axxzexdflp74jha@outlook.fr | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:54 | FAILED () | To: lesgavasimind@gmx.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:32:58 | FAILED () | To: lesgavasimind@gmx.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:33:03 | FAILED () | To: lesgavasimind@gmx.com | From: peter | Subject: peter is here | Campaign: 8
+2025-07-26 15:35:19 | DELIVERED | To: salssapp@gmail.com | From: amazonia | Subject: welcome to amazonia | Campaign: 9 | Details: Email appears to be delivered successfully
+2025-07-26 15:35:22 | DELIVERED | To: salsssaqzdsdapp@gmail.com | From: amazonia | Subject: welcome to amazonia | Campaign: 9 | Details: Email appears to be delivered successfully
+2025-07-26 15:35:24 | DELIVERED | To: salsssaqz47dsdapp@gmail.com | From: amazonia | Subject: welcome to amazonia | Campaign: 9 | Details: Email appears to be delivered successfully
+2025-07-26 15:35:28 | DELIVERED | To: jetalpha@outlook.fr | From: amazonia | Subject: welcome to amazonia | Campaign: 9 | Details: Email appears to be delivered successfully
+2025-07-26 15:35:31 | DELIVERED | To: axxzexdflp74jha@outlook.fr | From: amazonia | Subject: welcome to amazonia | Campaign: 9 | Details: Email appears to be delivered successfully
+2025-07-26 15:35:33 | DELIVERED | To: lesgavasimind@gmx.com | From: amazonia | Subject: welcome to amazonia | Campaign: 9 | Details: Email appears to be delivered successfully
+2025-07-26 15:39:16 | DELIVERED | To: salssapp@gmail.com | From: jacky | Subject: all the users are now live | Campaign: 10 | Details: Email delivered successfully (simulated)
+2025-07-26 15:39:19 | BOUNCED | To: salsssaqzdsdapp@gmail.com | From: jacky | Subject: all the users are now live | Campaign: 10 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 15:39:21 | BOUNCED | To: salsssaqz47dsdapp@gmail.com | From: jacky | Subject: all the users are now live | Campaign: 10 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 15:39:24 | DELIVERED | To: jetalpha@outlook.fr | From: jacky | Subject: all the users are now live | Campaign: 10 | Details: Email delivered successfully (simulated)
+2025-07-26 15:39:26 | BOUNCED | To: axxzexdflp74jha@outlook.fr | From: jacky | Subject: all the users are now live | Campaign: 10 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 15:39:29 | DELIVERED | To: lesgavasimind@gmx.com | From: jacky | Subject: all the users are now live | Campaign: 10 | Details: Email delivered successfully (simulated)
+2025-07-26 15:51:12 | DELIVERED | To: salssapp@gmail.com | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email delivered successfully (simulated)
+2025-07-26 15:51:15 | BOUNCED | To: salsssaqzdsdapp@gmail.com | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 15:51:17 | BOUNCED | To: salsssaqz47dsdapp@gmail.com | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 15:51:20 | DELIVERED | To: jetalpha@outlook.fr | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email delivered successfully (simulated)
+2025-07-26 15:51:23 | BOUNCED | To: axxzexdflp74jha@outlook.fr | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 15:51:26 | DELIVERED | To: lesgavasimind@gmx.com | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email delivered successfully (simulated)
+2025-07-26 15:51:28 | DELIVERED | To: abdo.zezgamsilins@gmail.com | From: Pro Send | Subject: we are testing now the bounce filtre | Campaign: 11 | Details: Email delivered successfully (simulated)
+2025-07-26 15:52:54 | DELIVERED | To: master.minds.blo77@gmx.com | From: paloma | Subject: testing arround | Campaign: 12 | Details: Email delivered successfully (simulated)
+2025-07-26 16:07:51 | DELIVERED | To: salssapp@gmail.com | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:07:53 | DELIVERED | To: armin.sdsdapp@gmail.com | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:07:55 | DELIVERED | To: salsssopiuszdapp@gmail.com | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:07:58 | DELIVERED | To: jetalpha@outlook.fr | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:08:00 | DELIVERED | To: zexdwiwlejha@outlook.fr | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:08:02 | DELIVERED | To: lesgavasimind@gmx.com | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:08:04 | DELIVERED | To: fbdo.zezsailins@gmail.com | From: willow | Subject: testing again | Campaign: 13 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:18:30 | DELIVERED | To: salssapp@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:18:32 | BOUNCED | To: salsssaqzdsdapp@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 16:18:34 | DELIVERED | To: salssdapp.mirolo@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:18:37 | DELIVERED | To: jetalpha@outlook.fr | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:18:39 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:18:41 | DELIVERED | To: lesgavasimind@gmx.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 16:18:44 | DELIVERED | To: abdo.barishmanes@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:56:42 | FAILED (INVALID_DATA) | To: salssapp@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:56:45 | FAILED (INVALID_DATA) | To: salssapp@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:56:49 | FAILED (INVALID_DATA) | To: salssapp@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:56:51 | FAILED (INVALID_DATA) | To: salsssaqzdsdapp@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:56:55 | FAILED (INVALID_DATA) | To: salsssaqzdsdapp@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:56:59 | FAILED (INVALID_DATA) | To: salsssaqzdsdapp@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:01 | FAILED (INVALID_DATA) | To: salssdapp.mirolo@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:04 | FAILED (INVALID_DATA) | To: salssdapp.mirolo@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:07 | DELIVERED | To: salssapp@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:57:08 | FAILED (INVALID_DATA) | To: salssdapp.mirolo@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:10 | DELIVERED | To: salssdapp.mirolo@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:57:10 | FAILED (INVALID_DATA) | To: jetalpha@outlook.fr | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:12 | DELIVERED | To: jetalpha@outlook.fr | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:57:14 | FAILED (INVALID_DATA) | To: jetalpha@outlook.fr | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:15 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:57:17 | DELIVERED | To: lesgavasimind@gmx.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:57:17 | FAILED (INVALID_DATA) | To: jetalpha@outlook.fr | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:20 | FAILED (INVALID_DATA) | To: aawzdflp74jha@outlook.fr | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:20 | DELIVERED | To: abdo.barishmanes@gmail.com | From: alin | Subject: last test | Campaign: 14 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:57:23 | FAILED (INVALID_DATA) | To: aawzdflp74jha@outlook.fr | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:27 | FAILED (INVALID_DATA) | To: aawzdflp74jha@outlook.fr | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:29 | FAILED (INVALID_DATA) | To: lesgavasimind@gmx.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:33 | FAILED (INVALID_DATA) | To: lesgavasimind@gmx.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:37 | FAILED (INVALID_DATA) | To: lesgavasimind@gmx.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:39 | FAILED (INVALID_DATA) | To: abdo.barishmanes@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:42 | FAILED (INVALID_DATA) | To: abdo.barishmanes@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:57:46 | FAILED (INVALID_DATA) | To: abdo.barishmanes@gmail.com | From: sarah | Subject: we are trying to connect | Campaign: 15 | Details: the Function API Name given seems to be invalid
+2025-07-26 23:58:30 | DELIVERED | To: salssapp@gmail.com | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:58:32 | BOUNCED | To: salsssaqzdsdapp@gmail.com | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-26 23:58:35 | DELIVERED | To: salssdapp.mirolo@gmail.com | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:58:37 | DELIVERED | To: jetalpha@outlook.fr | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:58:40 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:58:42 | DELIVERED | To: lesgavasimind@gmx.com | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email delivered successfully (pattern-based detection)
+2025-07-26 23:58:44 | DELIVERED | To: abdo.barishmanes@gmail.com | From: runner | Subject: lzeroy is a bitch | Campaign: 16 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:00:38 | DELIVERED | To: salssapp@gmail.com | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:00:40 | BOUNCED | To: salsssaqzdsdapp@gmail.com | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-27 00:00:43 | DELIVERED | To: salssdapp.mirolo@gmail.com | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:00:45 | DELIVERED | To: jetalpha@outlook.fr | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:00:48 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:00:51 | DELIVERED | To: lesgavasimind@gmx.com | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:00:53 | DELIVERED | To: abdo.barishmanes@gmail.com | From: retro | Subject: relaunch the box please | Campaign: 17 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:01:50 | DELIVERED | To: salssapp@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:01:53 | BOUNCED | To: salsssaqzdsdapp@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email likely to bounce - contains suspicious pattern
+2025-07-27 00:01:55 | DELIVERED | To: salssdapp.mirolo@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:01:57 | DELIVERED | To: jetalpha@outlook.fr | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:02:00 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:02:02 | DELIVERED | To: lesgavasimind@gmx.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
+2025-07-27 00:02:05 | DELIVERED | To: abdo.barishmanes@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Delivered Emails{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-check-circle text-success"></i>
+            Delivered Emails
+        </h1>
+        <div class="d-flex gap-2">
+            <select id="campaignFilter" class="form-select" style="width: auto;">
+                <option value="">All Campaigns</option>
+                {% for campaign_id, campaign_name in campaign_names.items() %}
+                <option value="{{ campaign_id }}" {% if selected_campaign and selected_campaign|string == campaign_id %}selected{% endif %}>
+                    {{ campaign_name }}
+                </option>
+                {% endfor %}
+            </select>
+            <button id="downloadBtn" class="btn btn-success" disabled>
+                <i class="fas fa-download"></i> Download CSV
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">Delivery List</h5>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-success" id="deliveryCount">{{ delivered_emails|length }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if delivered_emails %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Email</th>
+                            <th>Campaign</th>
+                            <th>Subject</th>
+                            <th>Sender</th>
+                            <th>Details</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deliveryTableBody">
+                        {% for entry in delivered_emails %}
+                        <tr data-campaign="{{ entry.campaign_id }}">
+                            <td>
+                                <code>{{ entry.email }}</code>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ campaign_names.get(entry.campaign_id|string, 'Unknown Campaign') }}
+                                </span>
+                            </td>
+                            <td>{{ entry.subject or 'N/A' }}</td>
+                            <td>{{ entry.sender or 'N/A' }}</td>
+                            <td>
+                                <small class="text-muted">{{ entry.details or 'Delivered successfully' }}</small>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ entry.timestamp|format_timestamp }}</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
+                <h4 class="text-muted">No Delivered Emails</h4>
+                <p class="text-muted">No emails have been delivered yet. Start a campaign to see results here.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const campaignFilter = document.getElementById('campaignFilter');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const deliveryTableBody = document.getElementById('deliveryTableBody');
+    const deliveryCount = document.getElementById('deliveryCount');
+    
+    // Filter functionality
+    campaignFilter.addEventListener('change', function() {
+        const selectedCampaign = this.value;
+        const rows = deliveryTableBody.querySelectorAll('tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const campaignId = row.getAttribute('data-campaign');
+            if (!selectedCampaign || campaignId === selectedCampaign) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        deliveryCount.textContent = visibleCount;
+        downloadBtn.disabled = visibleCount === 0;
+    });
+    
+    // Download functionality
+    downloadBtn.addEventListener('click', function() {
+        const selectedCampaign = campaignFilter.value;
+        let downloadUrl;
+        
+        if (selectedCampaign) {
+            downloadUrl = `/api/download/delivered/${selectedCampaign}`;
+        } else {
+            // For all campaigns, we'll need to implement a different approach
+            alert('Please select a specific campaign to download delivered emails.');
+            return;
+        }
+        
+        window.location.href = downloadUrl;
+    });
+    
+    // Enable download button if there are delivered emails
+    if ({{ delivered_emails|length }} > 0) {
+        downloadBtn.disabled = false;
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-bell text-primary"></i>
+            Notifications
+        </h1>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="markAllAsRead()">
+                <i class="fas fa-check-double"></i> Mark All as Read
+            </button>
+            <button class="btn btn-outline-danger" onclick="clearAllNotifications()">
+                <i class="fas fa-trash"></i> Clear All
+            </button>
+        </div>
+    </div>
+
+    {% if notifications %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list"></i>
+                            Recent Notifications ({{ notifications|length }})
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for notification in notifications|sort(attribute='timestamp', reverse=true) %}
+                            <div class="list-group-item list-group-item-action {% if not notification.read %}list-group-item-primary{% endif %}" 
+                                 id="notification-{{ notification.id }}">
+                                <div class="d-flex w-100 justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge me-2 {{ get_notification_badge_class(notification.type) }}">
+                                                {{ get_notification_icon(notification.type) }}
+                                            </span>
+                                            <h6 class="mb-0 {% if not notification.read %}fw-bold{% endif %}">
+                                                {{ notification.message }}
+                                            </h6>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock"></i>
+                                                {{ format_timestamp(notification.timestamp) }}
+                                            </small>
+                                            <div class="btn-group btn-group-sm">
+                                                {% if notification.campaign_id %}
+                                                <a href="/campaigns/{{ notification.campaign_id }}/logs" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye"></i> View Campaign
+                                                </a>
+                                                {% endif %}
+                                                {% if not notification.read %}
+                                                <button class="btn btn-outline-success btn-sm" 
+                                                        onclick="markAsRead('{{ notification.id }}')">
+                                                    <i class="fas fa-check"></i> Mark Read
+                                                </button>
+                                                {% endif %}
+                                                <button class="btn btn-outline-danger btn-sm" 
+                                                        onclick="deleteNotification('{{ notification.id }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No Notifications</h4>
+            <p class="text-muted">You don't have any notifications yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function markAsRead(notificationId) {
+    fetch(`/api/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notificationElement = document.getElementById(`notification-${notificationId}`);
+            if (notificationElement) {
+                notificationElement.classList.remove('list-group-item-primary');
+                const title = notificationElement.querySelector('h6');
+                if (title) {
+                    title.classList.remove('fw-bold');
+                }
+                // Hide the mark as read button
+                const markReadBtn = notificationElement.querySelector('button[onclick*="markAsRead"]');
+                if (markReadBtn) {
+                    markReadBtn.style.display = 'none';
+                }
+            }
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error marking notification as read');
+    });
+}
+
+function markAllAsRead() {
+    if (confirm('Mark all notifications as read?')) {
+        fetch('/api/notifications/mark-all-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update all notification elements
+                const notifications = document.querySelectorAll('.list-group-item');
+                notifications.forEach(notification => {
+                    notification.classList.remove('list-group-item-primary');
+                    const title = notification.querySelector('h6');
+                    if (title) {
+                        title.classList.remove('fw-bold');
+                    }
+                    // Hide all mark as read buttons
+                    const markReadBtn = notification.querySelector('button[onclick*="markAsRead"]');
+                    if (markReadBtn) {
+                        markReadBtn.style.display = 'none';
+                    }
+                });
+                alert('All notifications marked as read!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error marking notifications as read');
+        });
+    }
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Delete this notification?')) {
+        fetch(`/api/notifications/${notificationId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notificationElement = document.getElementById(`notification-${notificationId}`);
+                if (notificationElement) {
+                    notificationElement.remove();
+                }
+                // Update notification count if needed
+                const notificationCount = document.querySelectorAll('.list-group-item').length;
+                if (notificationCount === 0) {
+                    location.reload(); // Reload to show "No Notifications" message
+                }
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting notification');
+        });
+    }
+}
+
+function clearAllNotifications() {
+    if (confirm('Clear all notifications? This action cannot be undone.')) {
+        fetch('/api/notifications/clear-all', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Reload to show "No Notifications" message
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error clearing notifications');
+        });
+    }
+}
+</script>
+{% endblock %} 
