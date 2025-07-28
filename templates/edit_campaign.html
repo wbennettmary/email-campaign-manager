@@ -72,8 +72,18 @@
                                 </div>
                             </div>
                             <div class="mt-2">
-                                <label for="destinataires" class="form-label">Email Addresses (one per line)</label>
-                                <textarea class="form-control" id="destinataires" rows="6" required>{{ campaign.destinataires }}</textarea>
+                                <label for="destinataires" class="form-label">Email Addresses</label>
+                                <div id="manualEmailContainer">
+                                    <textarea class="form-control" id="destinataires" rows="6" required>{{ campaign.destinataires }}</textarea>
+                                </div>
+                                <div id="dataListInfoContainer" style="display: none;">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-list"></i>
+                                        <strong>Data List Selected:</strong> <span id="selectedListName">-</span>
+                                        <br>
+                                        <small>Emails: <span id="selectedListCount">0</span> | Geography: <span id="selectedListGeo">-</span> | ISP: <span id="selectedListIsp">-</span></small>
+                                    </div>
+                                </div>
                                 <div class="form-text">
                                     <span id="emailCount">{{ campaign.destinataires.split('\n')|length }}</span> emails loaded
                                 </div>
@@ -207,12 +217,42 @@ document.getElementById('editCampaignForm').addEventListener('submit', function(
 });
 
 function saveCampaign() {
+    const recipientType = document.getElementById('recipientType').value;
+    const listId = document.getElementById('dataListSelect').value;
+    
+    // If data list is selected, we need to fetch the emails first
+    if (recipientType === 'data_list' && listId) {
+        fetch(`/api/data-lists/${listId}/emails`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.emails && data.emails.length > 0) {
+                    updateCampaignWithEmails(data.emails.join('\n'));
+                } else {
+                    showNotification('No emails found in selected data list', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading data list emails:', error);
+                showNotification('Error loading emails from data list', 'error');
+            });
+    } else {
+        // Manual entry - use the textarea value
+        const destinataires = document.getElementById('destinataires').value;
+        if (!destinataires.trim()) {
+            showNotification('Please enter email addresses or select a data list', 'error');
+            return;
+        }
+        updateCampaignWithEmails(destinataires);
+    }
+}
+
+function updateCampaignWithEmails(destinataires) {
     const campaignId = document.getElementById('campaignId').value;
     const formData = {
         name: document.getElementById('campaignName').value,
         account_id: parseInt(document.getElementById('accountId').value),
         template_id: document.getElementById('templateId').value,
-        destinataires: document.getElementById('destinataires').value,
+        destinataires: destinataires,
         subjects: document.getElementById('subjects').value,
         froms: document.getElementById('froms').value
     };
@@ -322,16 +362,21 @@ function loadDataLists() {
 function toggleRecipientSource() {
     const recipientType = document.getElementById('recipientType').value;
     const dataListContainer = document.getElementById('dataListContainer');
+    const manualEmailContainer = document.getElementById('manualEmailContainer');
+    const dataListInfoContainer = document.getElementById('dataListInfoContainer');
     const destinatairesTextarea = document.getElementById('destinataires');
     
     if (recipientType === 'data_list') {
         dataListContainer.style.display = 'block';
-        destinatairesTextarea.placeholder = 'Emails will be loaded from selected data list...';
-        destinatairesTextarea.readOnly = true;
+        manualEmailContainer.style.display = 'none';
+        dataListInfoContainer.style.display = 'block';
+        destinatairesTextarea.value = '';
+        document.getElementById('emailCount').textContent = '0';
     } else {
         dataListContainer.style.display = 'none';
+        manualEmailContainer.style.display = 'block';
+        dataListInfoContainer.style.display = 'none';
         destinatairesTextarea.placeholder = 'email1@example.com\nemail2@example.com\nemail3@example.com';
-        destinatairesTextarea.readOnly = false;
         destinatairesTextarea.value = '';
         document.getElementById('emailCount').textContent = '0';
     }
@@ -340,27 +385,34 @@ function toggleRecipientSource() {
 function loadDataListEmails() {
     const listId = document.getElementById('dataListSelect').value;
     if (!listId) {
-        document.getElementById('destinataires').value = '';
+        document.getElementById('selectedListName').textContent = '-';
+        document.getElementById('selectedListCount').textContent = '0';
+        document.getElementById('selectedListGeo').textContent = '-';
+        document.getElementById('selectedListIsp').textContent = '-';
         document.getElementById('emailCount').textContent = '0';
         return;
     }
     
-    fetch(`/api/data-lists/${listId}/emails`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.emails && data.emails.length > 0) {
-                document.getElementById('destinataires').value = data.emails.join('\n');
-                document.getElementById('emailCount').textContent = data.count;
-            } else {
-                document.getElementById('destinataires').value = '';
-                document.getElementById('emailCount').textContent = '0';
-                alert('No emails found in selected data list');
-            }
-        })
-        .catch(error => {
-            console.error('Error loading data list emails:', error);
-            alert('Error loading emails from data list');
-        });
+    // Get the selected option to display list info
+    const select = document.getElementById('dataListSelect');
+    const selectedOption = select.options[select.selectedIndex];
+    const listInfo = selectedOption.textContent;
+    
+    // Extract count from the option text (format: "Name (count emails - geo/isp)")
+    const countMatch = listInfo.match(/\((\d+) emails/);
+    const count = countMatch ? countMatch[1] : '0';
+    
+    // Extract geography and ISP from the option text
+    const geoIspMatch = listInfo.match(/emails - ([^\/]+)\/([^\)]+)\)/);
+    const geography = geoIspMatch ? geoIspMatch[1] : 'Unknown';
+    const isp = geoIspMatch ? geoIspMatch[2] : 'Unknown';
+    
+    // Update the display
+    document.getElementById('selectedListName').textContent = selectedOption.textContent.split(' (')[0];
+    document.getElementById('selectedListCount').textContent = count;
+    document.getElementById('selectedListGeo').textContent = geography;
+    document.getElementById('selectedListIsp').textContent = isp;
+    document.getElementById('emailCount').textContent = count;
 }
 
 function showNotification(message, type = 'info') {
