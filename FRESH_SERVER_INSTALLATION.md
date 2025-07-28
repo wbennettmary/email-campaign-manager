@@ -1,4 +1,4 @@
-# Email Campaign Manager - Fresh Server Installation
+# Email Campaign Manager - Complete Installation & Management Guide
 
 ## 🚀 One-Command Installation
 
@@ -9,7 +9,7 @@ This guide will take your fresh Ubuntu server from zero to a fully working Email
 - Root access (sudo privileges)
 - Internet connection
 
-### Step 1: Download the Installation Script
+### Step 1: Download and Run the Installation Script
 
 ```bash
 # Download the automated installation script
@@ -17,11 +17,7 @@ wget https://raw.githubusercontent.com/wbennettmary/email-campaign-manager/maste
 
 # Make it executable
 chmod +x auto_install.sh
-```
 
-### Step 2: Run the Installation
-
-```bash
 # Run the automated installation
 sudo ./auto_install.sh
 ```
@@ -41,7 +37,7 @@ That's it! The script will automatically:
 11. ✅ Verify everything is working
 12. ✅ Show you the access URLs
 
-### Step 3: Access Your Application
+### Step 2: Access Your Application
 
 After the installation completes, you'll see output like this:
 
@@ -55,7 +51,36 @@ Your Email Campaign Manager is now running!
   Through Nginx: http://YOUR_SERVER_IP
 ```
 
-### What Gets Installed
+## 🔧 Management Commands
+
+The same script handles all management tasks:
+
+### Check Application Status
+```bash
+sudo ./auto_install.sh status
+```
+
+### Update Application
+```bash
+sudo ./auto_install.sh update
+```
+
+### Restart Services
+```bash
+sudo ./auto_install.sh restart
+```
+
+### View Logs
+```bash
+sudo ./auto_install.sh logs
+```
+
+### Show Help
+```bash
+sudo ./auto_install.sh help
+```
+
+## 📋 What Gets Installed
 
 - **Python 3** with virtual environment
 - **Flask** web framework
@@ -65,11 +90,21 @@ Your Email Campaign Manager is now running!
 - **Firewall** configuration
 - **Systemd** service management
 
-### Troubleshooting
+## 🎯 Features Included
 
-If something goes wrong, the script will show you exactly what failed. Common solutions:
+Your Email Campaign Manager will include:
 
-#### If the script fails:
+- 📧 **Email Campaign Management**
+- 👥 **Account Management**
+- 📊 **Campaign Analytics**
+- 📋 **Data Lists Management**
+- 🔄 **Bounce Detection**
+- 📈 **Delivery Tracking**
+- 🎨 **Modern Web Interface**
+
+## 🛠️ Troubleshooting
+
+### If the installation fails:
 ```bash
 # Check what went wrong
 sudo journalctl -u email-campaign-manager -n 20
@@ -78,14 +113,13 @@ sudo journalctl -u email-campaign-manager -n 20
 sudo systemctl restart email-campaign-manager
 
 # Check status
-sudo systemctl status email-campaign-manager
+sudo ./auto_install.sh status
 ```
 
-#### If you can't access the application:
+### If you can't access the application:
 ```bash
 # Check if services are running
-sudo systemctl status email-campaign-manager
-sudo systemctl status nginx
+sudo ./auto_install.sh status
 
 # Check if ports are listening
 sudo netstat -tlnp | grep -E ':(80|8000)'
@@ -94,7 +128,7 @@ sudo netstat -tlnp | grep -E ':(80|8000)'
 curl http://127.0.0.1:8000
 ```
 
-#### If you need to reinstall:
+### If you need to reinstall:
 ```bash
 # Stop services
 sudo systemctl stop email-campaign-manager
@@ -109,28 +143,136 @@ sudo rm /etc/nginx/sites-enabled/email-campaign-manager
 sudo ./auto_install.sh
 ```
 
-### Manual Installation (Alternative)
+### If services won't start:
+```bash
+# Check logs
+sudo ./auto_install.sh logs
 
-If you prefer to run commands manually, you can use the step-by-step guide in `DEPLOYMENT_GUIDE.md`.
+# Check system resources
+free -h
+df -h
 
-### Features Installed
+# Check Python installation
+sudo -u emailcampaign bash -c 'cd /home/emailcampaign/email-campaign-manager && source venv/bin/activate && python --version'
+```
 
-Your Email Campaign Manager will include:
+## 🔍 Manual Verification
 
-- 📧 **Email Campaign Management**
-- 👥 **Account Management**
-- 📊 **Campaign Analytics**
-- 📋 **Data Lists Management**
-- 🔄 **Bounce Detection**
-- 📈 **Delivery Tracking**
-- 🎨 **Modern Web Interface**
+If you want to verify everything manually:
 
-### Support
+```bash
+# Check service status
+sudo systemctl status email-campaign-manager
+sudo systemctl status nginx
+
+# Check if processes are running
+ps aux | grep gunicorn
+ps aux | grep nginx
+
+# Check if ports are open
+sudo netstat -tlnp | grep -E ':(80|8000)'
+
+# Test application response
+curl -I http://127.0.0.1:8000
+curl -I http://YOUR_SERVER_IP
+```
+
+## 📊 Monitoring
+
+### View Real-time Logs
+```bash
+# Application logs (follow)
+sudo journalctl -u email-campaign-manager -f
+
+# Nginx access logs
+sudo tail -f /var/log/nginx/access.log
+
+# Nginx error logs
+sudo tail -f /var/log/nginx/error.log
+```
+
+### Check Resource Usage
+```bash
+# CPU and memory usage
+htop
+
+# Disk usage
+df -h
+
+# Application directory size
+du -sh /home/emailcampaign/email-campaign-manager
+```
+
+## 🔒 Security
+
+The installation includes:
+
+- **Firewall configuration** (UFW)
+- **Non-root user** for application
+- **Service isolation** with systemd
+- **Secure file permissions**
+- **Nginx security headers**
+
+## 📈 Scaling
+
+To scale your application:
+
+### Increase Workers
+Edit the service file:
+```bash
+sudo nano /etc/systemd/system/email-campaign-manager.service
+```
+
+Change the workers parameter:
+```
+ExecStart=/home/emailcampaign/email-campaign-manager/venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 4 app:app
+```
+
+Restart the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart email-campaign-manager
+```
+
+### Add SSL/HTTPS
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx
+
+# Get SSL certificate
+sudo certbot --nginx -d yourdomain.com
+
+# Auto-renewal
+sudo crontab -e
+# Add: 0 12 * * * /usr/bin/certbot renew --quiet
+```
+
+## 🆘 Support
 
 If you encounter any issues:
 
-1. Check the logs: `sudo journalctl -u email-campaign-manager -f`
-2. Verify services: `sudo systemctl status email-campaign-manager`
-3. Test connectivity: `curl http://127.0.0.1:8000`
+1. **Check logs**: `sudo ./auto_install.sh logs`
+2. **Verify services**: `sudo ./auto_install.sh status`
+3. **Test connectivity**: `curl http://127.0.0.1:8000`
+4. **Check system resources**: `htop`, `df -h`
 
-The installation script includes comprehensive error checking and will tell you exactly what went wrong if there are any issues. 
+The installation script includes comprehensive error checking and will tell you exactly what went wrong if there are any issues.
+
+## 📝 Quick Reference
+
+| Command | Description |
+|---------|-------------|
+| `sudo ./auto_install.sh` | Install application |
+| `sudo ./auto_install.sh status` | Check status |
+| `sudo ./auto_install.sh update` | Update application |
+| `sudo ./auto_install.sh restart` | Restart services |
+| `sudo ./auto_install.sh logs` | View logs |
+| `sudo ./auto_install.sh help` | Show help |
+
+## 🎉 Success!
+
+Once installed, your Email Campaign Manager will be accessible at:
+- **Direct**: `http://YOUR_SERVER_IP:8000`
+- **Nginx**: `http://YOUR_SERVER_IP`
+
+The application includes a modern web interface with all the features you need for email campaign management! 
