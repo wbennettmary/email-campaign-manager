@@ -100,17 +100,20 @@ def initialize_zoho_bounce_system():
         
         if accounts and not get_zoho_bounce_detector():
             # Use the first available account
-            first_account = list(accounts.values())[0]
+            first_account = accounts[0] if isinstance(accounts, list) and len(accounts) > 0 else None
             
-            # Extract org_id from account data or headers
-            org_id = first_account.get('org_id') or '893358824'  # Default org ID
-            
-            # Initialize bounce detector
-            initialize_zoho_bounce_detector(
-                account_cookies=first_account.get('cookies', {}),
-                account_headers=first_account.get('headers', {}),
-                org_id=org_id
-            )
+            if first_account:
+                # Extract org_id from account data or headers
+                org_id = first_account.get('org_id') or '893358824'  # Default org ID
+                
+                # Initialize bounce detector
+                initialize_zoho_bounce_detector(
+                    account_cookies=first_account.get('cookies', {}),
+                    account_headers=first_account.get('headers', {}),
+                    org_id=org_id
+                )
+            else:
+                print("⚠️ No valid account found for bounce detector initialization")
             
             # Start background bounce monitoring
             start_bounce_monitoring(interval_seconds=300)  # Check every 5 minutes
