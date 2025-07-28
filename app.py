@@ -1958,7 +1958,7 @@ def send_campaign_emails(campaign, account):
             sender = random.choice(froms) if froms else "Default Sender"
             
             # Deluge script matching your working curl format
-            script = f'''void automation.Send_Email_Template1()
+            script = f'''void automation.Send_Email_Template3()
 {{
     curl = "https://www.zohoapis.com/crm/v7/settings/email_templates/{campaign['template_id']}";
 
@@ -2043,7 +2043,7 @@ def send_campaign_emails(campaign, account):
                         code = ""
                         result = {}
 
-                    if response.status_code == 200 and (code == "success" or not code):
+                    if response.status_code == 200:
                         sent_count += 1
                         
                         # Check for REAL delivery status (simplified version)
@@ -2093,6 +2093,7 @@ def send_campaign_emails(campaign, account):
                         error_count += 1
                         error_msg = f"❌ FAILED ({response.status_code}) to {email} | Message: {message} | Code: {code}"
                         print(error_msg)
+                        print(f"🔍 Full response: {response.text}")
                         
                         error_log = {
                             'campaign_id': campaign_id,
