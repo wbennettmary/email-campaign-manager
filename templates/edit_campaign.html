@@ -36,7 +36,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="accountId" class="form-label">Account</label>
-                                    <select class="form-select" id="accountId" required>
+                                    <select class="form-select" id="accountId" required onchange="loadAccountTemplates()">
                                         <option value="">Select Account</option>
                                         {% for account in accounts %}
                                         <option value="{{ account.id }}" {% if account.id == campaign.account_id %}selected{% endif %}>
@@ -49,9 +49,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="templateId" class="form-label">Template ID</label>
-                            <input type="text" class="form-control" id="templateId" value="{{ campaign.template_id }}" required>
-                            <div class="form-text">Zoho CRM Email Template ID</div>
+                            <label for="templateSelect" class="form-label">Email Template</label>
+                            <select class="form-select" id="templateSelect" required onchange="updateTemplateId()">
+                                <option value="">Select Account First</option>
+                            </select>
+                            <input type="hidden" id="templateId" value="{{ campaign.template_id }}" required>
+                            <div class="form-text">Select an account to see available templates</div>
                         </div>
 
                         <div class="mb-3">
@@ -374,6 +377,56 @@ function loadDataLists() {
         });
 }
 
+function loadAccountTemplates() {
+    const accountId = document.getElementById('accountId').value;
+    const templateSelect = document.getElementById('templateSelect');
+    const currentTemplateId = document.getElementById('templateId').value;
+    
+    if (!accountId) {
+        templateSelect.innerHTML = '<option value="">Select Account First</option>';
+        return;
+    }
+    
+    fetch(`/api/accounts/${accountId}/templates`)
+        .then(response => response.json())
+        .then(templates => {
+            templateSelect.innerHTML = '<option value="">Select Template</option>';
+            
+            if (templates && templates.length > 0) {
+                templates.forEach(template => {
+                    const option = document.createElement('option');
+                    option.value = template.id;
+                    option.textContent = `${template.name} (${template.id})`;
+                    option.setAttribute('data-template-id', template.id);
+                    
+                    // Select the current template if it matches
+                    if (template.id === currentTemplateId) {
+                        option.selected = true;
+                    }
+                    
+                    templateSelect.appendChild(option);
+                });
+            } else {
+                templateSelect.innerHTML = '<option value="">No templates found for this account</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading templates:', error);
+            templateSelect.innerHTML = '<option value="">Error loading templates</option>';
+        });
+}
+
+function updateTemplateId() {
+    const templateSelect = document.getElementById('templateSelect');
+    const templateIdInput = document.getElementById('templateId');
+    
+    if (templateSelect.value) {
+        templateIdInput.value = templateSelect.value;
+    } else {
+        templateIdInput.value = '';
+    }
+}
+
 function toggleRecipientSource() {
     const recipientType = document.getElementById('recipientType').value;
     const dataListContainer = document.getElementById('dataListContainer');
@@ -441,5 +494,19 @@ function showNotification(message, type = 'info') {
         toast.classList.remove('show');
     }, 5000);
 }
+
+// Initialize the form
+document.addEventListener('DOMContentLoaded', function() {
+    loadDataLists();
+    loadAccountTemplates(); // Load templates for the selected account
+    
+    // Set default recipient type to manual
+    document.getElementById('recipientType').value = 'manual';
+    toggleRecipientSource();
+    
+    // Clear the destinataires textarea for security
+    document.getElementById('destinataires').value = '';
+    document.getElementById('emailCount').textContent = '0';
+});
 </script>
 {% endblock %} 

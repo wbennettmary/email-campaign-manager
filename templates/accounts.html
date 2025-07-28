@@ -48,6 +48,20 @@
                         <p class="mb-0">{{ account.created_at[:10] if account.created_at else 'Unknown' }}</p>
                     </div>
                 </div>
+                <div class="mt-2">
+                    <small class="text-muted">Templates</small>
+                    {% if account.templates %}
+                        <div class="mt-1">
+                            {% for template in account.templates %}
+                                <span class="badge bg-info me-1 mb-1" title="ID: {{ template.id }}">
+                                    {{ template.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="mb-0 text-muted small">No templates configured</p>
+                    {% endif %}
+                </div>
                 <div class="mt-3">
                     <span class="badge bg-success">Active</span>
                     {% if account.updated_at %}
@@ -103,6 +117,31 @@
                         <textarea class="form-control" id="headers" rows="6" required placeholder='{"header1": "value1", "header2": "value2"}'></textarea>
                         <div class="form-text">Copy headers from browser developer tools</div>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email Templates</label>
+                        <div id="templatesContainer">
+                            <div class="template-entry mb-2">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <input type="text" class="form-control template-name" placeholder="Template Name (e.g., Welcome Email)" required>
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" class="form-control template-id" placeholder="Template ID (e.g., 6898521000000661004)" required>
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-template">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addTemplateField()">
+                            <i class="fas fa-plus me-1"></i>Add Template
+                        </button>
+                        <div class="form-text">Add your email templates with descriptive names</div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -142,6 +181,31 @@
                     <div class="mb-3">
                         <label for="editHeaders" class="form-label">Headers (JSON)</label>
                         <textarea class="form-control" id="editHeaders" rows="6" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email Templates</label>
+                        <div id="editTemplatesContainer">
+                            <div class="template-entry mb-2">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <input type="text" class="form-control edit-template-name" placeholder="Template Name (e.g., Welcome Email)" required>
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" class="form-control edit-template-id" placeholder="Template ID (e.g., 6898521000000661004)" required>
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-edit-template">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addEditTemplateField()">
+                            <i class="fas fa-plus me-1"></i>Add Template
+                        </button>
+                        <div class="form-text">Add your email templates with descriptive names</div>
                     </div>
                 </form>
             </div>
@@ -191,7 +255,8 @@ function saveAccount() {
             name: name,
             org_id: orgId,
             cookies: cookies,
-            headers: headers
+            headers: headers,
+            templates: getTemplatesFromForm('templatesContainer')
         };
         
         // Show loading state
@@ -251,6 +316,41 @@ function editAccount(accountId) {
             document.getElementById('editCookies').value = JSON.stringify(account.cookies || {}, null, 2);
             document.getElementById('editHeaders').value = JSON.stringify(account.headers || {}, null, 2);
             
+            // Populate templates
+            const container = document.getElementById('editTemplatesContainer');
+            container.innerHTML = ''; // Clear existing templates
+            
+            if (account.templates && account.templates.length > 0) {
+                account.templates.forEach(template => {
+                    const templateEntry = document.createElement('div');
+                    templateEntry.className = 'template-entry mb-2';
+                    templateEntry.innerHTML = `
+                        <div class="row">
+                            <div class="col-5">
+                                <input type="text" class="form-control edit-template-name" placeholder="Template Name (e.g., Welcome Email)" value="${template.name}" required>
+                            </div>
+                            <div class="col-5">
+                                <input type="text" class="form-control edit-template-id" placeholder="Template ID (e.g., 6898521000000661004)" value="${template.id}" required>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-edit-template">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(templateEntry);
+                    
+                    // Add event listener for remove button
+                    templateEntry.querySelector('.remove-edit-template').addEventListener('click', function() {
+                        container.removeChild(templateEntry);
+                    });
+                });
+            } else {
+                // Add one empty template field
+                addEditTemplateField();
+            }
+            
             new bootstrap.Modal(document.getElementById('editAccountModal')).show();
         });
 }
@@ -261,7 +361,8 @@ function updateAccount() {
         name: document.getElementById('editAccountName').value,
         org_id: document.getElementById('editOrgId').value,
         cookies: JSON.parse(document.getElementById('editCookies').value),
-        headers: JSON.parse(document.getElementById('editHeaders').value)
+        headers: JSON.parse(document.getElementById('editHeaders').value),
+        templates: getTemplatesFromForm('editTemplatesContainer')
     };
     
     fetch('/api/accounts', {
@@ -307,6 +408,81 @@ function deleteAccount(accountId) {
 function testAccount(accountId) {
     // TODO: Implement account testing
     alert('Account testing feature coming soon!');
+}
+
+// Template management functions
+function addTemplateField() {
+    const container = document.getElementById('templatesContainer');
+    const templateEntry = document.createElement('div');
+    templateEntry.className = 'template-entry mb-2';
+    templateEntry.innerHTML = `
+        <div class="row">
+            <div class="col-5">
+                <input type="text" class="form-control template-name" placeholder="Template Name (e.g., Welcome Email)" required>
+            </div>
+            <div class="col-5">
+                <input type="text" class="form-control template-id" placeholder="Template ID (e.g., 6898521000000661004)" required>
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-template">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(templateEntry);
+    
+    // Add event listener for remove button
+    templateEntry.querySelector('.remove-template').addEventListener('click', function() {
+        container.removeChild(templateEntry);
+    });
+}
+
+function addEditTemplateField() {
+    const container = document.getElementById('editTemplatesContainer');
+    const templateEntry = document.createElement('div');
+    templateEntry.className = 'template-entry mb-2';
+    templateEntry.innerHTML = `
+        <div class="row">
+            <div class="col-5">
+                <input type="text" class="form-control edit-template-name" placeholder="Template Name (e.g., Welcome Email)" required>
+            </div>
+            <div class="col-5">
+                <input type="text" class="form-control edit-template-id" placeholder="Template ID (e.g., 6898521000000661004)" required>
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-edit-template">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(templateEntry);
+    
+    // Add event listener for remove button
+    templateEntry.querySelector('.remove-edit-template').addEventListener('click', function() {
+        container.removeChild(templateEntry);
+    });
+}
+
+function getTemplatesFromForm(containerId) {
+    const container = document.getElementById(containerId);
+    const templates = [];
+    const templateEntries = container.querySelectorAll('.template-entry');
+    
+    templateEntries.forEach(entry => {
+        const nameInput = entry.querySelector('.template-name, .edit-template-name');
+        const idInput = entry.querySelector('.template-id, .edit-template-id');
+        
+        if (nameInput && idInput && nameInput.value.trim() && idInput.value.trim()) {
+            templates.push({
+                name: nameInput.value.trim(),
+                id: idInput.value.trim()
+            });
+        }
+    });
+    
+    return templates;
 }
 
 // Auto-format JSON inputs and add helper functions

@@ -864,6 +864,7 @@ def api_accounts():
             'org_id': data['org_id'],
             'cookies': data['cookies'],
             'headers': data['headers'],
+            'templates': data.get('templates', []),
             'created_at': datetime.now().isoformat()
         }
         
@@ -915,6 +916,26 @@ def api_account(account_id):
         
         add_notification(f"Account '{account['name']}' deleted successfully", 'warning')
         return ('', 204)
+
+@app.route('/api/accounts/<int:account_id>/templates', methods=['GET'])
+@login_required
+def get_account_templates(account_id):
+    """Get templates for a specific account"""
+    try:
+        with open(ACCOUNTS_FILE, 'r') as f:
+            accounts = json.load(f)
+        if not isinstance(accounts, list):
+            accounts = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        accounts = []
+    
+    account = next((acc for acc in accounts if acc['id'] == account_id), None)
+    
+    if not account:
+        return jsonify({'error': 'Account not found'}), 404
+    
+    templates = account.get('templates', [])
+    return jsonify(templates)
 
 @app.route('/api/campaigns', methods=['GET', 'POST'])
 @login_required

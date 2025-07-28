@@ -117,7 +117,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="accountSelect" class="form-label">Account</label>
-                                <select class="form-select" id="accountSelect" required>
+                                <select class="form-select" id="accountSelect" required onchange="loadAccountTemplates()">
                                     <option value="">Select Account</option>
                                 </select>
                             </div>
@@ -125,9 +125,12 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="templateId" class="form-label">Template ID</label>
-                        <input type="text" class="form-control" id="templateId" required>
-                        <div class="form-text">Enter the Zoho email template ID</div>
+                        <label for="templateSelect" class="form-label">Email Template</label>
+                        <select class="form-select" id="templateSelect" required onchange="updateTemplateId()">
+                            <option value="">Select Account First</option>
+                        </select>
+                        <input type="hidden" id="templateId" required>
+                        <div class="form-text">Select an account to see available templates</div>
                     </div>
                     
                     <div class="mb-3">
@@ -212,6 +215,49 @@ function loadAccounts() {
         .catch(error => {
             console.error('Error loading accounts:', error);
         });
+}
+
+function loadAccountTemplates() {
+    const accountId = document.getElementById('accountSelect').value;
+    const templateSelect = document.getElementById('templateSelect');
+    
+    if (!accountId) {
+        templateSelect.innerHTML = '<option value="">Select Account First</option>';
+        return;
+    }
+    
+    fetch(`/api/accounts/${accountId}/templates`)
+        .then(response => response.json())
+        .then(templates => {
+            templateSelect.innerHTML = '<option value="">Select Template</option>';
+            
+            if (templates && templates.length > 0) {
+                templates.forEach(template => {
+                    const option = document.createElement('option');
+                    option.value = template.id;
+                    option.textContent = `${template.name} (${template.id})`;
+                    option.setAttribute('data-template-id', template.id);
+                    templateSelect.appendChild(option);
+                });
+            } else {
+                templateSelect.innerHTML = '<option value="">No templates found for this account</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading templates:', error);
+            templateSelect.innerHTML = '<option value="">Error loading templates</option>';
+        });
+}
+
+function updateTemplateId() {
+    const templateSelect = document.getElementById('templateSelect');
+    const templateIdInput = document.getElementById('templateId');
+    
+    if (templateSelect.value) {
+        templateIdInput.value = templateSelect.value;
+    } else {
+        templateIdInput.value = '';
+    }
 }
 
 function loadDataLists() {

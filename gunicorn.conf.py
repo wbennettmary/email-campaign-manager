@@ -6,7 +6,7 @@ bind = "127.0.0.1:8000"
 backlog = 2048
 
 # Worker processes
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = 2
 worker_class = "sync"
 worker_connections = 1000
 max_requests = 1000
@@ -29,13 +29,7 @@ proc_name = "email-campaign-manager"
 # Server mechanics
 daemon = False
 pidfile = "/var/run/email-campaign-manager/gunicorn.pid"
-user = "emailcampaign"
-group = "emailcampaign"
 tmp_upload_dir = None
-
-# SSL (if needed)
-# keyfile = "/path/to/keyfile"
-# certfile = "/path/to/certfile"
 
 # Security
 limit_request_line = 4094

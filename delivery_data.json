@@ -300,5 +300,47 @@
       "details": "Email delivered successfully (pattern-based detection)",
       "timestamp": "2025-07-27T00:02:05.407253"
     }
+  ],
+  "1": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 1,
+      "subject": "odszqfsqfddqes",
+      "sender": "dfgvesdg",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-28T18:42:50.531983"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 1,
+      "subject": "odszqfsqfddqes",
+      "sender": "dfgvesdg",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-28T18:42:56.212923"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 1,
+      "subject": "odszqfsqfddqes",
+      "sender": "dfgvesdg",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-28T18:43:01.774055"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 1,
+      "subject": "odszqfsqfddqes",
+      "sender": "dfgvesdg",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-28T18:43:06.933137"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 1,
+      "subject": "odszqfsqfddqes",
+      "sender": "dfgvesdg",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-28T18:43:12.630410"
+    }
   ]
 }

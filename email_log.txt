@@ -149,3 +149,88 @@
 2025-07-28 15:00:40 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
 2025-07-28 15:00:43 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
 2025-07-28 15:00:47 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 17:49:32 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:35 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:39 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:41 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:45 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:48 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:51 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:54 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:49:58 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:50:00 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:50:04 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:50:07 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:50:09 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:50:13 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:50:16 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 17:55:30 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:34 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:37 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:39 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:43 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:46 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:48 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:52 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:56 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:55:57 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:56:01 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:56:05 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:56:07 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:56:10 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 17:56:14 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: alex | Subject: WE ARE WELCOMEN YOU | Campaign: 21 | Details: Authentication failed
+2025-07-28 18:33:53 | DELIVERED | To: salssapp@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:33:59 | DELIVERED | To: salssdapp.mirolo@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:34:04 | DELIVERED | To: jetalpha@outlook.fr | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:34:10 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:34:15 | DELIVERED | To: lesgavasimind@gmx.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:35:06 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:10 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:14 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:16 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:20 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:23 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:25 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:29 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:33 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:35 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:39 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:42 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:45 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:48 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:35:52 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: ARWIN | Subject: WELCOME SIR AND MADAME | Campaign: 20 | Details: Authentication failed
+2025-07-28 18:38:29 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:32 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:36 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:38 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:42 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:45 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:47 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:51 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:54 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:38:56 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:39:00 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:39:03 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:39:06 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:39:09 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:39:13 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: pETER | Subject: ANGEL IS HERE ARE YOU SURE | Campaign: 1 | Details: Authentication failed
+2025-07-28 18:39:43 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:39:47 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:39:50 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:39:52 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:39:58 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:02 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:11 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:14 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:18 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:20 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:23 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:27 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:29 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:33 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:40:37 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: warner | Subject: WE ARE STILL AVAILABLE | Campaign: 2 | Details: Authentication failed
+2025-07-28 18:42:50 | DELIVERED | To: salssapp@gmail.com | From: dfgvesdg | Subject: odszqfsqfddqes | Campaign: 1 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:42:56 | DELIVERED | To: jetalpha@outlook.fr | From: dfgvesdg | Subject: odszqfsqfddqes | Campaign: 1 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:43:01 | DELIVERED | To: lesgavasimind@gmx.com | From: dfgvesdg | Subject: odszqfsqfddqes | Campaign: 1 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:43:06 | DELIVERED | To: abdo.charhamane@gmail.com | From: dfgvesdg | Subject: odszqfsqfddqes | Campaign: 1 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
+2025-07-28 18:43:12 | DELIVERED | To: wbennettmary@gmail.com | From: dfgvesdg | Subject: odszqfsqfddqes | Campaign: 1 | Details: Email appears valid (Zoho APIs not accessible, using fallback detection)
