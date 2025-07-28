@@ -131,8 +131,29 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="destinataires" class="form-label">Recipients (one email per line)</label>
-                        <textarea class="form-control" id="destinataires" rows="5" required placeholder="email1@example.com&#10;email2@example.com&#10;email3@example.com"></textarea>
+                        <label class="form-label">Recipients</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="recipientType" class="form-label">Recipient Source</label>
+                                <select class="form-select" id="recipientType" onchange="toggleRecipientSource()">
+                                    <option value="manual">Manual Entry</option>
+                                    <option value="data_list">Data List</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="dataListContainer" style="display: none;">
+                                <label for="dataListSelect" class="form-label">Select Data List</label>
+                                <select class="form-select" id="dataListSelect" onchange="loadDataListEmails()">
+                                    <option value="">Select Data List</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <label for="destinataires" class="form-label">Email Addresses (one per line)</label>
+                            <textarea class="form-control" id="destinataires" rows="5" required placeholder="email1@example.com&#10;email2@example.com&#10;email3@example.com"></textarea>
+                            <div class="form-text">
+                                <span id="emailCount">0</span> emails loaded
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="mb-3">
@@ -162,6 +183,7 @@
 // Load accounts when modal opens
 document.getElementById('addCampaignModal').addEventListener('show.bs.modal', function () {
     loadAccounts();
+    loadDataLists();
 });
 
 function loadAccounts() {
@@ -179,6 +201,68 @@ function loadAccounts() {
         })
         .catch(error => {
             console.error('Error loading accounts:', error);
+        });
+}
+
+function loadDataLists() {
+    fetch('/api/data-lists')
+        .then(response => response.json())
+        .then(dataLists => {
+            const select = document.getElementById('dataListSelect');
+            select.innerHTML = '<option value="">Select Data List</option>';
+            dataLists.forEach(list => {
+                const option = document.createElement('option');
+                option.value = list.id;
+                option.textContent = `${list.name} (${list.email_count} emails - ${list.geography || 'Unknown'}/${list.isp || 'Unknown'})`;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading data lists:', error);
+        });
+}
+
+function toggleRecipientSource() {
+    const recipientType = document.getElementById('recipientType').value;
+    const dataListContainer = document.getElementById('dataListContainer');
+    const destinatairesTextarea = document.getElementById('destinataires');
+    
+    if (recipientType === 'data_list') {
+        dataListContainer.style.display = 'block';
+        destinatairesTextarea.placeholder = 'Emails will be loaded from selected data list...';
+        destinatairesTextarea.readOnly = true;
+    } else {
+        dataListContainer.style.display = 'none';
+        destinatairesTextarea.placeholder = 'email1@example.com\nemail2@example.com\nemail3@example.com';
+        destinatairesTextarea.readOnly = false;
+        destinatairesTextarea.value = '';
+        document.getElementById('emailCount').textContent = '0';
+    }
+}
+
+function loadDataListEmails() {
+    const listId = document.getElementById('dataListSelect').value;
+    if (!listId) {
+        document.getElementById('destinataires').value = '';
+        document.getElementById('emailCount').textContent = '0';
+        return;
+    }
+    
+    fetch(`/api/data-lists/${listId}/emails`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.emails && data.emails.length > 0) {
+                document.getElementById('destinataires').value = data.emails.join('\n');
+                document.getElementById('emailCount').textContent = data.count;
+            } else {
+                document.getElementById('destinataires').value = '';
+                document.getElementById('emailCount').textContent = '0';
+                alert('No emails found in selected data list');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading data list emails:', error);
+            alert('Error loading emails from data list');
         });
 }
 
