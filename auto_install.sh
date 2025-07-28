@@ -99,9 +99,18 @@ fi
 python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies
+# Install dependencies with specific versions to avoid compatibility issues
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install Flask==2.3.3
+pip install Flask-SocketIO==5.3.6
+pip install Flask-Login==0.6.3
+pip install Werkzeug==2.3.7
+pip install requests==2.31.0
+pip install python-socketio==5.8.0
+pip install python-engineio==4.7.1
+pip install numpy==1.24.3
+pip install pandas==2.0.3
+pip install gunicorn==21.2.0
 
 # Create data directories
 mkdir -p data_lists logs
@@ -182,7 +191,7 @@ EOF
     # Step 10: Wait for services to start
     print_header "STEP 10: WAITING FOR SERVICES TO START"
     print_status "Waiting for services to start..."
-    sleep 5
+    sleep 10
     
     # Step 11: Verify installation
     print_header "STEP 11: VERIFYING INSTALLATION"
@@ -193,7 +202,8 @@ EOF
         print_status "✅ Application service is running"
     else
         print_error "❌ Application service failed to start"
-        systemctl status email-campaign-manager --no-pager
+        print_status "Checking logs for errors..."
+        journalctl -u email-campaign-manager --no-pager -n 20
         exit 1
     fi
     
@@ -228,6 +238,8 @@ EOF
         print_status "✅ Application is responding"
     else
         print_error "❌ Application is not responding"
+        print_status "Checking application logs..."
+        journalctl -u email-campaign-manager --no-pager -n 10
         exit 1
     fi
     
@@ -270,7 +282,20 @@ update_application() {
 cd /home/emailcampaign/email-campaign-manager
 git pull origin master
 source venv/bin/activate
-pip install -r requirements.txt
+
+# Update dependencies with specific versions to avoid compatibility issues
+pip install --upgrade pip
+pip install Flask==2.3.3
+pip install Flask-SocketIO==5.3.6
+pip install Flask-Login==0.6.3
+pip install Werkzeug==2.3.7
+pip install requests==2.31.0
+pip install python-socketio==5.8.0
+pip install python-engineio==4.7.1
+pip install numpy==1.24.3
+pip install pandas==2.0.3
+pip install gunicorn==21.2.0
+
 deactivate
 EOF
     
