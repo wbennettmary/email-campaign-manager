@@ -134,3 +134,18 @@
 2025-07-27 00:02:00 | DELIVERED | To: aawzdflp74jha@outlook.fr | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
 2025-07-27 00:02:02 | DELIVERED | To: lesgavasimind@gmx.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
 2025-07-27 00:02:05 | DELIVERED | To: abdo.barishmanes@gmail.com | From: nother | Subject: we are waiting | Campaign: 18 | Details: Email delivered successfully (pattern-based detection)
+2025-07-28 15:00:01 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:05 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:09 | FAILED (AUTHENTICATION_FAILURE) | To: salssapp@gmail.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:11 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:14 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:18 | FAILED (AUTHENTICATION_FAILURE) | To: jetalpha@outlook.fr | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:20 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:24 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:27 | FAILED (AUTHENTICATION_FAILURE) | To: lesgavasimind@gmx.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:30 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:34 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:38 | FAILED (AUTHENTICATION_FAILURE) | To: abdo.charhamane@gmail.com | From: patrick | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:40 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:43 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed
+2025-07-28 15:00:47 | FAILED (AUTHENTICATION_FAILURE) | To: wbennettmary@gmail.com | From: le foots | Subject: patrick is waiting there | Campaign: 19 | Details: Authentication failed

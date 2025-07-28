@@ -56,6 +56,10 @@
 
                         <div class="mb-3">
                             <label class="form-label">Recipients</label>
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Note:</strong> When editing a campaign, you can select any data list or enter emails manually. The original recipient list is not displayed for security.
+                            </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="recipientType" class="form-label">Recipient Source</label>
@@ -74,7 +78,7 @@
                             <div class="mt-2">
                                 <label for="destinataires" class="form-label">Email Addresses</label>
                                 <div id="manualEmailContainer">
-                                    <textarea class="form-control" id="destinataires" rows="6" required>{{ campaign.destinataires }}</textarea>
+                                    <textarea class="form-control" id="destinataires" rows="6" required placeholder="email1@example.com&#10;email2@example.com&#10;email3@example.com"></textarea>
                                 </div>
                                 <div id="dataListInfoContainer" style="display: none;">
                                     <div class="alert alert-info">
@@ -85,7 +89,7 @@
                                     </div>
                                 </div>
                                 <div class="form-text">
-                                    <span id="emailCount">{{ campaign.destinataires.split('\n')|length }}</span> emails loaded
+                                    <span id="emailCount">0</span> emails loaded
                                 </div>
                             </div>
                         </div>
@@ -209,6 +213,17 @@
 // Load data lists when page loads
 document.addEventListener('DOMContentLoaded', function() {
     loadDataLists();
+    
+    // Initialize the form - set to manual entry by default
+    // This ensures users can select any data list they want
+    document.getElementById('recipientType').value = 'manual';
+    document.getElementById('destinataires').value = '';
+    document.getElementById('emailCount').textContent = '0';
+    
+    // Ensure the manual email container is visible and data list container is hidden
+    document.getElementById('manualEmailContainer').style.display = 'block';
+    document.getElementById('dataListContainer').style.display = 'none';
+    document.getElementById('dataListInfoContainer').style.display = 'none';
 });
 
 document.getElementById('editCampaignForm').addEventListener('submit', function(e) {
