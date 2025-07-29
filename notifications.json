@@ -1,5 +1,13 @@
 [
   {
+    "id": "8dacfbfa-2a7e-42fe-8729-dad131d70eef",
+    "message": "User 'oussamaac' updated successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T15:58:54.660226",
+    "read": false,
+    "campaign_id": null
+  },
+  {
     "id": "bc414ad3-b847-4612-ab8a-5ef87e28bb4a",
     "message": "Account 'jaylan' added successfully",
     "type": "success",

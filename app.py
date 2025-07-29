@@ -1337,7 +1337,7 @@ def api_accounts():
     
     elif request.method == 'POST':
         # Check if user has permission to create accounts
-        if not has_permission(current_user, 'add_account'):
+        if not has_permission(current_user, 'add_account') and current_user.role != 'admin':
             return jsonify({'error': 'Access denied. You need permission to add accounts.'}), 403
         
         try:
@@ -1436,7 +1436,8 @@ def api_account(account_id):
     print(f"✅ Found account: {account['name']} (ID: {account['id']}, Created by: {account.get('created_by', 'Unknown')})")
     
     # Check if user can access this account
-    if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+    # Admin can access all accounts, users can only access their own
+    if current_user.role != 'admin' and not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
         print(f"❌ Access denied: User {current_user.username} cannot access account {account_id}")
         return jsonify({'error': 'Access denied. You can only manage your own accounts.'}), 403
     
@@ -1445,7 +1446,7 @@ def api_account(account_id):
     
     elif request.method == 'PUT':
         # Check if user has permission to edit accounts
-        if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+        if current_user.role != 'admin' and not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
             return jsonify({'error': 'Access denied. You can only edit your own accounts.'}), 403
         
         data = request.json
@@ -1456,6 +1457,10 @@ def api_account(account_id):
             with open(ACCOUNTS_FILE, 'w') as f:
                 json.dump(accounts, f, indent=2)
             print(f"✅ Successfully updated account {account_id}")
+        except PermissionError as e:
+            print(f"❌ Permission error saving updated account: {e}")
+            error_msg = f"Permission denied: Cannot write to {ACCOUNTS_FILE}. Please check file permissions on the server."
+            return jsonify({'error': error_msg}), 500
         except Exception as e:
             print(f"❌ Error saving updated account: {e}")
             return jsonify({'error': f'Failed to save account: {str(e)}'}), 500
@@ -1467,7 +1472,8 @@ def api_account(account_id):
         print(f"🗑️ Attempting to delete account {account_id}")
         
         # Check if user has permission to delete accounts
-        if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+        # Admin can delete any account, users can only delete their own
+        if current_user.role != 'admin' and not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
             print(f"❌ Access denied: User {current_user.username} cannot delete account {account_id}")
             return jsonify({'error': 'Access denied. You can only delete your own accounts.'}), 403
         
@@ -3764,8 +3770,16 @@ def get_user_accounts(user):
         accounts = []
     
     # Admin can see all accounts
-    if user.role == 'admin' or has_permission(user, 'manage_accounts'):
+    if user.role == 'admin':
         return accounts
+    
+    # Users with manage_accounts permission can see all accounts
+    if has_permission(user, 'manage_accounts'):
+        return accounts
+    
+    # Users with add_account permission can see their own accounts
+    if has_permission(user, 'add_account'):
+        return [acc for acc in accounts if acc.get('created_by') == user.id]
     
     # Regular users can only see their own accounts
     return [acc for acc in accounts if acc.get('created_by') == user.id]
