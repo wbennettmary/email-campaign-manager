@@ -2791,12 +2791,30 @@ def smart_retry_with_exponential_backoff(campaign_id, email, subject, sender, ac
                 code = ""
                 result = {}
             
-            # Check for 401 rate limit error
+            # Check for 401 errors and distinguish between rate limit and authentication issues
             if response.status_code == 401:
-                if attempt < max_retries - 1:  # Not the last attempt
+                # Check if this is actually a rate limit error
+                is_rate_limit = False
+                rate_limit_indicators = [
+                    "rate limit", "rate_limit", "quota exceeded", "too many requests",
+                    "throttled", "limit exceeded", "429", "rate", "quota"
+                ]
+                
+                # Check message and code for rate limit indicators
+                message_lower = message.lower()
+                code_lower = str(code).lower()
+                
+                for indicator in rate_limit_indicators:
+                    if indicator in message_lower or indicator in code_lower:
+                        is_rate_limit = True
+                        break
+                
+                if is_rate_limit and attempt < max_retries - 1:  # Actual rate limit - retry
                     delay = retry_delays[attempt]
                     print(f"🚨 RATE LIMIT EXCEEDED (401) - Attempt {attempt + 1}/{max_retries}")
                     print(f"⏰ Smart pause: {delay} seconds before retry")
+                    print(f"📝 API Message: {message}")
+                    print(f"📝 API Code: {code}")
                     
                     # Log the rate limit event
                     rate_limit_log = {
@@ -2829,39 +2847,43 @@ def smart_retry_with_exponential_backoff(campaign_id, email, subject, sender, ac
                     time.sleep(delay)
                     continue
                 else:
-                    # Final attempt failed
-                    final_error = f"❌ FINAL FAILURE: Rate limit exceeded after {max_retries} attempts"
-                    print(final_error)
+                    # Authentication/Account error - don't retry
+                    auth_error_msg = f"❌ AUTHENTICATION/ACCOUNT ERROR (401): {message} | Code: {code}"
+                    print(auth_error_msg)
+                    print(f"🔍 This appears to be an account/authentication issue, not a rate limit")
+                    print(f"🔍 Account may be invalid, suspended, or lacks email permissions")
                     
-                    final_log = {
+                    auth_error_log = {
                         'campaign_id': campaign_id,
                         'timestamp': datetime.now().isoformat(),
                         'status': 'error',
-                        'message': final_error,
+                        'message': auth_error_msg,
                         'email': email,
                         'subject': subject,
                         'sender': sender,
-                        'type': 'final_rate_limit_failure',
-                        'attempt': max_retries,
+                        'type': 'authentication_error',
+                        'attempt': attempt + 1,
                         'response_code': 401,
                         'api_message': message,
-                        'api_code': code
+                        'api_code': code,
+                        'note': 'Account authentication/authorization issue - not retrying'
                     }
-                    add_campaign_log(campaign_id, final_log)
-                    socketio.emit('email_progress', final_log)
+                    add_campaign_log(campaign_id, auth_error_log)
+                    socketio.emit('email_progress', auth_error_log)
                     
-                    # Send final notification
+                    # Send notification about account issue
                     add_notification(
-                        f"❌ Campaign paused: Zoho rate limit exceeded after {max_retries} retry attempts. Manual intervention required.",
+                        f"❌ Account authentication error (401): {message}. Please check account credentials and permissions.",
                         'error',
                         campaign_id
                     )
                     
                     return {
                         'success': False,
-                        'status': 'rate_limit_final_failure',
-                        'message': final_error,
-                        'attempts': max_retries
+                        'status': 'authentication_error',
+                        'message': auth_error_msg,
+                        'attempts': attempt + 1,
+                        'response_code': 401
                     }
             
             # Handle other status codes
@@ -4224,6 +4246,72 @@ def write_json_file_simple(filename, data):
     except Exception as e:
         print(f"❌ Error writing {filename}: {e}")
         return False
+
+def test_account_authentication(account_id):
+    """
+    Test account authentication to check if credentials are valid
+    """
+    try:
+        # Load account
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((acc for acc in accounts if acc['id'] == account_id), None)
+        
+        if not account:
+            return {
+                'success': False,
+                'message': f'Account {account_id} not found'
+            }
+        
+        # Test URL - simple API call to check authentication
+        test_url = "https://crm.zoho.com/crm/v7/settings/email_templates"
+        
+        # Make a simple GET request to test authentication
+        response = requests.get(
+            test_url,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            return {
+                'success': True,
+                'message': 'Account authentication successful',
+                'account_name': account.get('name', 'Unknown')
+            }
+        elif response.status_code == 401:
+            return {
+                'success': False,
+                'message': 'Account authentication failed (401) - Invalid credentials or expired session',
+                'account_name': account.get('name', 'Unknown'),
+                'status_code': 401
+            }
+        else:
+            return {
+                'success': False,
+                'message': f'Account test failed with status {response.status_code}',
+                'account_name': account.get('name', 'Unknown'),
+                'status_code': response.status_code
+            }
+            
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Error testing account: {str(e)}'
+        }
+
+@app.route('/api/accounts/<int:account_id>/test', methods=['POST'])
+@login_required
+def test_account(account_id):
+    """Test account authentication"""
+    try:
+        result = test_account_authentication(account_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error testing account: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True) 
