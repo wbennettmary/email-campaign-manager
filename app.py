@@ -1566,15 +1566,15 @@ def api_campaigns():
                 if field not in data or not data[field]:
                     return jsonify({'error': f'Missing required field: {field}'}), 400
             
-            # Memory-optimized file reading
-            campaigns = read_json_file_cached(CAMPAIGNS_FILE)
+            # Simple file reading
+            campaigns = read_json_file_simple(CAMPAIGNS_FILE)
             if not isinstance(campaigns, list):
                 campaigns = []
             
             # Generate new campaign ID
             new_id = max([camp['id'] for camp in campaigns], default=0) + 1 if campaigns else 1
             
-            # Create campaign object with minimal memory footprint
+            # Create campaign object
             new_campaign = {
                 'id': new_id,
                 'name': str(data['name'])[:100],  # Limit name length
@@ -1597,18 +1597,15 @@ def api_campaigns():
             # Add to campaigns list
             campaigns.append(new_campaign)
             
-            # Memory-optimized file writing
-            if write_json_file_optimized(CAMPAIGNS_FILE, campaigns):
-                # Clear cache to force refresh
-                read_json_file_cached.cache_clear()
-                
+            # Simple file writing
+            if write_json_file_simple(CAMPAIGNS_FILE, campaigns):
                 # Add notification
                 try:
                     add_notification(f"Campaign '{data['name']}' created successfully", 'success', new_id)
                 except Exception as e:
                     print(f"⚠️ Could not add notification: {e}")
                 
-                # Force garbage collection
+                # Simple memory cleanup
                 cleanup_memory()
                 
                 print(f"✅ Campaign created successfully - Memory usage: {log_memory_usage():.1f} MB")
@@ -4170,6 +4167,52 @@ def write_json_file_optimized(filename, data):
         # Restore backup if available
         if os.path.exists(backup_filename):
             os.replace(backup_filename, filename)
+        return False
+
+# Simple memory optimization imports
+import gc
+import psutil
+
+# Simple memory monitoring
+def log_memory_usage():
+    """Log current memory usage for debugging"""
+    try:
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        print(f"📊 Memory Usage: {memory_info.rss / 1024 / 1024:.1f} MB")
+        return memory_info.rss / 1024 / 1024
+    except:
+        return 0
+
+# Simple garbage collection
+def cleanup_memory():
+    """Force garbage collection to free memory"""
+    try:
+        gc.collect()
+        print(f"🧹 Memory cleanup completed. Current usage: {log_memory_usage():.1f} MB")
+    except:
+        pass
+
+# Simple file reading
+def read_json_file_simple(filename):
+    """Read JSON file with simple error handling"""
+    try:
+        with open(filename, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"⚠️ Error reading {filename}: {e}")
+        return [] if 'campaigns' in filename or 'accounts' in filename else {}
+
+# Simple file writing
+def write_json_file_simple(filename, data):
+    """Write JSON file with simple error handling"""
+    try:
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"✅ Successfully wrote {filename}")
+        return True
+    except Exception as e:
+        print(f"❌ Error writing {filename}: {e}")
         return False
 
 if __name__ == '__main__':

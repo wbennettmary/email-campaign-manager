@@ -94,5 +94,26 @@
     "error_count": 0,
     "delivery_rate": 100.0,
     "bounce_rate": 0.0
+  },
+  {
+    "id": 5,
+    "name": "chahin",
+    "account_id": 5,
+    "template_id": "6932955000000601006",
+    "destinataires": "salssapp@gmail.com\njetalpha@outlook.fr\nlesgavasimind@gmx.com\nabdo.charhamane@gmail.com\nwbennettmary@gmail.com",
+    "subjects": "Now let me update the campaign creation",
+    "froms": "campaign creation pro",
+    "status": "completed",
+    "created_at": "2025-07-29T16:44:30.204625",
+    "created_by": 1,
+    "total_sent": 0,
+    "total_attempted": 5,
+    "started_at": "2025-07-29T16:44:33.821822",
+    "completed_at": "2025-07-29T16:44:45.967608",
+    "delivered_count": 0,
+    "bounced_count": 0,
+    "error_count": 5,
+    "delivery_rate": 0.0,
+    "bounce_rate": 0.0
   }
 ]

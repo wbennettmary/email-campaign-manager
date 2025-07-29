@@ -1,5 +1,37 @@
 [
   {
+    "id": "f7034c0c-5234-46d1-89a0-5a2dcfe3d719",
+    "message": "Campaign 'chahin' completed with delivery issues. 0/5 emails delivered (0.0% delivery rate).",
+    "type": "error",
+    "timestamp": "2025-07-29T16:44:45.975591",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "c422c1ef-29eb-4de8-ba92-af440a592a94",
+    "message": "Campaign 'chahin' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T16:44:33.859882",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "ed326f9a-763f-4fa8-a8db-c079b30151eb",
+    "message": "Campaign 'chahin' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T16:44:30.236650",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "ba7e26ab-9a72-45c0-b522-93f5d985356b",
+    "message": "Account 'chahinezol' added successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T16:43:45.197546",
+    "read": false,
+    "campaign_id": null
+  },
+  {
     "id": "8dacfbfa-2a7e-42fe-8729-dad131d70eef",
     "message": "User 'oussamaac' updated successfully",
     "type": "success",
