@@ -1553,38 +1553,75 @@ def api_campaigns():
             return jsonify([])
     
     elif request.method == 'POST':
-        data = request.json
         try:
-            with open(CAMPAIGNS_FILE, 'r') as f:
-                campaigns = json.load(f)
+            print(f"🔍 Creating campaign - Memory usage: {log_memory_usage():.1f} MB")
+            
+            data = request.json
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Validate required fields
+            required_fields = ['name', 'account_id', 'template_id', 'destinataires', 'subjects', 'froms']
+            for field in required_fields:
+                if field not in data or not data[field]:
+                    return jsonify({'error': f'Missing required field: {field}'}), 400
+            
+            # Memory-optimized file reading
+            campaigns = read_json_file_cached(CAMPAIGNS_FILE)
             if not isinstance(campaigns, list):
                 campaigns = []
-        except (FileNotFoundError, json.JSONDecodeError):
-            campaigns = []
-        
-        new_campaign = {
-            'id': max([camp['id'] for camp in campaigns], default=0) + 1 if campaigns else 1,
-            'name': data['name'],
-            'account_id': data['account_id'],
-            'template_id': data['template_id'],
-            'destinataires': data['destinataires'],
-            'subjects': data['subjects'],
-            'froms': data['froms'],
-            'status': 'ready',
-            'created_at': datetime.now().isoformat(),
-            'created_by': current_user.id,
-            'total_sent': 0,
-            'total_attempted': 0,
-            'rate_limits': data.get('rate_limits')  # Add rate limits if provided
-        }
-        
-        campaigns.append(new_campaign)
-        
-        with open(CAMPAIGNS_FILE, 'w') as f:
-            json.dump(campaigns, f)
-        
-        add_notification(f"Campaign '{data['name']}' created successfully", 'success', new_campaign['id'])
-        return jsonify(new_campaign)
+            
+            # Generate new campaign ID
+            new_id = max([camp['id'] for camp in campaigns], default=0) + 1 if campaigns else 1
+            
+            # Create campaign object with minimal memory footprint
+            new_campaign = {
+                'id': new_id,
+                'name': str(data['name'])[:100],  # Limit name length
+                'account_id': int(data['account_id']),
+                'template_id': str(data['template_id']),
+                'destinataires': str(data['destinataires']),
+                'subjects': str(data['subjects']),
+                'froms': str(data['froms']),
+                'status': 'ready',
+                'created_at': datetime.now().isoformat(),
+                'created_by': current_user.id,
+                'total_sent': 0,
+                'total_attempted': 0
+            }
+            
+            # Add rate limits if provided
+            if 'rate_limits' in data and data['rate_limits']:
+                new_campaign['rate_limits'] = data['rate_limits']
+            
+            # Add to campaigns list
+            campaigns.append(new_campaign)
+            
+            # Memory-optimized file writing
+            if write_json_file_optimized(CAMPAIGNS_FILE, campaigns):
+                # Clear cache to force refresh
+                read_json_file_cached.cache_clear()
+                
+                # Add notification
+                try:
+                    add_notification(f"Campaign '{data['name']}' created successfully", 'success', new_id)
+                except Exception as e:
+                    print(f"⚠️ Could not add notification: {e}")
+                
+                # Force garbage collection
+                cleanup_memory()
+                
+                print(f"✅ Campaign created successfully - Memory usage: {log_memory_usage():.1f} MB")
+                return jsonify(new_campaign)
+            else:
+                return jsonify({'error': 'Failed to save campaign to file'}), 500
+                
+        except Exception as e:
+            print(f"❌ Error creating campaign: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            cleanup_memory()
+            return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
 @app.route('/api/campaigns/<int:campaign_id>', methods=['GET', 'PUT', 'DELETE'])
 @login_required
@@ -4072,6 +4109,68 @@ def get_rate_limit_stats_api():
         
     except Exception as e:
         return jsonify({'error': f'Error getting rate limiting statistics: {str(e)}'}), 500
+
+# Memory optimization imports
+import gc
+import psutil
+import threading
+from functools import lru_cache
+
+# Memory monitoring
+def log_memory_usage():
+    """Log current memory usage for debugging"""
+    process = psutil.Process()
+    memory_info = process.memory_info()
+    print(f"📊 Memory Usage: {memory_info.rss / 1024 / 1024:.1f} MB")
+    return memory_info.rss / 1024 / 1024
+
+# Force garbage collection periodically
+def cleanup_memory():
+    """Force garbage collection to free memory"""
+    gc.collect()
+    print(f"🧹 Memory cleanup completed. Current usage: {log_memory_usage():.1f} MB")
+
+# Memory-optimized file reading with caching
+@lru_cache(maxsize=32)
+def read_json_file_cached(filename):
+    """Read JSON file with caching to reduce I/O operations"""
+    try:
+        with open(filename, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"⚠️ Error reading {filename}: {e}")
+        return [] if 'campaigns' in filename or 'accounts' in filename else {}
+
+# Memory-optimized file writing
+def write_json_file_optimized(filename, data):
+    """Write JSON file with memory optimization"""
+    try:
+        # Create backup before writing
+        backup_filename = f"{filename}.backup"
+        if os.path.exists(filename):
+            import shutil
+            shutil.copy2(filename, backup_filename)
+        
+        # Write with atomic operation
+        temp_filename = f"{filename}.tmp"
+        with open(temp_filename, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        # Atomic rename
+        os.replace(temp_filename, filename)
+        
+        # Clean up backup after successful write
+        if os.path.exists(backup_filename):
+            os.remove(backup_filename)
+            
+        print(f"✅ Successfully wrote {filename}")
+        return True
+    except Exception as e:
+        print(f"❌ Error writing {filename}: {e}")
+        # Restore backup if available
+        if os.path.exists(backup_filename):
+            os.replace(backup_filename, filename)
+        return False
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True) 
