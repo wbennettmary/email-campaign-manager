@@ -3497,8 +3497,16 @@ def api_users():
             
             users.append(new_user)
             
-            with open(USERS_FILE, 'w') as f:
-                json.dump(users, f, indent=2)
+            try:
+                with open(USERS_FILE, 'w') as f:
+                    json.dump(users, f, indent=2)
+            except PermissionError as e:
+                print(f"❌ Permission error saving user: {e}")
+                error_msg = f"Permission denied: Cannot write to {USERS_FILE}. Please check file permissions on the server."
+                return jsonify({'error': error_msg}), 500
+            except Exception as e:
+                print(f"❌ Error saving user to file: {e}")
+                return jsonify({'error': f'Failed to save user to file: {str(e)}'}), 500
             
             # Send account creation email
             if SMTP_CONFIG['enabled']:
@@ -3549,8 +3557,16 @@ def api_user(user_id):
             if key in ['username', 'email', 'password', 'role', 'is_active', 'permissions']:
                 user[key] = value
         
-        with open(USERS_FILE, 'w') as f:
-            json.dump(users, f)
+        try:
+            with open(USERS_FILE, 'w') as f:
+                json.dump(users, f, indent=2)
+        except PermissionError as e:
+            print(f"❌ Permission error saving user update: {e}")
+            error_msg = f"Permission denied: Cannot write to {USERS_FILE}. Please check file permissions on the server."
+            return jsonify({'error': error_msg}), 500
+        except Exception as e:
+            print(f"❌ Error saving user update: {e}")
+            return jsonify({'error': f'Failed to save user update: {str(e)}'}), 500
         
         add_notification(f"User '{user['username']}' updated successfully", 'success')
         return jsonify(user)
@@ -3566,11 +3582,20 @@ def api_user(user_id):
                 return jsonify({'error': 'Cannot delete the last admin user'}), 400
         
         users.remove(user)
-        with open(USERS_FILE, 'w') as f:
-            json.dump(users, f)
+        
+        try:
+            with open(USERS_FILE, 'w') as f:
+                json.dump(users, f, indent=2)
+        except PermissionError as e:
+            print(f"❌ Permission error saving user deletion: {e}")
+            error_msg = f"Permission denied: Cannot write to {USERS_FILE}. Please check file permissions on the server."
+            return jsonify({'error': error_msg}), 500
+        except Exception as e:
+            print(f"❌ Error saving user deletion: {e}")
+            return jsonify({'error': f'Failed to save user deletion: {str(e)}'}), 500
         
         add_notification(f"User '{user['username']}' deleted successfully", 'warning')
-        return ('', 204)
+        return jsonify({'success': True, 'message': f'User {user["username"]} deleted successfully'})
 
 @app.route('/profile')
 @login_required
