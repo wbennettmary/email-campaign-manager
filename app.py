@@ -1227,8 +1227,21 @@ def edit_campaign(campaign_id):
 @login_required
 def live_campaigns():
     """New page to monitor all running campaigns and recently completed ones"""
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
+    try:
+        with open(CAMPAIGNS_FILE, 'r') as f:
+            all_campaigns = json.load(f)
+        if not isinstance(all_campaigns, list):
+            all_campaigns = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        all_campaigns = []
+    
+    # Filter campaigns based on user permissions
+    if current_user.role == 'admin' or has_permission(current_user, 'view_all_campaigns'):
+        # Admin can see all campaigns
+        campaigns = all_campaigns
+    else:
+        # Regular users can only see their own campaigns
+        campaigns = [c for c in all_campaigns if c.get('created_by') == current_user.id]
     
     # Get current date for cleanup
     current_date = datetime.now().date()

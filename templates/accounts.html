@@ -15,7 +15,7 @@
 <!-- Accounts List -->
 <div class="row" id="accounts-container">
     {% for account in accounts %}
-    <div class="col-lg-6 col-xl-4 mb-4">
+    <div class="col-lg-6 col-xl-4 mb-4" data-account-id="{{ account.id }}">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h6 class="mb-0"><i class="fas fa-user me-2"></i>{{ account.name or 'Unnamed Account' }}</h6>
@@ -402,13 +402,65 @@ function deleteAccount(accountId) {
         })
         .then(data => {
             console.log('Account deleted successfully:', data);
-            location.reload();
+            
+            // Remove the account card from the DOM instead of reloading
+            const accountCard = document.querySelector(`[data-account-id="${accountId}"]`);
+            if (accountCard) {
+                accountCard.remove();
+                
+                // Check if there are any accounts left
+                const remainingAccounts = document.querySelectorAll('[data-account-id]');
+                if (remainingAccounts.length === 0) {
+                    // Show the "no accounts" message
+                    const container = document.getElementById('accounts-container');
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No accounts found</h4>
+                                <p class="text-muted">Add your first Zoho account to get started</p>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                                    <i class="fas fa-plus me-2"></i>Add Account
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Fallback to reload if card not found
+                location.reload();
+            }
+            
+            // Show success notification
+            showNotification('Account deleted successfully', 'success');
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Error deleting account: ' + error.message);
         });
     }
+}
+
+// Helper function to show notifications
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
 }
 
 function testAccount(accountId) {

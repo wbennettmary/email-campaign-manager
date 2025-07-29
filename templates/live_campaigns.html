@@ -31,6 +31,17 @@
                 </label>
             </div>
             
+            <!-- Refresh Interval -->
+            <div class="d-flex align-items-center me-3">
+                <label class="form-label mb-0 me-2">Interval:</label>
+                <select class="form-select form-select-sm" id="refreshInterval" style="width: auto;">
+                    <option value="5000">5s</option>
+                    <option value="10000" selected>10s</option>
+                    <option value="30000">30s</option>
+                    <option value="60000">1m</option>
+                </select>
+            </div>
+            
             <button class="btn btn-outline-primary" onclick="refreshCampaigns()">
                 <i class="fas fa-sync-alt"></i> Refresh
             </button>
@@ -57,8 +68,16 @@
         </div>
     </div>
 
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="text-center py-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading campaigns...</p>
+    </div>
+
     <!-- Statistics Bar -->
-    <div class="row mb-4">
+    <div class="row mb-4" id="stats-container">
         <div class="col-md-3">
             <div class="card bg-primary text-white">
                 <div class="card-body text-center">
@@ -278,8 +297,6 @@
 <script>
 const socket = io();
 let campaignLogs = {};
-let autoRefreshInterval;
-let autoRefreshEnabled = true;
 
 // Initialize logs for each campaign
 {% for campaign in campaigns %}
@@ -291,58 +308,167 @@ campaignLogs[{{ campaign.id }}] = {{ campaign.logs|tojson }};
 // loadCampaignLogs({{ campaign.id }});
 {% endfor %}
 
-// Grid control
-document.getElementById('gridSelector').addEventListener('change', function() {
-    updateGridLayout(this.value);
-});
+// Real-time update variables
+let autoRefreshInterval;
+let currentFilter = 'live';
+let isRefreshing = false;
 
-// Auto-refresh toggle
-document.getElementById('autoRefreshToggle').addEventListener('change', function() {
-    autoRefreshEnabled = this.checked;
-    if (autoRefreshEnabled) {
-        startAutoRefresh();
-    } else {
-        stopAutoRefresh();
-    }
-});
-
-function updateGridLayout(columnsPerRow) {
-    const cards = document.querySelectorAll('.campaign-card');
-    const grid = document.getElementById('campaigns-grid');
-    
-    // Remove existing classes
-    cards.forEach(card => {
-        card.className = 'campaign-card mb-4';
-    });
-    
-    // Add responsive classes based on selection
-    const colClasses = {
-        '1': 'col-12',
-        '2': 'col-12 col-md-6',
-        '3': 'col-12 col-md-6 col-lg-4',
-        '4': 'col-12 col-md-6 col-lg-3',
-        '6': 'col-12 col-md-6 col-lg-4 col-xl-2'
-    };
-    
-    cards.forEach(card => {
-        card.className = `campaign-card ${colClasses[columnsPerRow]} mb-4`;
-    });
-}
-
+// Start auto-refresh functionality
 function startAutoRefresh() {
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    autoRefreshInterval = setInterval(() => {
-        if (document.querySelectorAll('.campaign-card').length > 0) {
-            updateStatistics();
-        }
-    }, 10000); // Refresh every 10 seconds
+    const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+    const refreshInterval = document.getElementById('refreshInterval');
+    
+    if (autoRefreshToggle.checked) {
+        const interval = parseInt(refreshInterval.value);
+        autoRefreshInterval = setInterval(() => {
+            if (!isRefreshing) {
+                refreshCampaigns();
+            }
+        }, interval);
+    }
 }
 
+// Stop auto-refresh
 function stopAutoRefresh() {
     if (autoRefreshInterval) {
         clearInterval(autoRefreshInterval);
         autoRefreshInterval = null;
     }
+}
+
+// Refresh campaigns with real-time data
+function refreshCampaigns() {
+    if (isRefreshing) return;
+    
+    isRefreshing = true;
+    showLoadingIndicator();
+    
+    fetch('/live-campaigns')
+        .then(response => response.text())
+        .then(html => {
+            // Parse the HTML to extract campaign data
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Update the campaigns container
+            const newCampaignsContainer = doc.getElementById('campaigns-container');
+            const currentCampaignsContainer = document.getElementById('campaigns-container');
+            
+            if (newCampaignsContainer && currentCampaignsContainer) {
+                currentCampaignsContainer.innerHTML = newCampaignsContainer.innerHTML;
+            }
+            
+            // Update statistics
+            updateStatistics();
+            
+            // Re-apply current filter
+            filterCampaigns(currentFilter);
+            
+            // Load account names for new campaigns
+            loadAccountNames();
+            
+            hideLoadingIndicator();
+            showNotification('Campaigns refreshed successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error refreshing campaigns:', error);
+            hideLoadingIndicator();
+            showNotification('Error refreshing campaigns', 'error');
+        })
+        .finally(() => {
+            isRefreshing = false;
+        });
+}
+
+// Show loading indicator
+function showLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const campaignsContainer = document.getElementById('campaigns-container');
+    
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'block';
+    }
+    
+    if (campaignsContainer) {
+        campaignsContainer.style.opacity = '0.6';
+    }
+}
+
+// Hide loading indicator
+function hideLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const campaignsContainer = document.getElementById('campaigns-container');
+    
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'none';
+    }
+    
+    if (campaignsContainer) {
+        campaignsContainer.style.opacity = '1';
+    }
+}
+
+// Load account names for campaigns
+function loadAccountNames() {
+    const accountNameElements = document.querySelectorAll('[id^="account-name-"]');
+    
+    accountNameElements.forEach(element => {
+        const campaignId = element.id.replace('account-name-', '');
+        const campaignCard = element.closest('[data-campaign-id]');
+        const accountId = campaignCard ? campaignCard.getAttribute('data-account-id') : null;
+        
+        if (accountId) {
+            fetch(`/api/accounts/${accountId}`)
+                .then(response => response.json())
+                .then(account => {
+                    element.textContent = account.name;
+                })
+                .catch(error => {
+                    element.textContent = 'Unknown';
+                });
+        }
+    });
+}
+
+// Update statistics based on visible campaigns
+function updateStatistics() {
+    const visibleCampaigns = document.querySelectorAll('[data-campaign-id]:not([style*="display: none"])');
+    
+    let totalCampaigns = visibleCampaigns.length;
+    let totalSent = 0;
+    let totalErrors = 0;
+    let totalRemaining = 0;
+    
+    visibleCampaigns.forEach(card => {
+        const sentElement = card.querySelector('.sent-count');
+        const errorElement = card.querySelector('.error-count');
+        const totalElement = card.querySelector('.total-count');
+        
+        if (sentElement) {
+            totalSent += parseInt(sentElement.textContent) || 0;
+        }
+        
+        if (errorElement) {
+            totalErrors += parseInt(errorElement.textContent) || 0;
+        }
+        
+        if (totalElement && sentElement) {
+            const total = parseInt(totalElement.textContent) || 0;
+            const sent = parseInt(sentElement.textContent) || 0;
+            totalRemaining += Math.max(0, total - sent);
+        }
+    });
+    
+    // Update statistics display
+    const totalCampaignsElement = document.getElementById('total-campaigns');
+    const totalSentElement = document.getElementById('total-sent');
+    const totalErrorsElement = document.getElementById('total-errors');
+    const totalRemainingElement = document.getElementById('total-remaining');
+    
+    if (totalCampaignsElement) totalCampaignsElement.textContent = totalCampaigns;
+    if (totalSentElement) totalSentElement.textContent = totalSent;
+    if (totalErrorsElement) totalErrorsElement.textContent = totalErrors;
+    if (totalRemainingElement) totalRemainingElement.textContent = totalRemaining;
 }
 
 function addLogToContainer(campaignId, data) {
@@ -448,28 +574,6 @@ function updateProgress(campaignId, data) {
     const progress = Math.round((sentCount + errorCount) / totalEmails * 100);
     document.getElementById(`progress-${campaignId}`).textContent = progress + '%';
     document.getElementById(`progress-bar-${campaignId}`).style.width = progress + '%';
-}
-
-function updateStatistics() {
-    let totalCampaigns = 0;
-    let totalSent = 0;
-    let totalErrors = 0;
-    let totalRemaining = 0;
-    
-    document.querySelectorAll('.campaign-card').forEach(card => {
-        const campaignId = card.dataset.campaignId;
-        if (campaignId) {
-            totalCampaigns++;
-            totalSent += parseInt(document.getElementById(`sent-${campaignId}`)?.textContent || 0);
-            totalErrors += parseInt(document.getElementById(`errors-${campaignId}`)?.textContent || 0);
-            totalRemaining += parseInt(document.getElementById(`remaining-${campaignId}`)?.textContent || 0);
-        }
-    });
-    
-    document.getElementById('total-campaigns').textContent = totalCampaigns;
-    document.getElementById('total-sent').textContent = totalSent;
-    document.getElementById('total-errors').textContent = totalErrors;
-    document.getElementById('total-remaining').textContent = totalRemaining;
 }
 
 function getStatusIcon(status) {
@@ -674,6 +778,8 @@ function showNotification(message, type = 'info') {
 }
 
 function filterCampaigns(filterType) {
+    currentFilter = filterType;
+    
     // Update button states
     document.querySelectorAll('[id^="filter-"]').forEach(btn => {
         btn.classList.remove('active');
@@ -681,7 +787,9 @@ function filterCampaigns(filterType) {
     });
     
     const activeButton = document.getElementById(`filter-${filterType}`);
-    activeButton.classList.add('active');
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
     
     // Get all campaign cards
     const campaignCards = document.querySelectorAll('[data-campaign-id]');
@@ -713,6 +821,62 @@ function filterCampaigns(filterType) {
     updateStatistics();
 }
 
+// Event listeners for controls
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh toggle
+    const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+    if (autoRefreshToggle) {
+        autoRefreshToggle.addEventListener('change', function() {
+            if (this.checked) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+        });
+    }
+    
+    // Refresh interval change
+    const refreshInterval = document.getElementById('refreshInterval');
+    if (refreshInterval) {
+        refreshInterval.addEventListener('change', function() {
+            stopAutoRefresh();
+            if (autoRefreshToggle && autoRefreshToggle.checked) {
+                startAutoRefresh();
+            }
+        });
+    }
+    
+    // Grid selector
+    const gridSelector = document.getElementById('gridSelector');
+    if (gridSelector) {
+        gridSelector.addEventListener('change', function() {
+            const campaignsContainer = document.getElementById('campaigns-container');
+            if (campaignsContainer) {
+                campaignsContainer.className = `row`;
+                const cols = parseInt(this.value);
+                const colClass = cols === 1 ? 'col-12' : 
+                               cols === 2 ? 'col-lg-6' : 
+                               cols === 3 ? 'col-lg-4' : 
+                               cols === 4 ? 'col-lg-3' : 'col-lg-2';
+                
+                const campaignCards = campaignsContainer.querySelectorAll('[data-campaign-id]');
+                campaignCards.forEach(card => {
+                    card.className = `${colClass} mb-4`;
+                });
+            }
+        });
+    }
+    
+    // Initialize
+    updateStatistics();
+    startAutoRefresh();
+    
+    // Initial refresh to get latest data
+    setTimeout(() => {
+        refreshCampaigns();
+    }, 1000);
+});
+
 // Load account names
 {% for campaign in campaigns %}
 fetch(`/api/accounts/{{ campaign.account_id }}`)
@@ -726,11 +890,5 @@ fetch(`/api/accounts/{{ campaign.account_id }}`)
         if (element) element.textContent = 'Unknown';
     });
 {% endfor %}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    updateStatistics();
-    startAutoRefresh();
-});
 </script>
 {% endblock %} 
