@@ -1388,6 +1388,10 @@ def api_accounts():
                 with open(ACCOUNTS_FILE, 'w') as f:
                     json.dump(accounts, f, indent=2)
                 print(f"✅ Successfully saved account to {ACCOUNTS_FILE}")
+            except PermissionError as e:
+                print(f"❌ Permission error saving account: {e}")
+                error_msg = f"Permission denied: Cannot write to {ACCOUNTS_FILE}. Please check file permissions on the server."
+                return jsonify({'error': error_msg}), 500
             except Exception as e:
                 print(f"❌ Error saving to file: {e}")
                 return jsonify({'error': f'Failed to save account to file: {str(e)}'}), 500
@@ -1481,6 +1485,10 @@ def api_account(account_id):
             with open(ACCOUNTS_FILE, 'w') as f:
                 json.dump(accounts, f, indent=2)
             print(f"✅ Successfully saved updated accounts to file")
+        except PermissionError as e:
+            print(f"❌ Permission error saving accounts file: {e}")
+            error_msg = f"Permission denied: Cannot write to {ACCOUNTS_FILE}. Please check file permissions on the server."
+            return jsonify({'error': error_msg}), 500
         except Exception as e:
             print(f"❌ Error saving accounts file: {e}")
             return jsonify({'error': f'Failed to save accounts file: {str(e)}'}), 500
