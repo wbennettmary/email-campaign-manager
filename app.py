@@ -1345,6 +1345,9 @@ def api_accounts():
             if not data:
                 return jsonify({'error': 'No data provided'}), 400
             
+            print(f"🔍 Creating account with data: {json.dumps(data, indent=2)}")
+            print(f"👤 Current user: {current_user.username} (ID: {current_user.id}, Role: {current_user.role})")
+            
             # Validate required fields
             required_fields = ['name', 'org_id', 'cookies', 'headers']
             for field in required_fields:
@@ -1356,11 +1359,17 @@ def api_accounts():
                     accounts = json.load(f)
                 if not isinstance(accounts, list):
                     accounts = []
-            except (FileNotFoundError, json.JSONDecodeError):
+                print(f"📊 Loaded {len(accounts)} existing accounts")
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"⚠️ No existing accounts file or invalid JSON: {e}")
                 accounts = []
             
+            # Generate new account ID
+            new_id = max([acc['id'] for acc in accounts], default=0) + 1 if accounts else 1
+            print(f"🆔 Generated new account ID: {new_id}")
+            
             new_account = {
-                'id': max([acc['id'] for acc in accounts], default=0) + 1 if accounts else 1,
+                'id': new_id,
                 'name': data['name'],
                 'org_id': data['org_id'],
                 'cookies': data['cookies'],
@@ -1370,20 +1379,32 @@ def api_accounts():
                 'created_by': current_user.id
             }
             
+            print(f"📝 New account data: {json.dumps(new_account, indent=2)}")
+            
             accounts.append(new_account)
             
-            with open(ACCOUNTS_FILE, 'w') as f:
-                json.dump(accounts, f)
+            # Save to file with error handling
+            try:
+                with open(ACCOUNTS_FILE, 'w') as f:
+                    json.dump(accounts, f, indent=2)
+                print(f"✅ Successfully saved account to {ACCOUNTS_FILE}")
+            except Exception as e:
+                print(f"❌ Error saving to file: {e}")
+                return jsonify({'error': f'Failed to save account to file: {str(e)}'}), 500
             
             try:
                 add_notification(f"Account '{data['name']}' added successfully", 'success')
+                print(f"✅ Added success notification")
             except Exception as e:
-                print(f"Warning: Could not add notification: {e}")
+                print(f"⚠️ Could not add notification: {e}")
             
+            print(f"🎉 Account creation completed successfully")
             return jsonify(new_account)
             
         except Exception as e:
-            print(f"Error saving account: {str(e)}")
+            print(f"❌ Error saving account: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
 @app.route('/api/accounts/<int:account_id>', methods=['GET', 'PUT', 'DELETE'])

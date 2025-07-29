@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "bc414ad3-b847-4612-ab8a-5ef87e28bb4a",
+    "message": "Account 'jaylan' added successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T15:05:41.779438",
+    "read": false,
+    "campaign_id": null
+  }
+]
