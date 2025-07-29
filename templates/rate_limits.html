@@ -1,0 +1,401 @@
+{% extends "base.html" %}
+
+{% block title %}Rate Limits - Email Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Rate Limiting Configuration</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-warning me-2" onclick="resetRateLimits()">
+            <i class="fas fa-redo me-2"></i>Reset All Data
+        </button>
+        <button type="button" class="btn btn-info" onclick="loadDefaultSettings()">
+            <i class="fas fa-undo me-2"></i>Load Defaults
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>Rate Limiting Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="rateLimitForm">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enabled" name="enabled">
+                            <label class="form-check-label" for="enabled">
+                                <strong>Enable Rate Limiting</strong>
+                            </label>
+                        </div>
+                        <div class="form-text">Enable or disable rate limiting for email sending.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-clock me-2"></i>Time-based Limits
+                            </h6>
+                            
+                            <div class="mb-3">
+                                <label for="emails_per_second" class="form-label">Emails per Second</label>
+                                <input type="number" class="form-control" id="emails_per_second" name="emails_per_second" min="1" max="100">
+                                <div class="form-text">Maximum emails that can be sent per second.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="emails_per_minute" class="form-label">Emails per Minute</label>
+                                <input type="number" class="form-control" id="emails_per_minute" name="emails_per_minute" min="1" max="10000">
+                                <div class="form-text">Maximum emails that can be sent per minute.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="emails_per_hour" class="form-label">Emails per Hour</label>
+                                <input type="number" class="form-control" id="emails_per_hour" name="emails_per_hour" min="1" max="100000">
+                                <div class="form-text">Maximum emails that can be sent per hour.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="emails_per_day" class="form-label">Emails per Day</label>
+                                <input type="number" class="form-control" id="emails_per_day" name="emails_per_day" min="1" max="1000000">
+                                <div class="form-text">Maximum emails that can be sent per day.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="text-warning mb-3">
+                                <i class="fas fa-shield-alt me-2"></i>Protection Settings
+                            </h6>
+                            
+                            <div class="mb-3">
+                                <label for="wait_time_between_emails" class="form-label">Wait Time Between Emails (seconds)</label>
+                                <input type="number" class="form-control" id="wait_time_between_emails" name="wait_time_between_emails" min="0" max="60" step="0.1">
+                                <div class="form-text">Minimum time to wait between sending emails.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="burst_limit" class="form-label">Burst Limit</label>
+                                <input type="number" class="form-control" id="burst_limit" name="burst_limit" min="1" max="100">
+                                <div class="form-text">Maximum emails in a burst before cooldown.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="cooldown_period" class="form-label">Cooldown Period (seconds)</label>
+                                <input type="number" class="form-control" id="cooldown_period" name="cooldown_period" min="1" max="3600">
+                                <div class="form-text">Cooldown time after burst limit is exceeded.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Rate Limiting Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-lightbulb me-2"></i>How Rate Limiting Works</h6>
+                    <ul class="mb-0">
+                        <li><strong>Time-based Limits:</strong> Control how many emails can be sent per second, minute, hour, and day</li>
+                        <li><strong>Wait Time:</strong> Minimum delay between email sends to prevent overwhelming servers</li>
+                        <li><strong>Burst Protection:</strong> Prevents rapid-fire sending with cooldown periods</li>
+                        <li><strong>Per-User Tracking:</strong> Each user has their own rate limit counters</li>
+                        <li><strong>Automatic Cleanup:</strong> Old data is automatically cleaned up to save memory</li>
+                    </ul>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success">Recommended Settings</h6>
+                        <ul class="small">
+                            <li><strong>Conservative:</strong> 1/sec, 50/min, 500/hour, 5000/day</li>
+                            <li><strong>Moderate:</strong> 2/sec, 100/min, 1000/hour, 10000/day</li>
+                            <li><strong>Aggressive:</strong> 5/sec, 300/min, 3000/hour, 30000/day</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-warning">Provider Limits</h6>
+                        <ul class="small">
+                            <li><strong>Gmail:</strong> 500/day (free), 2000/day (paid)</li>
+                            <li><strong>Outlook:</strong> 300/day (free), 10000/day (paid)</li>
+                            <li><strong>Yahoo:</strong> 500/day (free), 5000/day (paid)</li>
+                            <li><strong>Zoho:</strong> Varies by plan</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Your Current Usage
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="rateLimitStats">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading statistics...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="loadDefaultSettings()">
+                        <i class="fas fa-undo me-2"></i>Load Default Settings
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="resetRateLimits()">
+                        <i class="fas fa-redo me-2"></i>Reset All Data
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="refreshStats()">
+                        <i class="fas fa-sync me-2"></i>Refresh Statistics
+                    </button>
+                </div>
+                
+                <hr>
+                
+                <div class="alert alert-warning small">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Note:</strong> Rate limiting is applied per user. Each user has their own counters and limits.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load current configuration on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadRateLimitConfig();
+    loadRateLimitStats();
+});
+
+function loadRateLimitConfig() {
+    fetch('/api/rate-limits')
+        .then(response => response.json())
+        .then(data => {
+            const config = data.config;
+            
+            document.getElementById('enabled').checked = config.enabled;
+            document.getElementById('emails_per_second').value = config.emails_per_second;
+            document.getElementById('emails_per_minute').value = config.emails_per_minute;
+            document.getElementById('emails_per_hour').value = config.emails_per_hour;
+            document.getElementById('emails_per_day').value = config.emails_per_day;
+            document.getElementById('wait_time_between_emails').value = config.wait_time_between_emails;
+            document.getElementById('burst_limit').value = config.burst_limit;
+            document.getElementById('cooldown_period').value = config.cooldown_period;
+        })
+        .catch(error => {
+            console.error('Error loading rate limit config:', error);
+            showNotification('Error loading rate limiting configuration', 'error');
+        });
+}
+
+function loadRateLimitStats() {
+    fetch('/api/rate-limits/stats')
+        .then(response => response.json())
+        .then(stats => {
+            displayRateLimitStats(stats);
+        })
+        .catch(error => {
+            console.error('Error loading rate limit stats:', error);
+            document.getElementById('rateLimitStats').innerHTML = 
+                '<div class="alert alert-danger">Error loading statistics</div>';
+        });
+}
+
+function displayRateLimitStats(stats) {
+    const statsHtml = `
+        <div class="mb-3">
+            <h6 class="text-primary">Daily Usage</h6>
+            <div class="progress mb-2">
+                <div class="progress-bar" role="progressbar" style="width: ${(stats.daily_sent / stats.daily_limit) * 100}%"></div>
+            </div>
+            <small class="text-muted">${stats.daily_sent} / ${stats.daily_limit} emails (${stats.daily_remaining} remaining)</small>
+        </div>
+        
+        <div class="mb-3">
+            <h6 class="text-info">Hourly Usage</h6>
+            <div class="progress mb-2">
+                <div class="progress-bar bg-info" role="progressbar" style="width: ${(stats.hourly_sent / stats.hourly_limit) * 100}%"></div>
+            </div>
+            <small class="text-muted">${stats.hourly_sent} / ${stats.hourly_limit} emails (${stats.hourly_remaining} remaining)</small>
+        </div>
+        
+        <div class="mb-3">
+            <h6 class="text-warning">Minute Usage</h6>
+            <div class="progress mb-2">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: ${(stats.minute_sent / stats.minute_limit) * 100}%"></div>
+            </div>
+            <small class="text-muted">${stats.minute_sent} / ${stats.minute_limit} emails (${stats.minute_remaining} remaining)</small>
+        </div>
+        
+        <div class="mb-3">
+            <h6 class="text-success">Burst Status</h6>
+            <div class="d-flex justify-content-between">
+                <span>Burst Count:</span>
+                <span class="badge ${stats.burst_count >= stats.burst_limit ? 'bg-danger' : 'bg-success'}">${stats.burst_count} / ${stats.burst_limit}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>Wait Time:</span>
+                <span>${stats.wait_time_between} seconds</span>
+            </div>
+        </div>
+        
+        ${stats.in_cooldown ? `
+        <div class="alert alert-warning small">
+            <i class="fas fa-clock me-2"></i>
+            <strong>Cooldown Active:</strong> Rate limiting is in cooldown mode.
+        </div>
+        ` : ''}
+    `;
+    
+    document.getElementById('rateLimitStats').innerHTML = statsHtml;
+}
+
+document.getElementById('rateLimitForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        enabled: document.getElementById('enabled').checked,
+        emails_per_second: parseInt(document.getElementById('emails_per_second').value) || 2,
+        emails_per_minute: parseInt(document.getElementById('emails_per_minute').value) || 100,
+        emails_per_hour: parseInt(document.getElementById('emails_per_hour').value) || 1000,
+        emails_per_day: parseInt(document.getElementById('emails_per_day').value) || 10000,
+        wait_time_between_emails: parseFloat(document.getElementById('wait_time_between_emails').value) || 0.5,
+        burst_limit: parseInt(document.getElementById('burst_limit').value) || 5,
+        cooldown_period: parseInt(document.getElementById('cooldown_period').value) || 60
+    };
+    
+    fetch('/api/rate-limits', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showNotification(data.message, 'success');
+            loadRateLimitStats(); // Refresh stats after update
+        } else {
+            showNotification(data.error || 'Error saving configuration', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error saving rate limiting configuration', 'error');
+    });
+});
+
+function loadDefaultSettings() {
+    if (confirm('Load default rate limiting settings? This will overwrite current configuration.')) {
+        const defaultSettings = {
+            enabled: true,
+            emails_per_second: 2,
+            emails_per_minute: 100,
+            emails_per_hour: 1000,
+            emails_per_day: 10000,
+            wait_time_between_emails: 0.5,
+            burst_limit: 5,
+            cooldown_period: 60
+        };
+        
+        // Update form fields
+        document.getElementById('enabled').checked = defaultSettings.enabled;
+        document.getElementById('emails_per_second').value = defaultSettings.emails_per_second;
+        document.getElementById('emails_per_minute').value = defaultSettings.emails_per_minute;
+        document.getElementById('emails_per_hour').value = defaultSettings.emails_per_hour;
+        document.getElementById('emails_per_day').value = defaultSettings.emails_per_day;
+        document.getElementById('wait_time_between_emails').value = defaultSettings.wait_time_between_emails;
+        document.getElementById('burst_limit').value = defaultSettings.burst_limit;
+        document.getElementById('cooldown_period').value = defaultSettings.cooldown_period;
+        
+        showNotification('Default settings loaded. Click "Save Configuration" to apply.', 'info');
+    }
+}
+
+function resetRateLimits() {
+    if (confirm('Reset all rate limiting data? This will clear all user counters and cannot be undone.')) {
+        fetch('/api/rate-limits/reset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showNotification(data.message, 'success');
+                loadRateLimitStats(); // Refresh stats after reset
+            } else {
+                showNotification(data.error || 'Error resetting rate limits', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error resetting rate limiting data', 'error');
+        });
+    }
+}
+
+function refreshStats() {
+    loadRateLimitStats();
+    showNotification('Statistics refreshed', 'info');
+}
+
+function showNotification(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                      type === 'error' ? 'alert-danger' : 
+                      type === 'warning' ? 'alert-warning' : 'alert-info';
+    
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        const alert = container.querySelector('.alert');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

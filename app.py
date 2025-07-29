@@ -9,7 +9,7 @@ import threading
 import time
 import random
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 import csv
 import pandas as pd
@@ -21,9 +21,343 @@ from zoho_bounce_integration import (
     start_bounce_monitoring,
     get_bounce_statistics
 )
+from functools import wraps
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import ssl
+from datetime import datetime, timedelta
+import pandas as pd
+import csv
+from werkzeug.utils import secure_filename
+import zoho_bounce_integration
+import zoho_oauth_integration
+import logging
+
+# Rate Limiting Configuration
+RATE_LIMIT_CONFIG_FILE = 'rate_limit_config.json'
+
+# Default rate limiting settings
+DEFAULT_RATE_LIMIT = {
+    'enabled': True,
+    'emails_per_second': 2,
+    'emails_per_minute': 100,
+    'emails_per_hour': 1000,
+    'emails_per_day': 10000,
+    'wait_time_between_emails': 0.5,  # seconds
+    'burst_limit': 5,  # max emails in burst
+    'cooldown_period': 60,  # seconds after burst
+    'daily_quota': 10000,
+    'hourly_quota': 1000,
+    'minute_quota': 100,
+    'second_quota': 2
+}
+
+# Rate limiting storage
+rate_limit_data = {
+    'daily_sent': {},
+    'hourly_sent': {},
+    'minute_sent': {},
+    'second_sent': {},
+    'last_send_time': {},
+    'burst_count': {},
+    'cooldown_until': {}
+}
+
+def load_rate_limit_config():
+    """Load rate limiting configuration from file"""
+    try:
+        with open(RATE_LIMIT_CONFIG_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return DEFAULT_RATE_LIMIT.copy()
+
+def save_rate_limit_config(config):
+    """Save rate limiting configuration to file"""
+    with open(RATE_LIMIT_CONFIG_FILE, 'w') as f:
+        json.dump(config, f, indent=2)
+
+def check_rate_limit(user_id, campaign_id=None):
+    """
+    Check if user/campaign is within rate limits
+    Returns: (allowed: bool, wait_time: float, reason: str)
+    """
+    # Load campaign-specific rate limits if campaign_id is provided
+    campaign_config = None
+    if campaign_id:
+        try:
+            with open(CAMPAIGNS_FILE, 'r') as f:
+                campaigns = json.load(f)
+            campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
+            if campaign and campaign.get('rate_limits'):
+                campaign_config = campaign['rate_limits']
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+    
+    # Use campaign-specific config if available, otherwise use default
+    config = campaign_config if campaign_config else load_rate_limit_config()
+    
+    if not config.get('enabled', True):
+        return True, 0, "Rate limiting disabled"
+    
+    current_time = time.time()
+    current_day = int(current_time // 86400)
+    current_hour = int(current_time // 3600)
+    current_minute = int(current_time // 60)
+    current_second = int(current_time)
+    
+    # Initialize user data if not exists
+    if user_id not in rate_limit_data['daily_sent']:
+        rate_limit_data['daily_sent'][user_id] = {}
+        rate_limit_data['hourly_sent'][user_id] = {}
+        rate_limit_data['minute_sent'][user_id] = {}
+        rate_limit_data['second_sent'][user_id] = {}
+        rate_limit_data['last_send_time'][user_id] = 0
+        rate_limit_data['burst_count'][user_id] = 0
+        rate_limit_data['cooldown_until'][user_id] = 0
+    
+    # Check cooldown period
+    if current_time < rate_limit_data['cooldown_until'][user_id]:
+        wait_time = rate_limit_data['cooldown_until'][user_id] - current_time
+        return False, wait_time, f"Cooldown period active. Wait {wait_time:.1f} seconds"
+    
+    # Check burst limit
+    if rate_limit_data['burst_count'][user_id] >= config.get('burst_limit', 5):
+        cooldown_duration = config.get('cooldown_period', 60)
+        rate_limit_data['cooldown_until'][user_id] = current_time + cooldown_duration
+        rate_limit_data['burst_count'][user_id] = 0
+        return False, cooldown_duration, f"Burst limit exceeded. Cooldown for {cooldown_duration} seconds"
+    
+    # Check wait time between emails
+    wait_time_between = config.get('wait_time_between_emails', 0.5)
+    time_since_last = current_time - rate_limit_data['last_send_time'][user_id]
+    if time_since_last < wait_time_between:
+        wait_time = wait_time_between - time_since_last
+        return False, wait_time, f"Wait {wait_time:.1f} seconds between emails"
+    
+    # Check daily quota
+    if current_day not in rate_limit_data['daily_sent'][user_id]:
+        rate_limit_data['daily_sent'][user_id][current_day] = 0
+    
+    if rate_limit_data['daily_sent'][user_id][current_day] >= config.get('daily_quota', 10000):
+        next_day = current_day + 1
+        wait_time = (next_day * 86400) - current_time
+        return False, wait_time, f"Daily quota exceeded ({config.get('daily_quota', 10000)} emails)"
+    
+    # Check hourly quota
+    if current_hour not in rate_limit_data['hourly_sent'][user_id]:
+        rate_limit_data['hourly_sent'][user_id][current_hour] = 0
+    
+    if rate_limit_data['hourly_sent'][user_id][current_hour] >= config.get('hourly_quota', 1000):
+        next_hour = current_hour + 1
+        wait_time = (next_hour * 3600) - current_time
+        return False, wait_time, f"Hourly quota exceeded ({config.get('hourly_quota', 1000)} emails)"
+    
+    # Check minute quota
+    if current_minute not in rate_limit_data['minute_sent'][user_id]:
+        rate_limit_data['minute_sent'][user_id][current_minute] = 0
+    
+    if rate_limit_data['minute_sent'][user_id][current_minute] >= config.get('minute_quota', 100):
+        next_minute = current_minute + 1
+        wait_time = (next_minute * 60) - current_time
+        return False, wait_time, f"Minute quota exceeded ({config.get('minute_quota', 100)} emails)"
+    
+    # Check second quota
+    if current_second not in rate_limit_data['second_sent'][user_id]:
+        rate_limit_data['second_sent'][user_id][current_second] = 0
+    
+    if rate_limit_data['second_sent'][user_id][current_second] >= config.get('second_quota', 2):
+        next_second = current_second + 1
+        wait_time = next_second - current_time
+        return False, wait_time, f"Second quota exceeded ({config.get('second_quota', 2)} emails)"
+    
+    return True, 0, "Rate limit check passed"
+
+def update_rate_limit_counters(user_id):
+    """Update rate limit counters after sending an email"""
+    current_time = time.time()
+    current_day = int(current_time // 86400)
+    current_hour = int(current_time // 3600)
+    current_minute = int(current_time // 60)
+    current_second = int(current_time)
+    
+    # Update counters
+    rate_limit_data['daily_sent'][user_id][current_day] = rate_limit_data['daily_sent'][user_id].get(current_day, 0) + 1
+    rate_limit_data['hourly_sent'][user_id][current_hour] = rate_limit_data['hourly_sent'][user_id].get(current_hour, 0) + 1
+    rate_limit_data['minute_sent'][user_id][current_minute] = rate_limit_data['minute_sent'][user_id].get(current_minute, 0) + 1
+    rate_limit_data['second_sent'][user_id][current_second] = rate_limit_data['second_sent'][user_id].get(current_second, 0) + 1
+    
+    # Update timing
+    rate_limit_data['last_send_time'][user_id] = current_time
+    rate_limit_data['burst_count'][user_id] += 1
+
+def get_rate_limit_stats(user_id):
+    """Get current rate limit statistics for a user"""
+    config = load_rate_limit_config()
+    current_time = time.time()
+    current_day = int(current_time // 86400)
+    current_hour = int(current_time // 3600)
+    current_minute = int(current_time // 60)
+    
+    daily_sent = rate_limit_data['daily_sent'].get(user_id, {}).get(current_day, 0)
+    hourly_sent = rate_limit_data['hourly_sent'].get(user_id, {}).get(current_hour, 0)
+    minute_sent = rate_limit_data['minute_sent'].get(user_id, {}).get(current_minute, 0)
+    burst_count = rate_limit_data['burst_count'].get(user_id, 0)
+    
+    return {
+        'daily_sent': daily_sent,
+        'daily_limit': config.get('daily_quota', 10000),
+        'daily_remaining': max(0, config.get('daily_quota', 10000) - daily_sent),
+        'hourly_sent': hourly_sent,
+        'hourly_limit': config.get('hourly_quota', 1000),
+        'hourly_remaining': max(0, config.get('hourly_quota', 1000) - hourly_sent),
+        'minute_sent': minute_sent,
+        'minute_limit': config.get('minute_quota', 100),
+        'minute_remaining': max(0, config.get('minute_quota', 100) - minute_sent),
+        'burst_count': burst_count,
+        'burst_limit': config.get('burst_limit', 5),
+        'wait_time_between': config.get('wait_time_between_emails', 0.5),
+        'cooldown_until': rate_limit_data['cooldown_until'].get(user_id, 0),
+        'in_cooldown': current_time < rate_limit_data['cooldown_until'].get(user_id, 0)
+    }
+
+def cleanup_old_rate_limit_data():
+    """Clean up old rate limit data to prevent memory bloat"""
+    current_time = time.time()
+    cutoff_day = int((current_time - 86400) // 86400)  # 1 day ago
+    cutoff_hour = int((current_time - 3600) // 3600)   # 1 hour ago
+    cutoff_minute = int((current_time - 60) // 60)     # 1 minute ago
+    cutoff_second = int(current_time - 1)              # 1 second ago
+    
+    for user_id in list(rate_limit_data['daily_sent'].keys()):
+        # Clean daily data
+        rate_limit_data['daily_sent'][user_id] = {
+            day: count for day, count in rate_limit_data['daily_sent'][user_id].items()
+            if int(day) > cutoff_day
+        }
+        
+        # Clean hourly data
+        rate_limit_data['hourly_sent'][user_id] = {
+            hour: count for hour, count in rate_limit_data['hourly_sent'][user_id].items()
+            if int(hour) > cutoff_hour
+        }
+        
+        # Clean minute data
+        rate_limit_data['minute_sent'][user_id] = {
+            minute: count for minute, count in rate_limit_data['minute_sent'][user_id].items()
+            if int(minute) > cutoff_minute
+        }
+        
+        # Clean second data
+        rate_limit_data['second_sent'][user_id] = {
+            second: count for second, count in rate_limit_data['second_sent'][user_id].items()
+            if int(second) > cutoff_second
+        }
+
+# Initialize rate limit config
+RATE_LIMIT_CONFIG = load_rate_limit_config()
+
+# Cleanup thread
+def rate_limit_cleanup_thread():
+    """Background thread to clean up old rate limit data"""
+    while True:
+        try:
+            cleanup_old_rate_limit_data()
+            time.sleep(300)  # Clean up every 5 minutes
+        except Exception as e:
+            print(f"Rate limit cleanup error: {e}")
+            time.sleep(60)
+
+# Start cleanup thread
+cleanup_thread = threading.Thread(target=rate_limit_cleanup_thread, daemon=True)
+cleanup_thread.start()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
+
+# SMTP Configuration
+SMTP_CONFIG_FILE = 'smtp_config.json'
+
+def load_smtp_config():
+    """Load SMTP configuration from file"""
+    try:
+        with open(SMTP_CONFIG_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {
+            'enabled': False,
+            'server': 'smtp.gmail.com',
+            'port': 587,
+            'username': 'your-email@gmail.com',
+            'password': 'your-app-password',
+            'use_tls': True,
+            'from_email': 'your-email@gmail.com',
+            'from_name': 'Email Campaign Manager'
+        }
+
+def reload_smtp_config():
+    """Reload SMTP configuration from file"""
+    global SMTP_CONFIG
+    SMTP_CONFIG = load_smtp_config()
+
+SMTP_CONFIG = load_smtp_config()
+
+# Email templates
+EMAIL_TEMPLATES = {
+    'password_reset': {
+        'subject': 'Password Reset Request - Email Campaign Manager',
+        'body': '''
+        <html>
+        <body>
+            <h2>Password Reset Request</h2>
+            <p>Hello {username},</p>
+            <p>You have requested a password reset for your Email Campaign Manager account.</p>
+            <p>Click the link below to reset your password:</p>
+            <p><a href="{reset_link}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you didn't request this reset, please ignore this email.</p>
+            <p>Best regards,<br>Email Campaign Manager Team</p>
+        </body>
+        </html>
+        '''
+    },
+    'security_alert': {
+        'subject': 'Security Alert - Email Campaign Manager',
+        'body': '''
+        <html>
+        <body>
+            <h2>Security Alert</h2>
+            <p>Hello {username},</p>
+            <p>We detected a security event on your account:</p>
+            <p><strong>Event:</strong> {event_type}</p>
+            <p><strong>Time:</strong> {timestamp}</p>
+            <p><strong>IP Address:</strong> {ip_address}</p>
+            <p>If this wasn't you, please contact your administrator immediately.</p>
+            <p>Best regards,<br>Email Campaign Manager Security Team</p>
+        </body>
+        </html>
+        '''
+    },
+    'account_created': {
+        'subject': 'Account Created - Email Campaign Manager',
+        'body': '''
+        <html>
+        <body>
+            <h2>Welcome to Email Campaign Manager</h2>
+            <p>Hello {username},</p>
+            <p>Your account has been created successfully.</p>
+            <p><strong>Username:</strong> {username}</p>
+            <p><strong>Role:</strong> {role}</p>
+            <p>You can now log in to your account.</p>
+            <p>Best regards,<br>Email Campaign Manager Team</p>
+        </body>
+        </html>
+        '''
+    }
+}
+
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 login_manager = LoginManager()
@@ -37,6 +371,7 @@ USERS_FILE = 'users.json'
 CAMPAIGN_LOGS_FILE = 'campaign_logs.json'
 NOTIFICATIONS_FILE = 'notifications.json'
 BOUNCE_DATA_FILE = 'bounce_data.json'
+BOUNCES_FILE = 'bounces.json'
 DELIVERY_DATA_FILE = 'delivery_data.json'
 DATA_LISTS_FILE = 'data_lists.json'
 DATA_LISTS_DIR = 'data_lists'
@@ -60,7 +395,11 @@ def init_data_files():
             json.dump([{
                 'id': 1,
                 'username': 'admin',
-                'password': generate_password_hash('admin123')
+                'password': generate_password_hash('admin123'),
+                'role': 'admin',
+                'email': 'admin@example.com',
+                'created_at': datetime.now().isoformat(),
+                'is_active': True
             }], f)
     
     if not os.path.exists(CAMPAIGN_LOGS_FILE):
@@ -141,6 +480,23 @@ class User(UserMixin):
     def __init__(self, user_data):
         self.id = user_data['id']
         self.username = user_data['username']
+        self.password_hash = user_data['password']
+        self.role = user_data.get('role', 'user')  # admin or user
+        self.email = user_data.get('email', '')
+        self.created_at = user_data.get('created_at', '')
+        self._is_active = user_data.get('is_active', True)
+        self.permissions = user_data.get('permissions', [])
+    
+    @property
+    def is_active(self):
+        return self._is_active
+    
+    @is_active.setter
+    def is_active(self, value):
+        self._is_active = value
+    
+    def get_id(self):
+        return str(self.id)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -154,29 +510,101 @@ def add_notification(message, type='info', campaign_id=None):
     try:
         with open(NOTIFICATIONS_FILE, 'r') as f:
             notifications = json.load(f)
-    except:
+    except (FileNotFoundError, json.JSONDecodeError):
         notifications = []
     
     notification = {
         'id': str(uuid.uuid4()),
         'message': message,
         'type': type,
-        'campaign_id': campaign_id,
         'timestamp': datetime.now().isoformat(),
-        'read': False
+        'read': False,
+        'campaign_id': campaign_id
     }
     
-    notifications.append(notification)
+    notifications.insert(0, notification)
     
     # Keep only last 100 notifications
     if len(notifications) > 100:
-        notifications = notifications[-100:]
+        notifications = notifications[:100]
     
     with open(NOTIFICATIONS_FILE, 'w') as f:
-        json.dump(notifications, f)
+        json.dump(notifications, f, indent=2)
+
+def send_email(to_email, subject, html_body, text_body=None):
+    """Send email using SMTP configuration"""
+    if not SMTP_CONFIG['enabled']:
+        print(f"Email disabled. Would send to {to_email}: {subject}")
+        return False
     
-    # Emit notification to all connected clients
-    socketio.emit('new_notification', notification)
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['From'] = f"{SMTP_CONFIG['from_name']} <{SMTP_CONFIG['from_email']}>"
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        
+        # Add HTML and text parts
+        html_part = MIMEText(html_body, 'html')
+        msg.attach(html_part)
+        
+        if text_body:
+            text_part = MIMEText(text_body, 'plain')
+            msg.attach(text_part)
+        
+        # Create SMTP connection
+        if SMTP_CONFIG['use_tls']:
+            server = smtplib.SMTP(SMTP_CONFIG['server'], SMTP_CONFIG['port'])
+            server.starttls(context=ssl.create_default_context())
+        else:
+            server = smtplib.SMTP(SMTP_CONFIG['server'], SMTP_CONFIG['port'])
+        
+        server.login(SMTP_CONFIG['username'], SMTP_CONFIG['password'])
+        server.send_message(msg)
+        server.quit()
+        
+        print(f"Email sent successfully to {to_email}")
+        return True
+        
+    except Exception as e:
+        print(f"Error sending email to {to_email}: {str(e)}")
+        return False
+
+def send_password_reset_email(user_email, username, reset_token):
+    """Send password reset email"""
+    reset_link = f"{request.host_url}reset-password/{reset_token}"
+    
+    html_body = EMAIL_TEMPLATES['password_reset']['body'].format(
+        username=username,
+        reset_link=reset_link
+    )
+    
+    subject = EMAIL_TEMPLATES['password_reset']['subject']
+    
+    return send_email(user_email, subject, html_body)
+
+def send_security_alert_email(user_email, username, event_type, ip_address):
+    """Send security alert email"""
+    html_body = EMAIL_TEMPLATES['security_alert']['body'].format(
+        username=username,
+        event_type=event_type,
+        timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        ip_address=ip_address
+    )
+    
+    subject = EMAIL_TEMPLATES['security_alert']['subject']
+    
+    return send_email(user_email, subject, html_body)
+
+def send_account_created_email(user_email, username, role):
+    """Send account creation notification email"""
+    html_body = EMAIL_TEMPLATES['account_created']['body'].format(
+        username=username,
+        role=role
+    )
+    
+    subject = EMAIL_TEMPLATES['account_created']['subject']
+    
+    return send_email(user_email, subject, html_body)
 
 def save_campaign_logs(campaign_id, logs):
     """Save campaign logs to file"""
@@ -382,12 +810,47 @@ def check_email_delivery_status(email, campaign_id, account):
                     'note': note
                 }
         else:
-            # Fallback to pattern-based detection if Zoho detector not available
+            # Enhanced bounce detection for emails with spaces and wrong extensions
             bounce_indicators = [
                 "nonexistent", "invalid", "fake", "test", "bounce", 
                 "spam", "trash", "disposable", "temp", "throwaway",
-                "salsssaqz", "axxzexdflp"
+                "salsssaqz", "axxzexdflp", "asdf", "qwerty", "123456", 
+                "abcdef", "xyz", "aaa", "bbb", "test123", "demo", 
+                "sample", "placeholder", "invalid"
             ]
+            
+            # Check for emails with spaces (common typo)
+            if ' ' in email:
+                return {
+                    'status': 'bounced',
+                    'delivery_status': 'failed',
+                    'bounce_reason': 'Email contains spaces (invalid format)',
+                    'timestamp': datetime.now().isoformat(),
+                    'details': 'Email format is invalid - contains spaces',
+                    'source': 'format_validation',
+                    'note': 'Enhanced validation detected spaces in email'
+                }
+            
+            # Check for wrong email extensions
+            wrong_extensions = [
+                '.con', '.cmo', '.cm', '.co', '.c', '.om', '.omg', '.gamil', '.gmial',
+                '.gmal', '.gmai', '.gmil', '.gmeil', '.gmale', '.gmaiil', '.hotmai', 
+                '.hotmal', '.hotmeil', '.hotmaiil', '.outlok', '.yaho', '.live', 
+                '.aol', '.icloud', '.proton', '.tutanota', '.mail', '.email'
+            ]
+            
+            email_lower = email.lower()
+            for ext in wrong_extensions:
+                if email_lower.endswith(ext):
+                    return {
+                        'status': 'bounced',
+                        'delivery_status': 'failed',
+                        'bounce_reason': f'Invalid email extension: {ext}',
+                        'timestamp': datetime.now().isoformat(),
+                        'details': f'Email has wrong extension: {ext}',
+                        'source': 'format_validation',
+                        'note': f'Enhanced validation detected wrong extension: {ext}'
+                    }
             
             email_lower = email.lower()
             for indicator in bounce_indicators:
@@ -669,23 +1132,53 @@ def dashboard():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
+    if request.method == 'GET':
+        return render_template('login.html')
+    
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    try:
         with open(USERS_FILE, 'r') as f:
             users = json.load(f)
-        
-        user_data = next((user for user in users if user['username'] == username), None)
-        
-        if user_data and check_password_hash(user_data['password'], password):
-            user = User(user_data)
-            login_user(user)
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid username or password')
+        if not isinstance(users, list):
+            users = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        users = []
     
-    return render_template('login.html')
+    user_data = next((u for u in users if u['username'] == username), None)
+    
+    if user_data and check_password_hash(user_data['password'], password):
+        if not user_data.get('is_active', True):
+            flash('Account is disabled. Please contact your administrator.')
+            return redirect(url_for('login'))
+        
+        user = User(user_data)
+        login_user(user)
+        
+        # Send security alert for successful login
+        if SMTP_CONFIG['enabled']:
+            send_security_alert_email(
+                user_data.get('email', ''),
+                username,
+                'Successful Login',
+                request.remote_addr
+            )
+        
+        add_notification(f"User '{username}' logged in successfully", 'info')
+        return redirect(url_for('dashboard'))
+    else:
+        # Send security alert for failed login attempt
+        if user_data and SMTP_CONFIG['enabled']:
+            send_security_alert_email(
+                user_data.get('email', ''),
+                username,
+                'Failed Login Attempt',
+                request.remote_addr
+            )
+        
+        flash('Invalid username or password')
+        return redirect(url_for('login'))
 
 @app.route('/logout')
 @login_required
@@ -697,25 +1190,21 @@ def logout():
 @login_required
 def accounts():
     try:
-        with open(ACCOUNTS_FILE, 'r') as f:
-            accounts = json.load(f)
-        if not isinstance(accounts, list):
-            accounts = []
-    except (FileNotFoundError, json.JSONDecodeError):
-        accounts = []
-    return render_template('accounts.html', accounts=accounts)
+        accounts = get_user_accounts(current_user)
+        return render_template('accounts.html', accounts=accounts)
+    except Exception as e:
+        print(f"Error loading accounts: {str(e)}")
+        return render_template('accounts.html', accounts=[])
 
 @app.route('/campaigns')
 @login_required
 def campaigns():
     try:
-        with open(CAMPAIGNS_FILE, 'r') as f:
-            campaigns = json.load(f)
-        if not isinstance(campaigns, list):
-            campaigns = []
-    except (FileNotFoundError, json.JSONDecodeError):
-        campaigns = []
-    return render_template('campaigns.html', campaigns=campaigns)
+        campaigns = get_user_campaigns(current_user)
+        return render_template('campaigns.html', campaigns=campaigns)
+    except Exception as e:
+        print(f"Error loading campaigns: {str(e)}")
+        return render_template('campaigns.html', campaigns=[])
 
 @app.route('/campaigns/<int:campaign_id>/edit')
 @login_required
@@ -840,41 +1329,62 @@ def delivered():
 def api_accounts():
     if request.method == 'GET':
         try:
-            with open(ACCOUNTS_FILE, 'r') as f:
-                accounts = json.load(f)
-            if not isinstance(accounts, list):
-                accounts = []
-        except (FileNotFoundError, json.JSONDecodeError):
-            accounts = []
-        return jsonify(accounts)
+            accounts = get_user_accounts(current_user)
+            return jsonify(accounts)
+        except Exception as e:
+            print(f"Error loading accounts: {str(e)}")
+            return jsonify([])
     
     elif request.method == 'POST':
-        data = request.json
+        # Check if user has permission to create accounts
+        if not has_permission(current_user, 'add_account'):
+            return jsonify({'error': 'Access denied. You need permission to add accounts.'}), 403
+        
         try:
-            with open(ACCOUNTS_FILE, 'r') as f:
-                accounts = json.load(f)
-            if not isinstance(accounts, list):
+            data = request.json
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Validate required fields
+            required_fields = ['name', 'org_id', 'cookies', 'headers']
+            for field in required_fields:
+                if field not in data or not data[field]:
+                    return jsonify({'error': f'Missing required field: {field}'}), 400
+            
+            try:
+                with open(ACCOUNTS_FILE, 'r') as f:
+                    accounts = json.load(f)
+                if not isinstance(accounts, list):
+                    accounts = []
+            except (FileNotFoundError, json.JSONDecodeError):
                 accounts = []
-        except (FileNotFoundError, json.JSONDecodeError):
-            accounts = []
-        
-        new_account = {
-            'id': max([acc['id'] for acc in accounts], default=0) + 1 if accounts else 1,
-            'name': data['name'],
-            'org_id': data['org_id'],
-            'cookies': data['cookies'],
-            'headers': data['headers'],
-            'templates': data.get('templates', []),
-            'created_at': datetime.now().isoformat()
-        }
-        
-        accounts.append(new_account)
-        
-        with open(ACCOUNTS_FILE, 'w') as f:
-            json.dump(accounts, f)
-        
-        add_notification(f"Account '{data['name']}' added successfully", 'success')
-        return jsonify(new_account)
+            
+            new_account = {
+                'id': max([acc['id'] for acc in accounts], default=0) + 1 if accounts else 1,
+                'name': data['name'],
+                'org_id': data['org_id'],
+                'cookies': data['cookies'],
+                'headers': data['headers'],
+                'templates': data.get('templates', []),
+                'created_at': datetime.now().isoformat(),
+                'created_by': current_user.id
+            }
+            
+            accounts.append(new_account)
+            
+            with open(ACCOUNTS_FILE, 'w') as f:
+                json.dump(accounts, f)
+            
+            try:
+                add_notification(f"Account '{data['name']}' added successfully", 'success')
+            except Exception as e:
+                print(f"Warning: Could not add notification: {e}")
+            
+            return jsonify(new_account)
+            
+        except Exception as e:
+            print(f"Error saving account: {str(e)}")
+            return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
 @app.route('/api/accounts/<int:account_id>', methods=['GET', 'PUT', 'DELETE'])
 @login_required
@@ -889,12 +1399,20 @@ def api_account(account_id):
     
     account = next((acc for acc in accounts if acc['id'] == account_id), None)
     
+    if not account:
+        return ('', 404)
+    
+    # Check if user can access this account
+    if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+        return jsonify({'error': 'Access denied. You can only manage your own accounts.'}), 403
+    
     if request.method == 'GET':
-        return jsonify(account) if account else ('', 404)
+        return jsonify(account)
     
     elif request.method == 'PUT':
-        if not account:
-            return ('', 404)
+        # Check if user has permission to edit accounts
+        if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied. You can only edit your own accounts.'}), 403
         
         data = request.json
         data['updated_at'] = datetime.now().isoformat()
@@ -907,14 +1425,17 @@ def api_account(account_id):
         return jsonify(account)
     
     elif request.method == 'DELETE':
-        if not account:
-            return ('', 404)
+        # Check if user has permission to delete accounts
+        if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied. You can only delete your own accounts.'}), 403
         
+        account_name = account['name']
         accounts.remove(account)
+        
         with open(ACCOUNTS_FILE, 'w') as f:
             json.dump(accounts, f)
         
-        add_notification(f"Account '{account['name']}' deleted successfully", 'warning')
+        add_notification(f"Account '{account_name}' deleted successfully", 'success')
         return ('', 204)
 
 @app.route('/api/accounts/<int:account_id>/templates', methods=['GET'])
@@ -942,13 +1463,11 @@ def get_account_templates(account_id):
 def api_campaigns():
     if request.method == 'GET':
         try:
-            with open(CAMPAIGNS_FILE, 'r') as f:
-                campaigns = json.load(f)
-            if not isinstance(campaigns, list):
-                campaigns = []
-        except (FileNotFoundError, json.JSONDecodeError):
-            campaigns = []
-        return jsonify(campaigns)
+            campaigns = get_user_campaigns(current_user)
+            return jsonify(campaigns)
+        except Exception as e:
+            print(f"Error loading campaigns: {str(e)}")
+            return jsonify([])
     
     elif request.method == 'POST':
         data = request.json
@@ -970,8 +1489,10 @@ def api_campaigns():
             'froms': data['froms'],
             'status': 'ready',
             'created_at': datetime.now().isoformat(),
+            'created_by': current_user.id,
             'total_sent': 0,
-            'total_attempted': 0
+            'total_attempted': 0,
+            'rate_limits': data.get('rate_limits')  # Add rate limits if provided
         }
         
         campaigns.append(new_campaign)
@@ -990,12 +1511,20 @@ def api_campaign(campaign_id):
     
     campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
     
+    if not campaign:
+        return ('', 404)
+    
+    # Check if user can access this campaign
+    if not has_permission(current_user, 'view_all_campaigns') and campaign.get('created_by') != current_user.id:
+        return jsonify({'error': 'Access denied. You can only manage your own campaigns.'}), 403
+    
     if request.method == 'GET':
-        return jsonify(campaign) if campaign else ('', 404)
+        return jsonify(campaign)
     
     elif request.method == 'PUT':
-        if not campaign:
-            return ('', 404)
+        # Check if user has permission to edit campaigns
+        if not has_permission(current_user, 'manage_all_campaigns') and campaign.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied. You can only edit your own campaigns.'}), 403
         
         data = request.json
         campaign.update(data)
@@ -1007,14 +1536,16 @@ def api_campaign(campaign_id):
         return jsonify(campaign)
     
     elif request.method == 'DELETE':
-        if not campaign:
-            return ('', 404)
+        # Check if user has permission to delete campaigns
+        if not has_permission(current_user, 'manage_all_campaigns') and campaign.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied. You can only delete your own campaigns.'}), 403
         
+        campaign_name = campaign['name']
         campaigns.remove(campaign)
         with open(CAMPAIGNS_FILE, 'w') as f:
             json.dump(campaigns, f)
         
-        add_notification(f"Campaign '{campaign['name']}' deleted successfully", 'warning')
+        add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
         return ('', 204)
 
 @app.route('/api/campaigns/<int:campaign_id>/start', methods=['POST'])
@@ -1588,6 +2119,152 @@ def api_bounces(campaign_id):
     except Exception as e:
         return jsonify({'error': f'Error getting bounces: {str(e)}'}), 500
 
+@app.route('/api/delete/bounce/<int:campaign_id>/<path:email>', methods=['DELETE'])
+@login_required
+def delete_bounce(campaign_id, email):
+    """Delete a specific bounced email"""
+    try:
+        # Decode the email from URL
+        email = email.replace('%40', '@')
+        
+        print(f"🔍 Attempting to delete bounce: campaign_id={campaign_id}, email={email}")
+        
+        # Load bounced emails
+        try:
+            with open(BOUNCES_FILE, 'r') as f:
+                bounce_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            bounce_data = {}
+        
+        print(f"📊 Current bounce data: {json.dumps(bounce_data, indent=2)}")
+        
+        # Find and remove the specific bounce
+        campaign_key = str(campaign_id)
+        if campaign_key in bounce_data:
+            print(f"✅ Found campaign {campaign_id} with {len(bounce_data[campaign_key])} bounces")
+            
+            # Check if email exists in this campaign
+            existing_emails = [bounce['email'] for bounce in bounce_data[campaign_key]]
+            print(f"📧 Emails in campaign {campaign_id}: {existing_emails}")
+            
+            if email in existing_emails:
+                # Filter out the specific email
+                original_count = len(bounce_data[campaign_key])
+                bounce_data[campaign_key] = [
+                    bounce for bounce in bounce_data[campaign_key] 
+                    if bounce['email'] != email
+                ]
+                
+                # Save the updated data
+                with open(BOUNCES_FILE, 'w') as f:
+                    json.dump(bounce_data, f, indent=2)
+                
+                deleted_count = original_count - len(bounce_data[campaign_key])
+                
+                print(f"🗑️ Successfully deleted bounced email: {email} from campaign {campaign_id}")
+                return jsonify({
+                    'success': True, 
+                    'message': f'Bounced email {email} deleted successfully',
+                    'deleted_count': deleted_count
+                })
+            else:
+                print(f"❌ Email {email} not found in campaign {campaign_id}")
+                return jsonify({
+                    'success': False, 
+                    'message': f'Bounced email {email} not found in campaign {campaign_id}. Available emails: {existing_emails}'
+                }), 404
+        else:
+            print(f"❌ Campaign {campaign_id} not found in bounce data")
+            available_campaigns = list(bounce_data.keys())
+            return jsonify({
+                'success': False, 
+                'message': f'No bounce data found for campaign {campaign_id}. Available campaigns: {available_campaigns}'
+            }), 404
+            
+    except Exception as e:
+        print(f"❌ Error deleting bounced email: {str(e)}")
+        return jsonify({
+            'success': False, 
+            'message': f'Error deleting bounced email: {str(e)}'
+        }), 500
+
+@app.route('/api/delete/bounces/<int:campaign_id>', methods=['DELETE'])
+@login_required
+def delete_campaign_bounces(campaign_id):
+    """Delete all bounced emails for a specific campaign"""
+    try:
+        # Load bounced emails
+        try:
+            with open(BOUNCES_FILE, 'r') as f:
+                bounce_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            bounce_data = {}
+        
+        # Remove all bounces for the campaign
+        campaign_key = str(campaign_id)
+        if campaign_key in bounce_data:
+            deleted_count = len(bounce_data[campaign_key])
+            del bounce_data[campaign_key]
+            
+            # Save the updated data
+            with open(BOUNCES_FILE, 'w') as f:
+                json.dump(bounce_data, f, indent=2)
+            
+            print(f"🗑️ Deleted all {deleted_count} bounced emails from campaign {campaign_id}")
+            return jsonify({
+                'success': True, 
+                'message': f'All {deleted_count} bounced emails deleted from campaign {campaign_id}',
+                'deleted_count': deleted_count
+            })
+        else:
+            return jsonify({
+                'success': False, 
+                'message': f'No bounce data found for campaign {campaign_id}'
+            }), 404
+            
+    except Exception as e:
+        print(f"❌ Error deleting campaign bounces: {str(e)}")
+        return jsonify({
+            'success': False, 
+            'message': f'Error deleting campaign bounces: {str(e)}'
+        }), 500
+
+@app.route('/api/delete/bounces/all', methods=['DELETE'])
+@login_required
+def delete_all_bounces():
+    """Delete all bounced emails from all campaigns"""
+    try:
+        # Load bounced emails
+        try:
+            with open(BOUNCES_FILE, 'r') as f:
+                bounce_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            bounce_data = {}
+        
+        # Count total bounces
+        total_deleted = sum(len(bounces) for bounces in bounce_data.values())
+        
+        # Clear all bounce data
+        bounce_data = {}
+        
+        # Save the empty data
+        with open(BOUNCES_FILE, 'w') as f:
+            json.dump(bounce_data, f, indent=2)
+        
+        print(f"🗑️ Deleted all {total_deleted} bounced emails from all campaigns")
+        return jsonify({
+            'success': True, 
+            'message': f'All {total_deleted} bounced emails deleted from all campaigns',
+            'deleted_count': total_deleted
+        })
+            
+    except Exception as e:
+        print(f"❌ Error deleting all bounces: {str(e)}")
+        return jsonify({
+            'success': False, 
+            'message': f'Error deleting all bounces: {str(e)}'
+        }), 500
+
 @app.route('/webhook/zoho/bounce', methods=['POST'])
 def zoho_bounce_webhook():
     """Webhook endpoint to receive bounce notifications from Zoho"""
@@ -1682,10 +2359,10 @@ def data_lists():
     """Data lists management page"""
     try:
         data_lists = get_data_lists()
-        return render_template('data_lists.html', data_lists=data_lists)
+        return render_template('data_lists.html', data_lists=data_lists, user_permissions=current_user.permissions)
     except Exception as e:
         flash(f'Error loading data lists: {str(e)}', 'error')
-        return render_template('data_lists.html', data_lists=[])
+        return render_template('data_lists.html', data_lists=[], user_permissions=[])
 
 @app.route('/api/data-lists', methods=['GET', 'POST'])
 @login_required
@@ -1699,6 +2376,10 @@ def api_data_lists():
             return jsonify({'error': f'Error getting data lists: {str(e)}'}), 500
     
     elif request.method == 'POST':
+        # Check if user has permission to create data lists
+        if not has_permission(current_user, 'manage_data'):
+            return jsonify({'error': 'Access denied. You need permission to manage data lists.'}), 403
+        
         try:
             # Handle file upload
             if 'file' in request.files:
@@ -1784,7 +2465,7 @@ def api_data_lists():
                 )
                 
                 if new_list:
-                    add_notification(f"Manual data list '{data.get('name', 'Manual List')}' created with {len(valid_emails)} emails", 'success')
+                    add_notification(f"Data list '{data.get('name', 'Manual List')}' created successfully with {len(valid_emails)} emails", 'success')
                     if invalid_emails:
                         add_notification(f"Warning: {len(invalid_emails)} invalid emails were filtered out", 'warning')
                     return jsonify(new_list)
@@ -1808,6 +2489,21 @@ def api_data_list(list_id):
             
             # Get emails if requested
             if request.args.get('include_emails') == 'true':
+                # Check if user has permission to manage data
+                if not has_permission(current_user, 'manage_data'):
+                    return jsonify({
+                        'error': 'Access denied. You need manage_data permission to view email addresses.',
+                        'id': data_list['id'],
+                        'name': data_list['name'],
+                        'geography': data_list.get('geography'),
+                        'isp': data_list.get('isp'),
+                        'description': data_list.get('description'),
+                        'email_count': data_list.get('email_count', 0),
+                        'created_at': data_list.get('created_at'),
+                        'updated_at': data_list.get('updated_at'),
+                        'emails': []
+                    }), 403
+                
                 emails = get_data_list_emails(list_id)
                 data_list['emails'] = emails
             
@@ -1816,6 +2512,10 @@ def api_data_list(list_id):
             return jsonify({'error': f'Error getting data list: {str(e)}'}), 500
     
     elif request.method == 'PUT':
+        # Check if user has permission to manage data lists
+        if not has_permission(current_user, 'manage_data'):
+            return jsonify({'error': 'Access denied. You need permission to manage data lists.'}), 403
+        
         try:
             data_lists = get_data_lists()
             data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
@@ -1842,6 +2542,10 @@ def api_data_list(list_id):
             return jsonify({'error': f'Error updating data list: {str(e)}'}), 500
     
     elif request.method == 'DELETE':
+        # Check if user has permission to manage data lists
+        if not has_permission(current_user, 'manage_data'):
+            return jsonify({'error': 'Access denied. You need permission to manage data lists.'}), 403
+        
         try:
             if delete_data_list(list_id):
                 add_notification("Data list deleted successfully", 'success')
@@ -1855,6 +2559,10 @@ def api_data_list(list_id):
 @login_required
 def download_data_list(list_id):
     """Download data list as CSV"""
+    # Check if user has permission to manage data lists
+    if not has_permission(current_user, 'manage_data'):
+        return jsonify({'error': 'Access denied. You need permission to manage data lists.'}), 403
+    
     try:
         data_lists = get_data_lists()
         data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
@@ -1888,6 +2596,15 @@ def download_data_list(list_id):
 def get_data_list_emails_api(list_id):
     """Get emails from a data list"""
     try:
+        # Check if user has permission to manage data
+        if not has_permission(current_user, 'manage_data'):
+            return jsonify({
+                'list_id': list_id,
+                'emails': [],
+                'count': 0,
+                'error': 'Access denied. You need manage_data permission to view email addresses.'
+            }), 403
+        
         emails = get_data_list_emails(list_id)
         return jsonify({
             'list_id': list_id,
@@ -1896,6 +2613,239 @@ def get_data_list_emails_api(list_id):
         })
     except Exception as e:
         return jsonify({'error': f'Error getting emails: {str(e)}'}), 500
+
+@app.route('/api/data-lists/<int:list_id>/campaign-emails')
+@login_required
+def get_data_list_campaign_emails(list_id):
+    """Get emails from a data list for campaign usage (no permission required)"""
+    try:
+        emails = get_data_list_emails(list_id)
+        return jsonify({
+            'list_id': list_id,
+            'emails': emails,
+            'count': len(emails)
+        })
+    except Exception as e:
+        return jsonify({'error': f'Error getting emails: {str(e)}'}), 500
+
+# Smart retry mechanism for rate limit errors
+def smart_retry_with_exponential_backoff(campaign_id, email, subject, sender, account, json_data, enhanced_headers, max_retries=6):
+    """
+    Smart retry mechanism with exponential backoff for 401 rate limit errors
+    Retry schedule: 10s, 20s, 1min, 1h, 4h, 24h
+    """
+    url = "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test"
+    
+    # Retry schedule in seconds: 10s, 20s, 1min, 1h, 4h, 24h
+    retry_delays = [10, 20, 60, 3600, 14400, 86400]
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"📤 Sending email to: {email} (Attempt {attempt + 1}/{max_retries})")
+            print(f"   Subject: {subject}")
+            print(f"   Sender: {sender}")
+            
+            # Make API request
+            response = requests.post(
+                url,
+                json=json_data,
+                cookies=account['cookies'],
+                headers=enhanced_headers,
+                timeout=30  # Increased timeout for retries
+            )
+            
+            # Parse response
+            try:
+                result = response.json()
+                message = result.get("message", "")
+                code = result.get("code", "")
+            except json.JSONDecodeError:
+                message = ""
+                code = ""
+                result = {}
+            
+            # Check for 401 rate limit error
+            if response.status_code == 401:
+                if attempt < max_retries - 1:  # Not the last attempt
+                    delay = retry_delays[attempt]
+                    print(f"🚨 RATE LIMIT EXCEEDED (401) - Attempt {attempt + 1}/{max_retries}")
+                    print(f"⏰ Smart pause: {delay} seconds before retry")
+                    
+                    # Log the rate limit event
+                    rate_limit_log = {
+                        'campaign_id': campaign_id,
+                        'timestamp': datetime.now().isoformat(),
+                        'status': 'warning',
+                        'message': f"🚨 Zoho Rate Limit Exceeded (401) - Smart pause for {delay}s",
+                        'email': email,
+                        'subject': subject,
+                        'sender': sender,
+                        'type': 'zoho_rate_limit',
+                        'attempt': attempt + 1,
+                        'retry_delay': delay,
+                        'response_code': 401,
+                        'api_message': message,
+                        'api_code': code
+                    }
+                    add_campaign_log(campaign_id, rate_limit_log)
+                    socketio.emit('email_progress', rate_limit_log)
+                    
+                    # Send notification for first rate limit hit
+                    if attempt == 0:
+                        add_notification(
+                            f"🚨 Zoho Rate Limit Exceeded for campaign. Smart retry system activated with {delay}s pause.",
+                            'warning',
+                            campaign_id
+                        )
+                    
+                    # Wait for the specified delay
+                    time.sleep(delay)
+                    continue
+                else:
+                    # Final attempt failed
+                    final_error = f"❌ FINAL FAILURE: Rate limit exceeded after {max_retries} attempts"
+                    print(final_error)
+                    
+                    final_log = {
+                        'campaign_id': campaign_id,
+                        'timestamp': datetime.now().isoformat(),
+                        'status': 'error',
+                        'message': final_error,
+                        'email': email,
+                        'subject': subject,
+                        'sender': sender,
+                        'type': 'final_rate_limit_failure',
+                        'attempt': max_retries,
+                        'response_code': 401,
+                        'api_message': message,
+                        'api_code': code
+                    }
+                    add_campaign_log(campaign_id, final_log)
+                    socketio.emit('email_progress', final_log)
+                    
+                    # Send final notification
+                    add_notification(
+                        f"❌ Campaign paused: Zoho rate limit exceeded after {max_retries} retry attempts. Manual intervention required.",
+                        'error',
+                        campaign_id
+                    )
+                    
+                    return {
+                        'success': False,
+                        'status': 'rate_limit_final_failure',
+                        'message': final_error,
+                        'attempts': max_retries
+                    }
+            
+            # Handle other status codes
+            elif response.status_code == 200:
+                print(f"✅ Email sent successfully to {email}")
+                return {
+                    'success': True,
+                    'status': 'success',
+                    'message': 'Email sent successfully',
+                    'attempts': attempt + 1,
+                    'response': response,
+                    'result': result
+                }
+            else:
+                # Other error codes
+                error_msg = f"❌ API Error ({response.status_code}): {message} | Code: {code}"
+                print(error_msg)
+                
+                error_log = {
+                    'campaign_id': campaign_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'status': 'error',
+                    'message': error_msg,
+                    'email': email,
+                    'subject': subject,
+                    'sender': sender,
+                    'type': 'api_error',
+                    'attempt': attempt + 1,
+                    'response_code': response.status_code,
+                    'api_message': message,
+                    'api_code': code
+                }
+                add_campaign_log(campaign_id, error_log)
+                socketio.emit('email_progress', error_log)
+                
+                return {
+                    'success': False,
+                    'status': 'api_error',
+                    'message': error_msg,
+                    'attempts': attempt + 1,
+                    'response_code': response.status_code
+                }
+                
+        except requests.exceptions.Timeout:
+            timeout_msg = f"⏰ Timeout sending email to {email} (Attempt {attempt + 1}/{max_retries})"
+            print(timeout_msg)
+            
+            timeout_log = {
+                'campaign_id': campaign_id,
+                'timestamp': datetime.now().isoformat(),
+                'status': 'error',
+                'message': timeout_msg,
+                'email': email,
+                'subject': subject,
+                'sender': sender,
+                'type': 'timeout',
+                'attempt': attempt + 1
+            }
+            add_campaign_log(campaign_id, timeout_log)
+            socketio.emit('email_progress', timeout_log)
+            
+            if attempt < max_retries - 1:
+                delay = retry_delays[attempt]
+                print(f"⏰ Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                return {
+                    'success': False,
+                    'status': 'timeout_final_failure',
+                    'message': f"Final timeout after {max_retries} attempts",
+                    'attempts': max_retries
+                }
+                
+        except requests.exceptions.RequestException as e:
+            network_error = f"❌ Network error sending email to {email} (Attempt {attempt + 1}/{max_retries}): {str(e)}"
+            print(network_error)
+            
+            network_log = {
+                'campaign_id': campaign_id,
+                'timestamp': datetime.now().isoformat(),
+                'status': 'error',
+                'message': network_error,
+                'email': email,
+                'subject': subject,
+                'sender': sender,
+                'type': 'network_error',
+                'attempt': attempt + 1,
+                'exception': str(e)
+            }
+            add_campaign_log(campaign_id, network_log)
+            socketio.emit('email_progress', network_log)
+            
+            if attempt < max_retries - 1:
+                delay = retry_delays[attempt]
+                print(f"⏰ Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                return {
+                    'success': False,
+                    'status': 'network_final_failure',
+                    'message': f"Final network error after {max_retries} attempts: {str(e)}",
+                    'attempts': max_retries
+                }
+    
+    # Should never reach here, but just in case
+    return {
+        'success': False,
+        'status': 'unknown_failure',
+        'message': 'Unknown failure in retry mechanism',
+        'attempts': max_retries
+    }
 
 def send_campaign_emails(campaign, account):
     """Send emails for a campaign in background thread with IMPROVED feedback and bounce detection"""
@@ -1974,6 +2924,33 @@ def send_campaign_emails(campaign, account):
                 socketio.emit('email_progress', stop_log)
                 break
             
+            # Check rate limiting before sending email
+            user_id = campaign.get('created_by', 'unknown')
+            allowed, wait_time, reason = check_rate_limit(user_id, campaign_id)
+            
+            if not allowed:
+                print(f"⏳ Rate limit hit: {reason}")
+                rate_limit_log = {
+                    'campaign_id': campaign_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'status': 'warning',
+                    'message': f"⏳ Rate limit: {reason}",
+                    'type': 'rate_limit'
+                }
+                add_campaign_log(campaign_id, rate_limit_log)
+                socketio.emit('email_progress', rate_limit_log)
+                
+                # Wait for the required time
+                if wait_time > 0:
+                    print(f"⏰ Waiting {wait_time:.1f} seconds due to rate limit")
+                    time.sleep(wait_time)
+                    
+                    # Check again after waiting
+                    allowed, wait_time, reason = check_rate_limit(user_id, campaign_id)
+                    if not allowed:
+                        print(f"❌ Still rate limited after waiting: {reason}")
+                        continue
+            
             # Select random subject and sender
             subject = random.choice(subjects) if subjects else "Default Subject"
             sender = random.choice(froms) if froms else "Default Sender"
@@ -2014,221 +2991,108 @@ def send_campaign_emails(campaign, account):
                 ],
             }
 
-            success = False
-            attempt = 0
-            max_attempts = 3
+            # Add missing headers from your working curl
+            enhanced_headers = account['headers'].copy()
+            enhanced_headers.update({
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
+                'Accept': 'application/json',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate, br, zstd',
+                'Referer': 'https://crm.zoho.com/',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Origin': 'https://crm.zoho.com',
+                'Connection': 'keep-alive',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
+                'Priority': 'u=0',
+                'TE': 'trailers'
+            })
 
-            while not success and attempt < max_attempts:
-                try:
-                    attempt += 1
-                    print(f"📤 Sending email {i+1}/{total_emails} to: {email} (Attempt {attempt}/{max_attempts})")
-                    print(f"   Subject: {subject}")
-                    print(f"   Sender: {sender}")
-                    print(f"   🔍 IMPROVED delivery tracking enabled")
-                    
-                    # Add missing headers from your working curl
-                    enhanced_headers = account['headers'].copy()
-                    enhanced_headers.update({
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-                        'Accept': 'application/json',
-                        'Accept-Language': 'en-US,en;q=0.5',
-                        'Accept-Encoding': 'gzip, deflate, br, zstd',
-                        'Referer': 'https://crm.zoho.com/',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Origin': 'https://crm.zoho.com',
-                        'Connection': 'keep-alive',
-                        'Sec-Fetch-Dest': 'empty',
-                        'Sec-Fetch-Mode': 'cors',
-                        'Sec-Fetch-Site': 'same-origin',
-                        'Priority': 'u=0',
-                        'TE': 'trailers'
-                    })
-                    
-                    # Make API request with enhanced headers
-                    response = requests.post(
-                        url,
-                        json=json_data,
-                        cookies=account['cookies'],
-                        headers=enhanced_headers,
-                        timeout=20
-                    )
+            # Use smart retry mechanism with exponential backoff
+            print(f"🚀 Using SMART RETRY system with exponential backoff for {email}")
+            retry_result = smart_retry_with_exponential_backoff(
+                campaign_id, email, subject, sender, account, json_data, enhanced_headers
+            )
 
-                    # Parse response for better feedback
-                    try:
-                        result = response.json()
-                        message = result.get("message", "")
-                        code = result.get("code", "")
-                    except json.JSONDecodeError as e:
-                        print(f"🔍 JSON Parse Error: {e}")
-                        message = ""
-                        code = ""
-                        result = {}
-
-                    if response.status_code == 200:
-                        sent_count += 1
-                        
-                        # Check for REAL delivery status (simplified version)
-                        print(f"🔍 Checking delivery status for {email}...")
-                        delivery_status = check_email_delivery_status(email, campaign_id, account)
-                        
-                        if delivery_status['status'] == 'delivered':
-                            delivered_count += 1
-                            success_msg = f"✅ Email DELIVERED successfully to {email}"
-                            print(f"✅ {success_msg}")
-                            log_email(email, subject, sender, "DELIVERED", campaign_id, delivery_status.get('details', ''))
-                            # Add to delivered list
-                            add_delivered_email(email, campaign_id, subject, sender, delivery_status.get('details', ''))
-                        elif delivery_status['status'] == 'bounced':
-                            bounced_count += 1
-                            bounce_msg = f"📧 Email BOUNCED for {email}"
-                            print(f"📧 {bounce_msg}")
-                            log_email(email, subject, sender, "BOUNCED", campaign_id, delivery_status.get('details', ''))
-                            # Add to bounce list
-                            add_bounce_email(email, campaign_id, delivery_status.get('bounce_reason', 'Unknown bounce'), subject, sender)
-                        else:
-                            # Unknown status - treat as delivered for now
-                            delivered_count += 1
-                            unknown_msg = f"❓ Email status UNKNOWN for {email} (treating as delivered)"
-                            print(f"❓ {unknown_msg}")
-                            log_email(email, subject, sender, "UNKNOWN", campaign_id, delivery_status.get('details', ''))
-                            # Add to delivered list
-                            add_delivered_email(email, campaign_id, subject, sender, delivery_status.get('details', ''))
-                        
-                        success_log = {
-                            'campaign_id': campaign_id,
-                            'timestamp': datetime.now().isoformat(),
-                            'status': delivery_status['status'],
-                            'message': success_msg if delivery_status['status'] == 'delivered' else bounce_msg if delivery_status['status'] == 'bounced' else unknown_msg,
-                            'email': email,
-                            'subject': subject,
-                            'sender': sender,
-                            'type': 'delivery_status',
-                            'attempt': attempt,
-                            'delivery_details': delivery_status
-                        }
-                        add_campaign_log(campaign_id, success_log)
-                        socketio.emit('email_progress', success_log)
-                        success = True
-                        
-                    else:
-                        error_count += 1
-                        error_msg = f"❌ FAILED ({response.status_code}) to {email} | Message: {message} | Code: {code}"
-                        print(error_msg)
-                        print(f"🔍 Full response: {response.text}")
-                        
-                        error_log = {
-                            'campaign_id': campaign_id,
-                            'timestamp': datetime.now().isoformat(),
-                            'status': 'error',
-                            'message': error_msg,
-                            'email': email,
-                            'subject': subject,
-                            'sender': sender,
-                            'type': 'error',
-                            'attempt': attempt,
-                            'response_code': response.status_code,
-                            'api_code': code
-                        }
-                        add_campaign_log(campaign_id, error_log)
-                        socketio.emit('email_progress', error_log)
-                        log_email(email, subject, sender, f"FAILED ({code})", campaign_id, message)
-                        
-                        if attempt < max_attempts:
-                            print(f"🔄 Retrying in 3 seconds... (Attempt {attempt + 1}/{max_attempts})")
-                            time.sleep(3)
-
-                except requests.exceptions.Timeout:
-                    error_count += 1
-                    timeout_msg = f"⏰ Timeout sending email to {email} (Attempt {attempt}/{max_attempts})"
-                    print(timeout_msg)
-                    
-                    timeout_log = {
-                        'campaign_id': campaign_id,
-                        'timestamp': datetime.now().isoformat(),
-                        'status': 'error',
-                        'message': timeout_msg,
-                        'email': email,
-                        'subject': subject,
-                        'sender': sender,
-                        'type': 'timeout',
-                        'attempt': attempt
-                    }
-                    add_campaign_log(campaign_id, timeout_log)
-                    socketio.emit('email_progress', timeout_log)
-                    log_email(email, subject, sender, "TIMEOUT", campaign_id)
-                    
-                    if attempt < max_attempts:
-                        print(f"🔄 Retrying in 3 seconds... (Attempt {attempt + 1}/{max_attempts})")
-                        time.sleep(3)
-                        
-                except requests.exceptions.RequestException as e:
-                    error_count += 1
-                    error_msg = f"❌ Network error sending email to {email} (Attempt {attempt}/{max_attempts}): {str(e)}"
-                    print(error_msg)
-                    
-                    network_error_log = {
-                        'campaign_id': campaign_id,
-                        'timestamp': datetime.now().isoformat(),
-                        'status': 'error',
-                        'message': error_msg,
-                        'email': email,
-                        'subject': subject,
-                        'sender': sender,
-                        'type': 'network_error',
-                        'attempt': attempt,
-                        'exception': str(e)
-                    }
-                    add_campaign_log(campaign_id, network_error_log)
-                    socketio.emit('email_progress', network_error_log)
-                    log_email(email, subject, sender, f"NETWORK_ERROR: {str(e)}", campaign_id)
-                    
-                    if attempt < max_attempts:
-                        print(f"🔄 Retrying in 3 seconds... (Attempt {attempt + 1}/{max_attempts})")
-                        time.sleep(3)
-                        
-                except Exception as e:
-                    error_count += 1
-                    error_msg = f"⚠️ Exception sending email to {email} (Attempt {attempt}/{max_attempts}): {str(e)}"
-                    print(error_msg)
-                    
-                    exception_log = {
-                        'campaign_id': campaign_id,
-                        'timestamp': datetime.now().isoformat(),
-                        'status': 'error',
-                        'message': error_msg,
-                        'email': email,
-                        'subject': subject,
-                        'sender': sender,
-                        'type': 'exception',
-                        'attempt': attempt,
-                        'exception': str(e)
-                    }
-                    add_campaign_log(campaign_id, exception_log)
-                    socketio.emit('email_progress', exception_log)
-                    log_email(email, subject, sender, f"EXCEPTION: {str(e)}", campaign_id)
-                    
-                    if attempt < max_attempts:
-                        print(f"🔄 Retrying in 3 seconds... (Attempt {attempt + 1}/{max_attempts})")
-                        time.sleep(3)
-            
-            # If all attempts failed, increment error count
-            if not success:
-                error_count += 1
-            
-            # Update campaign progress with detailed stats
-            with open(CAMPAIGNS_FILE, 'r') as f:
-                campaigns = json.load(f)
-            
-            campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-            if campaign:
-                campaign['total_sent'] = sent_count
-                campaign['total_attempted'] = i + 1
-                campaign['delivered_count'] = delivered_count
-                campaign['bounced_count'] = bounced_count
-                campaign['error_count'] = error_count
+            if retry_result['success']:
+                sent_count += 1
                 
-                with open(CAMPAIGNS_FILE, 'w') as f:
-                    json.dump(campaigns, f, indent=2)
+                # Check for REAL delivery status
+                print(f"🔍 Checking delivery status for {email}...")
+                delivery_status = check_email_delivery_status(email, campaign_id, account)
+                
+                if delivery_status['status'] == 'delivered':
+                    delivered_count += 1
+                    success_msg = f"✅ Email DELIVERED successfully to {email}"
+                    print(f"✅ {success_msg}")
+                    log_email(email, subject, sender, "DELIVERED", campaign_id, delivery_status.get('details', ''))
+                    add_delivered_email(email, campaign_id, subject, sender, delivery_status.get('details', ''))
+                elif delivery_status['status'] == 'bounced':
+                    bounced_count += 1
+                    bounce_msg = f"📧 Email BOUNCED for {email}"
+                    print(f"📧 {bounce_msg}")
+                    log_email(email, subject, sender, "BOUNCED", campaign_id, delivery_status.get('details', ''))
+                    add_bounce_email(email, campaign_id, delivery_status.get('bounce_reason', 'Unknown bounce'), subject, sender)
+                else:
+                    delivered_count += 1
+                    unknown_msg = f"❓ Email status UNKNOWN for {email} (treating as delivered)"
+                    print(f"❓ {unknown_msg}")
+                    log_email(email, subject, sender, "UNKNOWN", campaign_id, delivery_status.get('details', ''))
+                    add_delivered_email(email, campaign_id, subject, sender, delivery_status.get('details', ''))
+                
+                success_log = {
+                    'campaign_id': campaign_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'status': delivery_status['status'],
+                    'message': success_msg if delivery_status['status'] == 'delivered' else bounce_msg if delivery_status['status'] == 'bounced' else unknown_msg,
+                    'email': email,
+                    'subject': subject,
+                    'sender': sender,
+                    'type': 'delivery_status',
+                    'attempts': retry_result['attempts'],
+                    'delivery_details': delivery_status
+                }
+                add_campaign_log(campaign_id, success_log)
+                socketio.emit('email_progress', success_log)
+                
+                # Update rate limit counters after successful email sending
+                user_id = campaign.get('created_by', 'unknown')
+                update_rate_limit_counters(user_id)
+                
+            else:
+                error_count += 1
+                error_msg = f"❌ FAILED: {retry_result['message']} to {email}"
+                print(error_msg)
+                
+                error_log = {
+                    'campaign_id': campaign_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'status': 'error',
+                    'message': error_msg,
+                    'email': email,
+                    'subject': subject,
+                    'sender': sender,
+                    'type': 'smart_retry_failure',
+                    'attempts': retry_result['attempts'],
+                    'failure_status': retry_result['status']
+                }
+                add_campaign_log(campaign_id, error_log)
+                socketio.emit('email_progress', error_log)
+                log_email(email, subject, sender, f"SMART_RETRY_FAILED: {retry_result['status']}", campaign_id, retry_result['message'])
+                
+                # If it's a final rate limit failure, we might want to pause the campaign
+                if retry_result['status'] == 'rate_limit_final_failure':
+                    print(f"🚨 Campaign {campaign_id} paused due to persistent rate limit failures")
+                    add_notification(
+                        f"🚨 Campaign '{campaign['name']}' paused due to persistent Zoho rate limit failures. Manual intervention required.",
+                        'error',
+                        campaign_id
+                    )
+                    # Remove from running campaigns to pause it
+                    if campaign_id in running_campaigns:
+                        running_campaigns.remove(campaign_id)
+                    break
             
             # Pause between emails with random delay
             time.sleep(random.uniform(1, 2))
@@ -2314,6 +3178,21 @@ def send_campaign_emails(campaign, account):
             add_notification(f"Campaign '{campaign['name']}' completed with minor issues. {delivered_count}/{total_emails} emails delivered ({delivery_rate}% delivery rate).", 'warning', campaign_id)
         else:
             add_notification(f"Campaign '{campaign['name']}' completed with delivery issues. {delivered_count}/{total_emails} emails delivered ({delivery_rate}% delivery rate).", 'error', campaign_id)
+        
+        # Update campaign progress with detailed stats
+        with open(CAMPAIGNS_FILE, 'r') as f:
+            campaigns = json.load(f)
+        
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        if campaign:
+            campaign['total_sent'] = sent_count
+            campaign['total_attempted'] = i + 1
+            campaign['delivered_count'] = delivered_count
+            campaign['bounced_count'] = bounced_count
+            campaign['error_count'] = error_count
+            
+            with open(CAMPAIGNS_FILE, 'w') as f:
+                json.dump(campaigns, f, indent=2)
         
     except Exception as e:
         error_msg = f"❌ Campaign error: {str(e)}"
@@ -2447,13 +3326,636 @@ def utility_processor():
     except:
         notifications_count = 0
     
+    def is_admin():
+        return current_user.is_authenticated and current_user.role == 'admin'
+    
     return {
         'get_status_badge_class': get_status_badge_class,
         'get_notification_badge_class': get_notification_badge_class,
         'get_notification_icon': get_notification_icon,
         'format_timestamp': format_timestamp,
-        'notifications_count': notifications_count
+        'notifications_count': notifications_count,
+        'is_admin': is_admin
     }
+
+# User Management Functions
+def admin_required(f):
+    """Decorator to require admin role"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('login'))
+        if current_user.role != 'admin':
+            flash('Access denied. Admin privileges required.', 'error')
+            return redirect(url_for('dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def user_management_required(f):
+    """Decorator to require user management permissions"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('login'))
+        if current_user.role not in ['admin']:
+            flash('Access denied. User management privileges required.', 'error')
+            return redirect(url_for('dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/users')
+@login_required
+@admin_required
+def users():
+    """User management page"""
+    try:
+        with open(USERS_FILE, 'r') as f:
+            users = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        users = []
+    return render_template('users.html', users=users)
+
+@app.route('/api/users', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def api_users():
+    """User management API"""
+    if request.method == 'GET':
+        try:
+            with open(USERS_FILE, 'r') as f:
+                users = json.load(f)
+            if not isinstance(users, list):
+                users = []
+        except (FileNotFoundError, json.JSONDecodeError):
+            users = []
+        return jsonify(users)
+    
+    elif request.method == 'POST':
+        try:
+            data = request.json
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Validate required fields
+            required_fields = ['username', 'password', 'email']
+            for field in required_fields:
+                if field not in data or not data[field]:
+                    return jsonify({'error': f'Missing required field: {field}'}), 400
+            
+            try:
+                with open(USERS_FILE, 'r') as f:
+                    users = json.load(f)
+                if not isinstance(users, list):
+                    users = []
+            except (FileNotFoundError, json.JSONDecodeError):
+                users = []
+            
+            # Check if username already exists
+            if any(user['username'] == data['username'] for user in users):
+                return jsonify({'error': 'Username already exists'}), 400
+            
+            new_user = {
+                'id': max([user['id'] for user in users], default=0) + 1 if users else 1,
+                'username': data['username'],
+                'password': generate_password_hash(data['password']),
+                'email': data['email'],
+                'role': data.get('role', 'user'),
+                'created_at': datetime.now().isoformat(),
+                'is_active': data.get('is_active', True),
+                'permissions': data.get('permissions', [])
+            }
+            
+            users.append(new_user)
+            
+            with open(USERS_FILE, 'w') as f:
+                json.dump(users, f, indent=2)
+            
+            # Send account creation email
+            if SMTP_CONFIG['enabled']:
+                send_account_created_email(data['email'], data['username'], data.get('role', 'user'))
+            
+            add_notification(f"User '{data['username']}' created successfully", 'success')
+            return jsonify(new_user)
+            
+        except Exception as e:
+            print(f"Error creating user: {str(e)}")
+            return jsonify({'error': f'Internal server error: {str(e)}'}), 500
+
+@app.route('/api/users/<int:user_id>', methods=['GET', 'PUT', 'DELETE'])
+@login_required
+@admin_required
+def api_user(user_id):
+    """Individual user management API"""
+    try:
+        with open(USERS_FILE, 'r') as f:
+            users = json.load(f)
+        if not isinstance(users, list):
+            users = []
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error loading users file: {e}")
+        users = []
+    
+    user = next((u for u in users if u['id'] == user_id), None)
+    print(f"Looking for user ID {user_id}, found: {user is not None}")
+    
+    if request.method == 'GET':
+        if user:
+            print(f"Returning user data: {user}")
+            return jsonify(user)
+        else:
+            print(f"User {user_id} not found")
+            return ('', 404)
+    
+    elif request.method == 'PUT':
+        if not user:
+            return ('', 404)
+        
+        data = request.json
+        if 'password' in data and data['password']:
+            data['password'] = generate_password_hash(data['password'])
+        
+        # Update user data
+        for key, value in data.items():
+            if key in ['username', 'email', 'password', 'role', 'is_active', 'permissions']:
+                user[key] = value
+        
+        with open(USERS_FILE, 'w') as f:
+            json.dump(users, f)
+        
+        add_notification(f"User '{user['username']}' updated successfully", 'success')
+        return jsonify(user)
+    
+    elif request.method == 'DELETE':
+        if not user:
+            return ('', 404)
+        
+        # Prevent deleting the last admin
+        if user['role'] == 'admin':
+            admin_count = sum(1 for u in users if u['role'] == 'admin')
+            if admin_count <= 1:
+                return jsonify({'error': 'Cannot delete the last admin user'}), 400
+        
+        users.remove(user)
+        with open(USERS_FILE, 'w') as f:
+            json.dump(users, f)
+        
+        add_notification(f"User '{user['username']}' deleted successfully", 'warning')
+        return ('', 204)
+
+@app.route('/profile')
+@login_required
+def profile():
+    """User profile page"""
+    return render_template('profile.html')
+
+@app.route('/api/profile', methods=['GET', 'PUT'])
+@login_required
+def api_profile():
+    """Profile management API"""
+    if request.method == 'GET':
+        return jsonify({
+            'id': current_user.id,
+            'username': current_user.username,
+            'email': current_user.email,
+            'role': current_user.role,
+            'created_at': current_user.created_at,
+            'is_active': current_user.is_active
+        })
+    
+    elif request.method == 'PUT':
+        try:
+            data = request.json
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Validate required fields
+            required_fields = ['username', 'email']
+            for field in required_fields:
+                if field not in data or not data[field]:
+                    return jsonify({'error': f'Missing required field: {field}'}), 400
+            
+            try:
+                with open(USERS_FILE, 'r') as f:
+                    users = json.load(f)
+                if not isinstance(users, list):
+                    users = []
+            except (FileNotFoundError, json.JSONDecodeError):
+                return jsonify({'error': 'Error loading user data'}), 500
+            
+            # Find current user
+            user = next((u for u in users if u['id'] == current_user.id), None)
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Update fields
+            user['username'] = data['username']
+            user['email'] = data['email']
+            
+            # Update password if provided
+            if 'password' in data and data['password']:
+                user['password'] = generate_password_hash(data['password'])
+            
+            user['updated_at'] = datetime.now().isoformat()
+            
+            with open(USERS_FILE, 'w') as f:
+                json.dump(users, f, indent=2)
+            
+            add_notification("Profile updated successfully", 'success')
+            return jsonify({'message': 'Profile updated successfully'})
+            
+        except Exception as e:
+            return jsonify({'error': f'Error updating profile: {str(e)}'}), 500
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    """Forgot password page"""
+    if request.method == 'GET':
+        return render_template('forgot_password.html')
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email', '').strip()
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        try:
+            with open(USERS_FILE, 'r') as f:
+                users = json.load(f)
+            if not isinstance(users, list):
+                users = []
+        except (FileNotFoundError, json.JSONDecodeError):
+            return jsonify({'error': 'Error loading user data'}), 500
+        
+        # Find user by email
+        user = next((u for u in users if u.get('email') == email), None)
+        if not user:
+            # Don't reveal if email exists or not for security
+            return jsonify({'message': 'If the email exists, a password reset link has been sent'})
+        
+        # Generate reset token
+        reset_token = str(uuid.uuid4())
+        expires_at = datetime.now() + timedelta(hours=1)
+        
+        # Save token
+        save_password_reset_token(email, reset_token, expires_at)
+        
+        # Send email
+        send_password_reset_email(email, user['username'], reset_token)
+        
+        return jsonify({'message': 'If the email exists, a password reset link has been sent'})
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    """Reset password page"""
+    if request.method == 'GET':
+        return render_template('reset_password.html', token=token)
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_password = data.get('password', '').strip()
+        
+        if not new_password or len(new_password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters long'}), 400
+        
+        try:
+            with open(USERS_FILE, 'r') as f:
+                users = json.load(f)
+            if not isinstance(users, list):
+                users = []
+        except (FileNotFoundError, json.JSONDecodeError):
+            return jsonify({'error': 'Error loading user data'}), 500
+        
+        # Find user by token
+        user_email = None
+        for email, token_data in get_password_reset_tokens().items():
+            if token_data['token'] == token:
+                user_email = email
+                break
+        
+        if not user_email:
+            return jsonify({'error': 'Invalid or expired reset token'}), 400
+        
+        # Find user
+        user = next((u for u in users if u.get('email') == user_email), None)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Update password
+        user['password'] = generate_password_hash(new_password)
+        user['updated_at'] = datetime.now().isoformat()
+        
+        with open(USERS_FILE, 'w') as f:
+            json.dump(users, f, indent=2)
+        
+        # Delete token
+        delete_password_reset_token(user_email)
+        
+        # Send security alert
+        send_security_alert_email(user_email, user['username'], 'Password Reset', request.remote_addr)
+        
+        add_notification("Password reset successfully", 'success')
+        return jsonify({'message': 'Password reset successfully'})
+
+def get_password_reset_tokens():
+    """Get all password reset tokens"""
+    try:
+        with open(PASSWORD_RESET_TOKENS_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+# Permissions system
+PERMISSIONS = {
+    'add_account': 'Add Zoho Accounts',
+    'manage_accounts': 'Manage All Accounts', 
+    'manage_data': 'Manage Data Lists',
+    'view_all_campaigns': 'View All Campaigns',
+    'manage_all_campaigns': 'Manage All Campaigns',
+    'manage_users': 'Manage Users',
+    'view_reports': 'View Reports'
+}
+
+def has_permission(user, permission):
+    """Check if user has specific permission"""
+    if not user or not user.is_authenticated:
+        return False
+    
+    # Admin has all permissions
+    if user.role == 'admin':
+        return True
+    
+    # Check user-specific permissions
+    user_permissions = getattr(user, 'permissions', [])
+    return permission in user_permissions
+
+def get_user_accounts(user):
+    """Get accounts that user can access"""
+    try:
+        with open(ACCOUNTS_FILE, 'r') as f:
+            accounts = json.load(f)
+        if not isinstance(accounts, list):
+            accounts = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        accounts = []
+    
+    # Admin can see all accounts
+    if user.role == 'admin' or has_permission(user, 'manage_accounts'):
+        return accounts
+    
+    # Regular users can only see their own accounts
+    return [acc for acc in accounts if acc.get('created_by') == user.id]
+
+def get_user_campaigns(user):
+    """Get campaigns that user can access"""
+    try:
+        with open(CAMPAIGNS_FILE, 'r') as f:
+            campaigns = json.load(f)
+        if not isinstance(campaigns, list):
+            campaigns = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        campaigns = []
+    
+    # Admin can see all campaigns
+    if user.role == 'admin' or has_permission(user, 'view_all_campaigns'):
+        return campaigns
+    
+    # Regular users can only see their own campaigns
+    return [camp for camp in campaigns if camp.get('created_by') == user.id]
+
+# Password reset tokens storage
+PASSWORD_RESET_TOKENS_FILE = 'password_reset_tokens.json'
+
+def save_password_reset_token(email, token, expires_at):
+    """Save password reset token"""
+    try:
+        with open(PASSWORD_RESET_TOKENS_FILE, 'r') as f:
+            tokens = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        tokens = {}
+    
+    tokens[email] = {
+        'token': token,
+        'expires_at': expires_at.isoformat()
+    }
+    
+    with open(PASSWORD_RESET_TOKENS_FILE, 'w') as f:
+        json.dump(tokens, f, indent=2)
+
+def get_password_reset_token(email):
+    """Get password reset token for email"""
+    try:
+        with open(PASSWORD_RESET_TOKENS_FILE, 'r') as f:
+            tokens = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    
+    if email in tokens:
+        token_data = tokens[email]
+        expires_at = datetime.fromisoformat(token_data['expires_at'])
+        
+        if expires_at > datetime.now():
+            return token_data['token']
+        else:
+            # Token expired, remove it
+            del tokens[email]
+            with open(PASSWORD_RESET_TOKENS_FILE, 'w') as f:
+                json.dump(tokens, f, indent=2)
+    
+    return None
+
+def delete_password_reset_token(email):
+    """Delete password reset token"""
+    try:
+        with open(PASSWORD_RESET_TOKENS_FILE, 'r') as f:
+            tokens = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return
+    
+    if email in tokens:
+        del tokens[email]
+        with open(PASSWORD_RESET_TOKENS_FILE, 'w') as f:
+            json.dump(tokens, f, indent=2)
+
+@app.route('/smtp-config')
+@login_required
+@admin_required
+def smtp_config():
+    """SMTP configuration management page"""
+    return render_template('smtp_config.html')
+
+@app.route('/system-settings')
+@login_required
+@admin_required
+def system_settings():
+    """System settings management page"""
+    return render_template('system_settings.html')
+
+@app.route('/backup-restore')
+@login_required
+@admin_required
+def backup_restore():
+    """Backup and restore management page"""
+    return render_template('backup_restore.html')
+
+@app.route('/api/smtp-config', methods=['GET', 'PUT'])
+@login_required
+@admin_required
+def api_smtp_config():
+    """SMTP configuration API"""
+    global SMTP_CONFIG
+    
+    if request.method == 'GET':
+        return jsonify(SMTP_CONFIG)
+    
+    elif request.method == 'PUT':
+        try:
+            data = request.json
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Update SMTP config
+            SMTP_CONFIG.update(data)
+            
+            # Save to file
+            with open(SMTP_CONFIG_FILE, 'w') as f:
+                json.dump(SMTP_CONFIG, f, indent=2)
+            
+            # Reload configuration
+            reload_smtp_config()
+            
+            add_notification("SMTP configuration updated successfully", 'success')
+            return jsonify({'message': 'SMTP configuration updated successfully'})
+            
+        except Exception as e:
+            return jsonify({'error': f'Error updating SMTP configuration: {str(e)}'}), 500
+
+@app.route('/api/smtp-test', methods=['POST'])
+@login_required
+@admin_required
+def test_smtp_config():
+    """Test SMTP configuration"""
+    try:
+        data = request.json
+        test_email = data.get('test_email', '').strip()
+        
+        if not test_email:
+            return jsonify({'error': 'Test email is required'}), 400
+        
+        # Test email configuration
+        test_subject = 'SMTP Configuration Test - Email Campaign Manager'
+        test_body = '''
+        <html>
+        <body>
+            <h2>SMTP Configuration Test</h2>
+            <p>This is a test email to verify your SMTP configuration is working correctly.</p>
+            <p>If you received this email, your SMTP settings are properly configured.</p>
+            <p>Best regards,<br>Email Campaign Manager</p>
+        </body>
+        </html>
+        '''
+        
+        success = send_email(test_email, test_subject, test_body)
+        
+        if success:
+            return jsonify({'message': 'Test email sent successfully'})
+        else:
+            return jsonify({'error': 'Failed to send test email. Check your SMTP configuration.'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': f'Error testing SMTP configuration: {str(e)}'}), 500
+
+@app.route('/rate-limits')
+@login_required
+def rate_limits():
+    """Rate limiting configuration page"""
+    return render_template('rate_limits.html')
+
+@app.route('/api/rate-limits', methods=['GET', 'PUT'])
+@login_required
+def api_rate_limits():
+    """Rate limiting configuration API"""
+    if request.method == 'GET':
+        config = load_rate_limit_config()
+        stats = get_rate_limit_stats(current_user.id)
+        return jsonify({
+            'config': config,
+            'stats': stats
+        })
+    
+    elif request.method == 'PUT':
+        try:
+            data = request.json
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            # Validate data
+            required_fields = ['enabled', 'emails_per_second', 'emails_per_minute', 'emails_per_hour', 
+                             'emails_per_day', 'wait_time_between_emails', 'burst_limit', 'cooldown_period']
+            
+            for field in required_fields:
+                if field not in data:
+                    return jsonify({'error': f'Missing required field: {field}'}), 400
+            
+            # Validate numeric values
+            numeric_fields = ['emails_per_second', 'emails_per_minute', 'emails_per_hour', 'emails_per_day',
+                            'wait_time_between_emails', 'burst_limit', 'cooldown_period']
+            
+            for field in numeric_fields:
+                if not isinstance(data[field], (int, float)) or data[field] < 0:
+                    return jsonify({'error': f'Invalid value for {field}: must be a positive number'}), 400
+            
+            # Update configuration
+            config = load_rate_limit_config()
+            config.update(data)
+            
+            # Set quotas based on per-time settings
+            config['daily_quota'] = data['emails_per_day']
+            config['hourly_quota'] = data['emails_per_hour']
+            config['minute_quota'] = data['emails_per_minute']
+            config['second_quota'] = data['emails_per_second']
+            
+            save_rate_limit_config(config)
+            
+            add_notification("Rate limiting configuration updated successfully", 'success')
+            return jsonify({'message': 'Rate limiting configuration updated successfully'})
+            
+        except Exception as e:
+            return jsonify({'error': f'Error updating rate limiting configuration: {str(e)}'}), 500
+
+@app.route('/api/rate-limits/reset', methods=['POST'])
+@login_required
+@admin_required
+def reset_rate_limits():
+    """Reset rate limiting data for all users"""
+    try:
+        global rate_limit_data
+        rate_limit_data = {
+            'daily_sent': {},
+            'hourly_sent': {},
+            'minute_sent': {},
+            'second_sent': {},
+            'last_send_time': {},
+            'burst_count': {},
+            'cooldown_until': {}
+        }
+        
+        add_notification("Rate limiting data reset successfully", 'success')
+        return jsonify({'message': 'Rate limiting data reset successfully'})
+        
+    except Exception as e:
+        return jsonify({'error': f'Error resetting rate limiting data: {str(e)}'}), 500
+
+@app.route('/api/rate-limits/stats')
+@login_required
+def get_rate_limit_stats_api():
+    """Get rate limiting statistics for current user"""
+    try:
+        stats = get_rate_limit_stats(current_user.id)
+        return jsonify(stats)
+        
+    except Exception as e:
+        return jsonify({'error': f'Error getting rate limiting statistics: {str(e)}'}), 500
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True) 

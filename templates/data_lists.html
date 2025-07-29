@@ -72,6 +72,16 @@
         </div>
     </div>
 
+    <!-- Permission Notice -->
+    {% if current_user.role != 'admin' and 'manage_data' not in current_user.permissions %}
+    <div class="col-12 mb-4">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Permission Notice:</strong> You can view data list information and use lists for campaigns, but you need <code>manage_data</code> permission to view, edit, or download email addresses. Contact your administrator to request this permission.
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Action Buttons -->
     <div class="col-12 mb-4">
         <div class="card">
@@ -80,6 +90,7 @@
                     <h5 class="card-title mb-0">
                         <i class="fas fa-plus-circle me-2"></i>Add New Data List
                     </h5>
+                    {% if current_user.role == 'admin' or 'manage_data' in current_user.permissions %}
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
                             <i class="fas fa-upload me-2"></i>Upload File
@@ -88,6 +99,11 @@
                             <i class="fas fa-edit me-2"></i>Manual Entry
                         </button>
                     </div>
+                    {% else %}
+                    <div class="text-muted">
+                        <i class="fas fa-lock me-2"></i>You need permission to manage data lists
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -443,6 +459,7 @@
 <script>
 let currentDataLists = [];
 let currentViewListId = null;
+let userPermissions = {{ user_permissions | tojson | safe }};
 
 // Load data lists on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -454,6 +471,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('ispFilter').addEventListener('change', filterDataLists);
     document.getElementById('searchFilter').addEventListener('input', filterDataLists);
 });
+
+function hasPermission(permission) {
+    return userPermissions.includes(permission);
+}
 
 function loadDataLists() {
     fetch('/api/data-lists')
@@ -497,18 +518,24 @@ function displayDataLists(dataLists) {
             <td>${formatDate(list.created_at)}</td>
             <td>
                 <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-outline-primary" onclick="viewDataList(${list.id})" title="View">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-outline-info" onclick="editDataList(${list.id})" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-outline-success" onclick="downloadDataList(${list.id})" title="Download">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button class="btn btn-outline-danger" onclick="deleteDataList(${list.id})" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${hasPermission('manage_data') ? `
+                        <button class="btn btn-outline-primary" onclick="viewDataList(${list.id})" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-info" onclick="editDataList(${list.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-success" onclick="downloadDataList(${list.id})" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteDataList(${list.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : `
+                        <span class="text-muted small">
+                            <i class="fas fa-lock me-1"></i>No access
+                        </span>
+                    `}
                 </div>
             </td>
         `;
@@ -657,9 +684,36 @@ function viewDataList(listId) {
     currentViewListId = listId;
     
     fetch(`/api/data-lists/${listId}?include_emails=true`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    // Permission denied - show data list info without emails
+                    return response.json().then(data => {
+                        document.getElementById('viewListName').textContent = data.name;
+                        document.getElementById('viewListCount').textContent = data.email_count;
+                        document.getElementById('viewListGeography').textContent = data.geography || 'Unknown';
+                        document.getElementById('viewListIsp').textContent = data.isp || 'Unknown';
+                        document.getElementById('viewListDescription').textContent = data.description || 'No description';
+                        
+                        const emailsContainer = document.getElementById('viewListEmails');
+                        emailsContainer.innerHTML = `
+                            <div class="alert alert-warning">
+                                <i class="fas fa-lock me-2"></i>
+                                <strong>Access Restricted:</strong> You need <code>manage_data</code> permission to view email addresses.
+                                <br><small class="text-muted">Contact your administrator to request this permission.</small>
+                            </div>
+                        `;
+                        
+                        new bootstrap.Modal(document.getElementById('viewListModal')).show();
+                    });
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.error) {
+            if (data.error && !data.id) {
                 throw new Error(data.error);
             }
             

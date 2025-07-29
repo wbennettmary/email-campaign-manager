@@ -116,5 +116,387 @@
       "delivery_rate": 100.0,
       "bounce_rate": 0.0
     }
+  ],
+  "2": [
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:35:48.205827",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'albert' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:35:49.443285",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-28T19:35:49.430299",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:35:51.992387",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-28T19:35:51.984416",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:35:54.627248",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-28T19:35:54.615770",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:35:57.512455",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-28T19:35:57.502679",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:35:59.582132",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-28T19:35:59.554207",
+        "details": "Email delivered successfully (pattern-based detection)",
+        "source": "pattern_detection",
+        "note": "Zoho detector not available, using pattern detection"
+      }
+    },
+    {
+      "campaign_id": 2,
+      "timestamp": "2025-07-28T19:36:01.322886",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
+      "type": "completion",
+      "total_sent": 5,
+      "total_attempted": 5,
+      "delivered_count": 5,
+      "bounced_count": 0,
+      "error_count": 0,
+      "delivery_rate": 100.0,
+      "bounce_rate": 0.0
+    }
+  ],
+  "3": [
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:23:30.865078",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'ml' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:23:35.928959",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T00:23:35.898096",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:23:42.761786",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T00:23:42.748849",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:23:49.405246",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T00:23:49.394277",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:23:56.364651",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T00:23:56.312791",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:24:03.196860",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "type": "delivery_status",
+      "attempt": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T00:24:03.113078",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 3,
+      "timestamp": "2025-07-29T00:24:04.734322",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
+      "type": "completion",
+      "total_sent": 5,
+      "total_attempted": 5,
+      "delivered_count": 5,
+      "bounced_count": 0,
+      "error_count": 0,
+      "delivery_rate": 100.0,
+      "bounce_rate": 0.0
+    }
+  ],
+  "4": [
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:12.061265",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'ww' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:17.217013",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "Send notifications to keep users informed",
+      "sender": "Adds",
+      "type": "delivery_status",
+      "attempts": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T14:01:17.207040",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:19.106269",
+      "status": "warning",
+      "message": "\u23f3 Rate limit: Wait 2.1 seconds between emails",
+      "type": "rate_limit"
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:26.248710",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "Send notifications to keep users informed",
+      "sender": "campaign",
+      "type": "delivery_status",
+      "attempts": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T14:01:26.209289",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:28.191920",
+      "status": "warning",
+      "message": "\u23f3 Rate limit: Wait 2.1 seconds between emails",
+      "type": "rate_limit"
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:35.285542",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "Automatically detect 401 rate limit errors from Zoho",
+      "sender": "rate",
+      "type": "delivery_status",
+      "attempts": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T14:01:35.273037",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:37.243617",
+      "status": "warning",
+      "message": "\u23f3 Rate limit: Wait 2.1 seconds between emails",
+      "type": "rate_limit"
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:44.371442",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "Implement smart pauses with exponential backoff",
+      "sender": "Adds",
+      "type": "delivery_status",
+      "attempts": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T14:01:44.360531",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:46.363105",
+      "status": "warning",
+      "message": "\u23f3 Rate limit: Wait 2.0 seconds between emails",
+      "type": "rate_limit"
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:53.236416",
+      "status": "delivered",
+      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "Retry automatically up to 6 times with increasing delays",
+      "sender": "campaign",
+      "type": "delivery_status",
+      "attempts": 1,
+      "delivery_details": {
+        "status": "delivered",
+        "delivery_status": "success",
+        "timestamp": "2025-07-29T14:01:53.225445",
+        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+        "source": "fallback_detection",
+        "note": "Zoho APIs not accessible, using fallback"
+      }
+    },
+    {
+      "campaign_id": 4,
+      "timestamp": "2025-07-29T14:01:54.779946",
+      "status": "info",
+      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
+      "type": "completion",
+      "total_sent": 5,
+      "total_attempted": 5,
+      "delivered_count": 5,
+      "bounced_count": 0,
+      "error_count": 0,
+      "delivery_rate": 100.0,
+      "bounce_rate": 0.0
+    }
   ]
 }

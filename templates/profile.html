@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Email Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">My Profile</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary" onclick="saveProfile()">
+            <i class="fas fa-save me-2"></i>Save Changes
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-edit me-2"></i>Edit Profile
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">New Password (leave blank to keep current)</label>
+                        <input type="password" class="form-control" id="password">
+                        <div class="form-text">Enter a new password only if you want to change it</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Account Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <small class="text-muted">Role</small>
+                        <p class="mb-0">
+                            {% if current_user.role == 'admin' %}
+                                <span class="badge bg-danger">Admin</span>
+                            {% else %}
+                                <span class="badge bg-secondary">User</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Status</small>
+                        <p class="mb-0">
+                            {% if current_user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <small class="text-muted">Account Created</small>
+                        <p class="mb-0">{{ current_user.created_at[:10] if current_user.created_at else 'Unknown' }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <small class="text-muted">User ID</small>
+                        <p class="mb-0">{{ current_user.id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load profile data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProfile();
+});
+
+function loadProfile() {
+    fetch('/api/profile')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('username').value = data.username;
+            document.getElementById('email').value = data.email;
+            document.getElementById('password').value = '';
+            document.getElementById('confirmPassword').value = '';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading profile data');
+        });
+}
+
+function saveProfile() {
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (!username || !email) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    if (password && password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+    
+    const formData = {
+        username: username,
+        email: email
+    };
+    
+    if (password) {
+        formData.password = password;
+    }
+    
+    fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.id) {
+            alert('Profile updated successfully!');
+            // Clear password fields
+            document.getElementById('password').value = '';
+            document.getElementById('confirmPassword').value = '';
+        } else {
+            alert('Error updating profile: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating profile');
+    });
+}
+</script>
+{% endblock %} 

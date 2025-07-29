@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}SMTP Configuration - Email Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">SMTP Configuration</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-success" onclick="testSmtpConfig()">
+            <i class="fas fa-paper-plane me-2"></i>Test Configuration
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>Email Server Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="smtpConfigForm">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enabled" name="enabled">
+                            <label class="form-check-label" for="enabled">
+                                <strong>Enable Email Notifications</strong>
+                            </label>
+                        </div>
+                        <div class="form-text">Enable this to send password reset and security alert emails.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="server" class="form-label">SMTP Server</label>
+                                <input type="text" class="form-control" id="server" name="server" placeholder="smtp.gmail.com">
+                                <div class="form-text">Common servers: smtp.gmail.com, smtp.outlook.com, smtp.yahoo.com</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="port" class="form-label">Port</label>
+                                <input type="number" class="form-control" id="port" name="port" placeholder="587">
+                                <div class="form-text">Common ports: 587 (TLS), 465 (SSL), 25 (unencrypted)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username/Email</label>
+                                <input type="email" class="form-control" id="username" name="username" placeholder="your-email@gmail.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password/App Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="your-app-password">
+                                <div class="form-text">For Gmail, use an App Password instead of your regular password.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="from_email" class="form-label">From Email</label>
+                                <input type="email" class="form-control" id="from_email" name="from_email" placeholder="your-email@gmail.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="from_name" class="form-label">From Name</label>
+                                <input type="text" class="form-control" id="from_name" name="from_name" placeholder="Email Campaign Manager">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="use_tls" name="use_tls">
+                            <label class="form-check-label" for="use_tls">
+                                Use TLS/SSL
+                            </label>
+                        </div>
+                        <div class="form-text">Enable for secure connections (recommended).</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Setup Instructions
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Gmail Setup:</h6>
+                <ol class="small">
+                    <li>Enable 2-Factor Authentication on your Google account</li>
+                    <li>Generate an App Password:
+                        <ul>
+                            <li>Go to Google Account settings</li>
+                            <li>Security → 2-Step Verification → App passwords</li>
+                            <li>Generate password for "Mail"</li>
+                        </ul>
+                    </li>
+                    <li>Use the App Password in the password field</li>
+                </ol>
+                
+                <h6>Outlook/Hotmail Setup:</h6>
+                <ol class="small">
+                    <li>Enable 2-Factor Authentication</li>
+                    <li>Generate an App Password</li>
+                    <li>Use the App Password in the password field</li>
+                </ol>
+                
+                <h6>Other Providers:</h6>
+                <ul class="small">
+                    <li>Check your email provider's SMTP settings</li>
+                    <li>Some providers require specific security settings</li>
+                    <li>Contact your provider if you have issues</li>
+                </ul>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Tip:</strong> Test your configuration after saving to ensure emails will be sent correctly.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Test Email Modal -->
+<div class="modal fade" id="testEmailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-paper-plane me-2"></i>Test SMTP Configuration
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Enter an email address to send a test email and verify your SMTP configuration.</p>
+                <div class="mb-3">
+                    <label for="testEmail" class="form-label">Test Email Address</label>
+                    <input type="email" class="form-control" id="testEmail" placeholder="test@example.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="sendTestEmail()">
+                    <i class="fas fa-paper-plane me-2"></i>Send Test Email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load current configuration on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadSmtpConfig();
+});
+
+function loadSmtpConfig() {
+    fetch('/api/smtp-config')
+        .then(response => response.json())
+        .then(config => {
+            document.getElementById('enabled').checked = config.enabled;
+            document.getElementById('server').value = config.server || '';
+            document.getElementById('port').value = config.port || '';
+            document.getElementById('username').value = config.username || '';
+            document.getElementById('password').value = config.password || '';
+            document.getElementById('from_email').value = config.from_email || '';
+            document.getElementById('from_name').value = config.from_name || '';
+            document.getElementById('use_tls').checked = config.use_tls;
+        })
+        .catch(error => {
+            console.error('Error loading SMTP config:', error);
+            showNotification('Error loading SMTP configuration', 'error');
+        });
+}
+
+document.getElementById('smtpConfigForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        enabled: document.getElementById('enabled').checked,
+        server: document.getElementById('server').value,
+        port: parseInt(document.getElementById('port').value) || 587,
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        from_email: document.getElementById('from_email').value,
+        from_name: document.getElementById('from_name').value,
+        use_tls: document.getElementById('use_tls').checked
+    };
+    
+    fetch('/api/smtp-config', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.error || 'Error saving configuration', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error saving SMTP configuration', 'error');
+    });
+});
+
+function testSmtpConfig() {
+    const modal = new bootstrap.Modal(document.getElementById('testEmailModal'));
+    modal.show();
+}
+
+function sendTestEmail() {
+    const testEmail = document.getElementById('testEmail').value.trim();
+    
+    if (!testEmail) {
+        showNotification('Please enter a test email address', 'error');
+        return;
+    }
+    
+    const sendBtn = document.querySelector('#testEmailModal .btn-success');
+    const originalText = sendBtn.innerHTML;
+    
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+    
+    fetch('/api/smtp-test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ test_email: testEmail })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showNotification(data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('testEmailModal')).hide();
+        } else {
+            showNotification(data.error || 'Error sending test email', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error sending test email', 'error');
+    })
+    .finally(() => {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = originalText;
+    });
+}
+
+function showNotification(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        const alert = container.querySelector('.alert');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

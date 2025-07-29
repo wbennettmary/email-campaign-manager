@@ -1,0 +1,10 @@
+{
+  "enabled": false,
+  "server": "smtp.gmail.com",
+  "port": 587,
+  "username": "salssapp@gmail.com",
+  "password": "yftpcwjxqmxrknvf",
+  "use_tls": true,
+  "from_email": "salssapp@gmail.com",
+  "from_name": "Email Campaign Manager"
+}

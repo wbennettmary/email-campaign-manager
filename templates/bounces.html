@@ -21,6 +21,9 @@
             <button id="downloadBtn" class="btn btn-success" disabled>
                 <i class="fas fa-download"></i> Download CSV
             </button>
+            <button id="deleteAllBtn" class="btn btn-danger" disabled>
+                <i class="fas fa-trash"></i> Delete All
+            </button>
         </div>
     </div>
 
@@ -48,11 +51,12 @@
                             <th>Sender</th>
                             <th>Bounce Type</th>
                             <th>Timestamp</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="bounceTableBody">
                         {% for entry in bounced_emails %}
-                        <tr data-campaign="{{ entry.campaign_id }}">
+                        <tr data-campaign="{{ entry.campaign_id }}" data-email="{{ entry.email }}">
                             <td>
                                 <code>{{ entry.email }}</code>
                             </td>
@@ -76,6 +80,14 @@
                             <td>
                                 <small class="text-muted">{{ entry.timestamp|format_timestamp }}</small>
                             </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger delete-bounce-btn" 
+                                        data-email="{{ entry.email }}" 
+                                        data-campaign="{{ entry.campaign_id }}"
+                                        title="Delete this bounced email">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -96,6 +108,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const campaignFilter = document.getElementById('campaignFilter');
     const downloadBtn = document.getElementById('downloadBtn');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
     const bounceTableBody = document.getElementById('bounceTableBody');
     const bounceCount = document.getElementById('bounceCount');
     
@@ -117,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         bounceCount.textContent = visibleCount;
         downloadBtn.disabled = visibleCount === 0;
+        deleteAllBtn.disabled = visibleCount === 0; // Disable delete all if no bounces
     });
     
     // Download functionality
@@ -134,10 +148,120 @@ document.addEventListener('DOMContentLoaded', function() {
         
         window.location.href = downloadUrl;
     });
+
+    // Delete All functionality
+    deleteAllBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete all bounced emails? This action cannot be undone.')) {
+            const selectedCampaign = campaignFilter.value;
+            let deleteUrl;
+
+            if (selectedCampaign) {
+                deleteUrl = `/api/delete/bounces/${selectedCampaign}`;
+            } else {
+                deleteUrl = `/api/delete/bounces/all`; // For all campaigns
+            }
+
+            fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(`Successfully deleted ${data.deleted_count || 'all'} bounced emails.`);
+                    location.reload(); // Refresh the page to show updated count
+                } else {
+                    alert('Error deleting bounced emails: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting bounced emails:', error);
+                alert('Error deleting bounced emails. Please try again.');
+            });
+        }
+    });
     
     // Enable download button if there are bounces
     if ({{ bounced_emails|length }} > 0) {
         downloadBtn.disabled = false;
+        deleteAllBtn.disabled = false; // Enable delete all if there are bounces
+    }
+    
+    // Individual delete functionality
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-bounce-btn')) {
+            const button = e.target.closest('.delete-bounce-btn');
+            const email = button.getAttribute('data-email');
+            const campaignId = button.getAttribute('data-campaign');
+            
+            if (confirm(`Are you sure you want to delete the bounced email: ${email}?`)) {
+                fetch(`/api/delete/bounce/${campaignId}/${encodeURIComponent(email)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        const row = button.closest('tr');
+                        row.remove();
+                        
+                        // Update the bounce count
+                        const currentCount = parseInt(bounceCount.textContent);
+                        bounceCount.textContent = currentCount - 1;
+                        
+                        // Check if there are any remaining bounces
+                        const remainingRows = bounceTableBody.querySelectorAll('tr');
+                        if (remainingRows.length === 0) {
+                            location.reload(); // Reload to show the "no bounces" message
+                        }
+                        
+                        // Show success message
+                        showNotification('Bounced email deleted successfully', 'success');
+                    } else {
+                        alert('Error deleting bounced email: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting bounced email:', error);
+                    alert('Error deleting bounced email. Please try again.');
+                });
+            }
+        }
+    });
+    
+    // Function to show notifications
+    function showNotification(message, type = 'info') {
+        // Create a simple notification
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
     }
 });
 </script>

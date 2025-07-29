@@ -40,6 +40,23 @@
         </div>
     </div>
 
+    <!-- Filter Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group" aria-label="Campaign filters">
+                <button type="button" class="btn btn-outline-primary active" id="filter-live" onclick="filterCampaigns('live')">
+                    <i class="fas fa-play-circle"></i> Live Campaigns
+                </button>
+                <button type="button" class="btn btn-outline-warning" id="filter-interrupted" onclick="filterCampaigns('interrupted')">
+                    <i class="fas fa-pause-circle"></i> Interrupted Campaigns
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="filter-finished" onclick="filterCampaigns('finished')">
+                    <i class="fas fa-check-circle"></i> Old Finished Campaigns
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Statistics Bar -->
     <div class="row mb-4">
         <div class="col-md-3">
@@ -654,6 +671,46 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 5000);
+}
+
+function filterCampaigns(filterType) {
+    // Update button states
+    document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('btn-outline-primary', 'btn-outline-warning', 'btn-outline-secondary');
+    });
+    
+    const activeButton = document.getElementById(`filter-${filterType}`);
+    activeButton.classList.add('active');
+    
+    // Get all campaign cards
+    const campaignCards = document.querySelectorAll('[data-campaign-id]');
+    
+    campaignCards.forEach(card => {
+        const statusBadge = card.querySelector('.badge');
+        const status = statusBadge ? statusBadge.textContent.toLowerCase().trim() : '';
+        
+        let shouldShow = false;
+        
+        switch(filterType) {
+            case 'live':
+                shouldShow = status === 'running' || status === 'ready';
+                break;
+            case 'interrupted':
+                shouldShow = status === 'paused' || status === 'stopped';
+                break;
+            case 'finished':
+                shouldShow = status === 'completed';
+                break;
+            default:
+                shouldShow = true;
+        }
+        
+        card.style.display = shouldShow ? 'block' : 'none';
+    });
+    
+    // Update statistics for visible campaigns
+    updateStatistics();
 }
 
 // Load account names

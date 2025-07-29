@@ -178,6 +178,93 @@
                         <label for="froms" class="form-label">Sender Names (one per line)</label>
                         <textarea class="form-control" id="froms" rows="3" required placeholder="Sender 1&#10;Sender 2&#10;Sender 3"></textarea>
                     </div>
+                    
+                    <!-- Rate Limiting Configuration -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-tachometer-alt me-2"></i>Rate Limiting Settings
+                                <button type="button" class="btn btn-sm btn-outline-info float-end" onclick="loadDefaultRateLimits()">
+                                    <i class="fas fa-undo me-1"></i>Load Defaults
+                                </button>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="useCustomRateLimit" onchange="toggleCustomRateLimit()">
+                                    <label class="form-check-label" for="useCustomRateLimit">
+                                        <strong>Use Custom Rate Limits for this Campaign</strong>
+                                    </label>
+                                </div>
+                                <div class="form-text">If unchecked, the system will use the default rate limiting settings.</div>
+                            </div>
+                            
+                            <div id="customRateLimitSettings" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-primary mb-3">
+                                            <i class="fas fa-clock me-2"></i>Time-based Limits
+                                        </h6>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_emails_per_second" class="form-label">Emails per Second</label>
+                                            <input type="number" class="form-control" id="campaign_emails_per_second" min="1" max="100" value="2">
+                                            <div class="form-text">Maximum emails per second for this campaign.</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_emails_per_minute" class="form-label">Emails per Minute</label>
+                                            <input type="number" class="form-control" id="campaign_emails_per_minute" min="1" max="10000" value="100">
+                                            <div class="form-text">Maximum emails per minute for this campaign.</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_emails_per_hour" class="form-label">Emails per Hour</label>
+                                            <input type="number" class="form-control" id="campaign_emails_per_hour" min="1" max="100000" value="1000">
+                                            <div class="form-text">Maximum emails per hour for this campaign.</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_emails_per_day" class="form-label">Emails per Day</label>
+                                            <input type="number" class="form-control" id="campaign_emails_per_day" min="1" max="1000000" value="10000">
+                                            <div class="form-text">Maximum emails per day for this campaign.</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <h6 class="text-warning mb-3">
+                                            <i class="fas fa-shield-alt me-2"></i>Protection Settings
+                                        </h6>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_wait_time" class="form-label">Wait Time Between Emails (seconds)</label>
+                                            <input type="number" class="form-control" id="campaign_wait_time" min="0" max="60" step="0.1" value="0.5">
+                                            <div class="form-text">Minimum time to wait between emails.</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_burst_limit" class="form-label">Burst Limit</label>
+                                            <input type="number" class="form-control" id="campaign_burst_limit" min="1" max="100" value="5">
+                                            <div class="form-text">Maximum emails in a burst before cooldown.</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="campaign_cooldown_period" class="form-label">Cooldown Period (seconds)</label>
+                                            <input type="number" class="form-control" id="campaign_cooldown_period" min="1" max="3600" value="60">
+                                            <div class="form-text">Cooldown time after burst limit is exceeded.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info small">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Note:</strong> These settings will override the default rate limits for this campaign only. 
+                                    Other campaigns will continue to use the default settings unless customized.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -193,6 +280,70 @@
 
 {% block scripts %}
 <script>
+// Rate Limiting Functions
+function toggleCustomRateLimit() {
+    const useCustom = document.getElementById('useCustomRateLimit').checked;
+    const settingsDiv = document.getElementById('customRateLimitSettings');
+    
+    if (useCustom) {
+        settingsDiv.style.display = 'block';
+        loadDefaultRateLimits(); // Load current default values
+    } else {
+        settingsDiv.style.display = 'none';
+    }
+}
+
+function loadDefaultRateLimits() {
+    fetch('/api/rate-limits')
+        .then(response => response.json())
+        .then(data => {
+            const config = data.config;
+            
+            // Update campaign rate limit fields with current default values
+            document.getElementById('campaign_emails_per_second').value = config.emails_per_second;
+            document.getElementById('campaign_emails_per_minute').value = config.emails_per_minute;
+            document.getElementById('campaign_emails_per_hour').value = config.emails_per_hour;
+            document.getElementById('campaign_emails_per_day').value = config.emails_per_day;
+            document.getElementById('campaign_wait_time').value = config.wait_time_between_emails;
+            document.getElementById('campaign_burst_limit').value = config.burst_limit;
+            document.getElementById('campaign_cooldown_period').value = config.cooldown_period;
+        })
+        .catch(error => {
+            console.error('Error loading default rate limits:', error);
+            // Use fallback values if API fails
+            document.getElementById('campaign_emails_per_second').value = 2;
+            document.getElementById('campaign_emails_per_minute').value = 100;
+            document.getElementById('campaign_emails_per_hour').value = 1000;
+            document.getElementById('campaign_emails_per_day').value = 10000;
+            document.getElementById('campaign_wait_time').value = 0.5;
+            document.getElementById('campaign_burst_limit').value = 5;
+            document.getElementById('campaign_cooldown_period').value = 60;
+        });
+}
+
+function getCampaignRateLimits() {
+    const useCustom = document.getElementById('useCustomRateLimit').checked;
+    
+    if (!useCustom) {
+        return null; // Use default rate limits
+    }
+    
+    return {
+        enabled: true,
+        emails_per_second: parseInt(document.getElementById('campaign_emails_per_second').value) || 2,
+        emails_per_minute: parseInt(document.getElementById('campaign_emails_per_minute').value) || 100,
+        emails_per_hour: parseInt(document.getElementById('campaign_emails_per_hour').value) || 1000,
+        emails_per_day: parseInt(document.getElementById('campaign_emails_per_day').value) || 10000,
+        wait_time_between_emails: parseFloat(document.getElementById('campaign_wait_time').value) || 0.5,
+        burst_limit: parseInt(document.getElementById('campaign_burst_limit').value) || 5,
+        cooldown_period: parseInt(document.getElementById('campaign_cooldown_period').value) || 60,
+        daily_quota: parseInt(document.getElementById('campaign_emails_per_day').value) || 10000,
+        hourly_quota: parseInt(document.getElementById('campaign_emails_per_hour').value) || 1000,
+        minute_quota: parseInt(document.getElementById('campaign_emails_per_minute').value) || 100,
+        second_quota: parseInt(document.getElementById('campaign_emails_per_second').value) || 2
+    };
+}
+
 // Load accounts when modal opens
 document.getElementById('addCampaignModal').addEventListener('show.bs.modal', function () {
     loadAccounts();
@@ -340,7 +491,7 @@ function saveCampaign() {
     
     // If data list is selected, we need to fetch the emails first
     if (recipientType === 'data_list' && listId) {
-        fetch(`/api/data-lists/${listId}/emails`)
+        fetch(`/api/data-lists/${listId}/campaign-emails`)
             .then(response => response.json())
             .then(data => {
                 if (data.emails && data.emails.length > 0) {
@@ -371,7 +522,8 @@ function createCampaignWithEmails(destinataires) {
         template_id: document.getElementById('templateId').value,
         destinataires: destinataires,
         subjects: document.getElementById('subjects').value,
-        froms: document.getElementById('froms').value
+        froms: document.getElementById('froms').value,
+        rate_limits: getCampaignRateLimits() // Add rate limiting configuration
     };
 
     if (!formData.name || !formData.account_id || !formData.template_id || 

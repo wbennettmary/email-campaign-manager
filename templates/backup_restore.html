@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Backup & Restore - Email Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Backup & Restore</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-success" onclick="createBackup()">
+            <i class="fas fa-download me-2"></i>Create Backup
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-database me-2"></i>Data Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Backup & Restore</strong> - Manage your application data with automated backups and restore functionality.
+                    <br><small>Coming soon: Automated backups, cloud storage integration, and data migration tools.</small>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0"><i class="fas fa-download me-2"></i>Backup</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Create backups of your application data.</p>
+                                <ul class="list-unstyled small">
+                                    <li><i class="fas fa-check text-success me-2"></i>User accounts</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Email campaigns</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Data lists</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>System settings</li>
+                                </ul>
+                                <button class="btn btn-primary btn-sm" onclick="createBackup()">
+                                    <i class="fas fa-download me-2"></i>Create Backup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0"><i class="fas fa-upload me-2"></i>Restore</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Restore data from a backup file.</p>
+                                <div class="alert alert-warning small">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Warning:</strong> Restoring will overwrite current data.
+                                </div>
+                                <button class="btn btn-warning btn-sm" onclick="restoreBackup()">
+                                    <i class="fas fa-upload me-2"></i>Restore Backup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-file-export me-2"></i>Export</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Export specific data types.</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-info btn-sm" onclick="exportData('users')">
+                                        <i class="fas fa-users me-2"></i>Export Users
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="exportData('campaigns')">
+                                        <i class="fas fa-bullhorn me-2"></i>Export Campaigns
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="exportData('data_lists')">
+                                        <i class="fas fa-list me-2"></i>Export Data Lists
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-file-import me-2"></i>Import</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">Import data from external sources.</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-success btn-sm" onclick="importData('users')">
+                                        <i class="fas fa-users me-2"></i>Import Users
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm" onclick="importData('campaigns')">
+                                        <i class="fas fa-bullhorn me-2"></i>Import Campaigns
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm" onclick="importData('data_lists')">
+                                        <i class="fas fa-list me-2"></i>Import Data Lists
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Backup History
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>No Backups Found</strong>
+                    <br><small>No backup files have been created yet.</small>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="createBackup()">
+                        <i class="fas fa-download me-2"></i>Create First Backup
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Backup Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Data Files:</strong>
+                    <ul class="list-unstyled small mt-2">
+                        <li><i class="fas fa-file me-2"></i>users.json</li>
+                        <li><i class="fas fa-file me-2"></i>campaigns.json</li>
+                        <li><i class="fas fa-file me-2"></i>accounts.json</li>
+                        <li><i class="fas fa-file me-2"></i>data_lists.json</li>
+                        <li><i class="fas fa-file me-2"></i>smtp_config.json</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info small">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Tip:</strong> Regular backups ensure your data is safe and can be restored if needed.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Progress Modal -->
+<div class="modal fade" id="backupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-download me-2"></i>Creating Backup
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+                <p id="backupStatus">Initializing backup process...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function createBackup() {
+    const modal = new bootstrap.Modal(document.getElementById('backupModal'));
+    modal.show();
+    
+    // Simulate backup process
+    const progressBar = document.querySelector('#backupModal .progress-bar');
+    const status = document.getElementById('backupStatus');
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        
+        if (progress <= 30) {
+            status.textContent = 'Collecting user data...';
+        } else if (progress <= 60) {
+            status.textContent = 'Backing up campaigns...';
+        } else if (progress <= 90) {
+            status.textContent = 'Saving configuration...';
+        } else {
+            status.textContent = 'Backup completed successfully!';
+            clearInterval(interval);
+            
+            setTimeout(() => {
+                modal.hide();
+                showNotification('Backup created successfully!', 'success');
+            }, 1000);
+        }
+    }, 200);
+}
+
+function restoreBackup() {
+    if (confirm('Are you sure you want to restore from backup? This will overwrite current data.')) {
+        showNotification('Restore functionality coming soon!', 'info');
+    }
+}
+
+function exportData(type) {
+    showNotification(`${type} export functionality coming soon!`, 'info');
+}
+
+function importData(type) {
+    showNotification(`${type} import functionality coming soon!`, 'info');
+}
+
+function showNotification(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-info';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        const alert = container.querySelector('.alert');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

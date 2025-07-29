@@ -342,5 +342,131 @@
       "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
       "timestamp": "2025-07-28T18:43:12.630410"
     }
+  ],
+  "2": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 2,
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "details": "Email delivered successfully (pattern-based detection)",
+      "timestamp": "2025-07-28T19:35:49.439275"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 2,
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "details": "Email delivered successfully (pattern-based detection)",
+      "timestamp": "2025-07-28T19:35:51.987400"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 2,
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "details": "Email delivered successfully (pattern-based detection)",
+      "timestamp": "2025-07-28T19:35:54.619758"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 2,
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "details": "Email delivered successfully (pattern-based detection)",
+      "timestamp": "2025-07-28T19:35:57.506467"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 2,
+      "subject": "we are ready sir",
+      "sender": "alberto",
+      "details": "Email delivered successfully (pattern-based detection)",
+      "timestamp": "2025-07-28T19:35:59.566176"
+    }
+  ],
+  "3": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 3,
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T00:23:35.914039"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 3,
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T00:23:42.754827"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 3,
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T00:23:49.400262"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 3,
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T00:23:56.355683"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 3,
+      "subject": "we are waiting here",
+      "sender": "armando",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T00:24:03.128032"
+    }
+  ],
+  "4": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 4,
+      "subject": "Send notifications to keep users informed",
+      "sender": "Adds",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T14:01:17.212026"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 4,
+      "subject": "Send notifications to keep users informed",
+      "sender": "campaign",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T14:01:26.230758"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 4,
+      "subject": "Automatically detect 401 rate limit errors from Zoho",
+      "sender": "rate",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T14:01:35.279531"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 4,
+      "subject": "Implement smart pauses with exponential backoff",
+      "sender": "Adds",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T14:01:44.365503"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 4,
+      "subject": "Retry automatically up to 6 times with increasing delays",
+      "sender": "campaign",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T14:01:53.231429"
+    }
   ]
 }
