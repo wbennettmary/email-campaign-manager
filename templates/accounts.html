@@ -393,14 +393,20 @@ function deleteAccount(accountId) {
         })
         .then(response => {
             if (response.ok) {
-                location.reload();
+                return response.json();
             } else {
-                alert('Error deleting account');
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Error deleting account');
+                });
             }
+        })
+        .then(data => {
+            console.log('Account deleted successfully:', data);
+            location.reload();
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error deleting account');
+            alert('Error deleting account: ' + error.message);
         });
     }
 }

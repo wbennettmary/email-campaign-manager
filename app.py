@@ -1411,20 +1411,29 @@ def api_accounts():
 @login_required
 def api_account(account_id):
     try:
+        print(f"🔍 Processing account request: ID={account_id}, Method={request.method}")
+        print(f"👤 Current user: {current_user.username} (ID: {current_user.id}, Role: {current_user.role})")
+        
         with open(ACCOUNTS_FILE, 'r') as f:
             accounts = json.load(f)
         if not isinstance(accounts, list):
             accounts = []
-    except (FileNotFoundError, json.JSONDecodeError):
+        print(f"📊 Loaded {len(accounts)} accounts from file")
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"⚠️ Error loading accounts file: {e}")
         accounts = []
     
     account = next((acc for acc in accounts if acc['id'] == account_id), None)
     
     if not account:
-        return ('', 404)
+        print(f"❌ Account {account_id} not found")
+        return jsonify({'error': f'Account {account_id} not found'}), 404
+    
+    print(f"✅ Found account: {account['name']} (ID: {account['id']}, Created by: {account.get('created_by', 'Unknown')})")
     
     # Check if user can access this account
     if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+        print(f"❌ Access denied: User {current_user.username} cannot access account {account_id}")
         return jsonify({'error': 'Access denied. You can only manage your own accounts.'}), 403
     
     if request.method == 'GET':
@@ -1439,25 +1448,51 @@ def api_account(account_id):
         data['updated_at'] = datetime.now().isoformat()
         account.update(data)
         
-        with open(ACCOUNTS_FILE, 'w') as f:
-            json.dump(accounts, f)
+        try:
+            with open(ACCOUNTS_FILE, 'w') as f:
+                json.dump(accounts, f, indent=2)
+            print(f"✅ Successfully updated account {account_id}")
+        except Exception as e:
+            print(f"❌ Error saving updated account: {e}")
+            return jsonify({'error': f'Failed to save account: {str(e)}'}), 500
         
         add_notification(f"Account '{account['name']}' updated successfully", 'success')
         return jsonify(account)
     
     elif request.method == 'DELETE':
+        print(f"🗑️ Attempting to delete account {account_id}")
+        
         # Check if user has permission to delete accounts
         if not has_permission(current_user, 'manage_accounts') and account.get('created_by') != current_user.id:
+            print(f"❌ Access denied: User {current_user.username} cannot delete account {account_id}")
             return jsonify({'error': 'Access denied. You can only delete your own accounts.'}), 403
         
         account_name = account['name']
-        accounts.remove(account)
+        print(f"📝 Removing account '{account_name}' from list")
         
-        with open(ACCOUNTS_FILE, 'w') as f:
-            json.dump(accounts, f)
+        try:
+            accounts.remove(account)
+            print(f"✅ Account removed from list, {len(accounts)} accounts remaining")
+        except ValueError as e:
+            print(f"❌ Error removing account from list: {e}")
+            return jsonify({'error': f'Failed to remove account from list: {str(e)}'}), 500
         
-        add_notification(f"Account '{account_name}' deleted successfully", 'success')
-        return ('', 204)
+        try:
+            with open(ACCOUNTS_FILE, 'w') as f:
+                json.dump(accounts, f, indent=2)
+            print(f"✅ Successfully saved updated accounts to file")
+        except Exception as e:
+            print(f"❌ Error saving accounts file: {e}")
+            return jsonify({'error': f'Failed to save accounts file: {str(e)}'}), 500
+        
+        try:
+            add_notification(f"Account '{account_name}' deleted successfully", 'success')
+            print(f"✅ Added deletion notification")
+        except Exception as e:
+            print(f"⚠️ Could not add notification: {e}")
+        
+        print(f"🎉 Account '{account_name}' deleted successfully")
+        return jsonify({'success': True, 'message': f'Account {account_name} deleted successfully'})
 
 @app.route('/api/accounts/<int:account_id>/templates', methods=['GET'])
 @login_required
