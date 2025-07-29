@@ -651,5 +651,74 @@
       "delivery_rate": 0.0,
       "bounce_rate": 0.0
     }
+  ],
+  "6": [
+    {
+      "campaign_id": 6,
+      "timestamp": "2025-07-29T16:49:56.164055",
+      "status": "info",
+      "message": "\ud83d\ude80 Campaign 'jayjay' started with IMPROVED delivery feedback",
+      "type": "start"
+    },
+    {
+      "campaign_id": 6,
+      "timestamp": "2025-07-29T16:49:56.840898",
+      "status": "warning",
+      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 10s",
+      "email": "salssapp@gmail.com",
+      "subject": "Send notifications to keep users informed plaese",
+      "sender": "Addalin",
+      "type": "zoho_rate_limit",
+      "attempt": 1,
+      "retry_delay": 10,
+      "response_code": 401,
+      "api_message": "Authentication failed",
+      "api_code": "AUTHENTICATION_FAILURE"
+    },
+    {
+      "campaign_id": 6,
+      "timestamp": "2025-07-29T16:50:07.462804",
+      "status": "warning",
+      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 20s",
+      "email": "salssapp@gmail.com",
+      "subject": "Send notifications to keep users informed plaese",
+      "sender": "Addalin",
+      "type": "zoho_rate_limit",
+      "attempt": 2,
+      "retry_delay": 20,
+      "response_code": 401,
+      "api_message": "Authentication failed",
+      "api_code": "AUTHENTICATION_FAILURE"
+    },
+    {
+      "campaign_id": 6,
+      "timestamp": "2025-07-29T16:50:28.264836",
+      "status": "warning",
+      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 60s",
+      "email": "salssapp@gmail.com",
+      "subject": "Send notifications to keep users informed plaese",
+      "sender": "Addalin",
+      "type": "zoho_rate_limit",
+      "attempt": 3,
+      "retry_delay": 60,
+      "response_code": 401,
+      "api_message": "Authentication failed",
+      "api_code": "AUTHENTICATION_FAILURE"
+    },
+    {
+      "campaign_id": 6,
+      "timestamp": "2025-07-29T16:51:28.918960",
+      "status": "warning",
+      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 3600s",
+      "email": "salssapp@gmail.com",
+      "subject": "Send notifications to keep users informed plaese",
+      "sender": "Addalin",
+      "type": "zoho_rate_limit",
+      "attempt": 4,
+      "retry_delay": 3600,
+      "response_code": 401,
+      "api_message": "Authentication failed",
+      "api_code": "AUTHENTICATION_FAILURE"
+    }
   ]
 }

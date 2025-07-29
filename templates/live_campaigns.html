@@ -312,17 +312,29 @@ campaignLogs[{{ campaign.id }}] = {{ campaign.logs|tojson }};
 let autoRefreshInterval;
 let currentFilter = 'live';
 let isRefreshing = false;
+let refreshCount = 0;
+const MAX_REFRESH_COUNT = 100; // Prevent infinite refresh
 
 // Start auto-refresh functionality
 function startAutoRefresh() {
     const autoRefreshToggle = document.getElementById('autoRefreshToggle');
     const refreshInterval = document.getElementById('refreshInterval');
     
-    if (autoRefreshToggle.checked) {
-        const interval = parseInt(refreshInterval.value);
+    if (autoRefreshToggle && autoRefreshToggle.checked) {
+        const interval = parseInt(refreshInterval ? refreshInterval.value : 10000);
+        
+        // Clear any existing interval
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+        }
+        
         autoRefreshInterval = setInterval(() => {
-            if (!isRefreshing) {
+            if (!isRefreshing && refreshCount < MAX_REFRESH_COUNT) {
                 refreshCampaigns();
+            } else if (refreshCount >= MAX_REFRESH_COUNT) {
+                console.warn('Maximum refresh count reached, stopping auto-refresh');
+                stopAutoRefresh();
+                showNotification('Auto-refresh stopped due to maximum limit', 'warning');
             }
         }, interval);
     }
@@ -336,139 +348,198 @@ function stopAutoRefresh() {
     }
 }
 
-// Refresh campaigns with real-time data
+// Refresh campaigns with AJAX (not full page reload)
 function refreshCampaigns() {
     if (isRefreshing) return;
     
     isRefreshing = true;
+    refreshCount++;
     showLoadingIndicator();
     
-    fetch('/live-campaigns')
-        .then(response => response.text())
-        .then(html => {
-            // Parse the HTML to extract campaign data
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+    // Use AJAX to get only the data, not the full page
+    fetch('/api/campaigns')
+        .then(response => response.json())
+        .then(campaigns => {
+            // Filter campaigns based on current filter
+            const filteredCampaigns = filterCampaignsByType(campaigns, currentFilter);
             
-            // Update the campaigns container
-            const newCampaignsContainer = doc.getElementById('campaigns-container');
-            const currentCampaignsContainer = document.getElementById('campaigns-container');
-            
-            if (newCampaignsContainer && currentCampaignsContainer) {
-                currentCampaignsContainer.innerHTML = newCampaignsContainer.innerHTML;
-            }
+            // Update the campaigns container with new data
+            updateCampaignsDisplay(filteredCampaigns);
             
             // Update statistics
             updateStatistics();
             
-            // Re-apply current filter
-            filterCampaigns(currentFilter);
-            
-            // Load account names for new campaigns
-            loadAccountNames();
-            
             hideLoadingIndicator();
-            showNotification('Campaigns refreshed successfully', 'success');
+            
+            // Show success notification only every 10 refreshes
+            if (refreshCount % 10 === 0) {
+                showNotification('Campaigns refreshed successfully', 'success');
+            }
         })
         .catch(error => {
             console.error('Error refreshing campaigns:', error);
             hideLoadingIndicator();
-            showNotification('Error refreshing campaigns', 'error');
+            
+            // Show error notification only every 5 refreshes
+            if (refreshCount % 5 === 0) {
+                showNotification('Error refreshing campaigns', 'error');
+            }
         })
         .finally(() => {
             isRefreshing = false;
         });
 }
 
-// Show loading indicator
-function showLoadingIndicator() {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const campaignsContainer = document.getElementById('campaigns-container');
-    
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'block';
-    }
-    
-    if (campaignsContainer) {
-        campaignsContainer.style.opacity = '0.6';
-    }
-}
-
-// Hide loading indicator
-function hideLoadingIndicator() {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const campaignsContainer = document.getElementById('campaigns-container');
-    
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'none';
-    }
-    
-    if (campaignsContainer) {
-        campaignsContainer.style.opacity = '1';
-    }
-}
-
-// Load account names for campaigns
-function loadAccountNames() {
-    const accountNameElements = document.querySelectorAll('[id^="account-name-"]');
-    
-    accountNameElements.forEach(element => {
-        const campaignId = element.id.replace('account-name-', '');
-        const campaignCard = element.closest('[data-campaign-id]');
-        const accountId = campaignCard ? campaignCard.getAttribute('data-account-id') : null;
+// Filter campaigns by type without page reload
+function filterCampaignsByType(campaigns, filterType) {
+    return campaigns.filter(campaign => {
+        const status = campaign.status ? campaign.status.toLowerCase() : '';
         
-        if (accountId) {
-            fetch(`/api/accounts/${accountId}`)
-                .then(response => response.json())
-                .then(account => {
-                    element.textContent = account.name;
-                })
-                .catch(error => {
-                    element.textContent = 'Unknown';
-                });
+        switch(filterType) {
+            case 'live':
+                return status === 'running' || status === 'ready';
+            case 'interrupted':
+                return status === 'paused' || status === 'stopped';
+            case 'finished':
+                return status === 'completed';
+            default:
+                return true;
         }
     });
 }
 
-// Update statistics based on visible campaigns
-function updateStatistics() {
-    const visibleCampaigns = document.querySelectorAll('[data-campaign-id]:not([style*="display: none"])');
+// Update campaigns display without page reload
+function updateCampaignsDisplay(campaigns) {
+    const container = document.getElementById('campaigns-container');
+    if (!container) return;
     
-    let totalCampaigns = visibleCampaigns.length;
-    let totalSent = 0;
-    let totalErrors = 0;
-    let totalRemaining = 0;
+    // Clear existing content
+    container.innerHTML = '';
     
-    visibleCampaigns.forEach(card => {
-        const sentElement = card.querySelector('.sent-count');
-        const errorElement = card.querySelector('.error-count');
-        const totalElement = card.querySelector('.total-count');
-        
-        if (sentElement) {
-            totalSent += parseInt(sentElement.textContent) || 0;
-        }
-        
-        if (errorElement) {
-            totalErrors += parseInt(errorElement.textContent) || 0;
-        }
-        
-        if (totalElement && sentElement) {
-            const total = parseInt(totalElement.textContent) || 0;
-            const sent = parseInt(sentElement.textContent) || 0;
-            totalRemaining += Math.max(0, total - sent);
-        }
+    if (campaigns.length === 0) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-broadcast-tower fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No campaigns found</h4>
+                    <p class="text-muted">No campaigns match the current filter</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Add campaign cards
+    campaigns.forEach(campaign => {
+        const campaignCard = createCampaignCard(campaign);
+        container.appendChild(campaignCard);
     });
+}
+
+// Create campaign card element
+function createCampaignCard(campaign) {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'col-lg-6 col-xl-4 mb-4';
+    colDiv.setAttribute('data-campaign-id', campaign.id);
     
-    // Update statistics display
-    const totalCampaignsElement = document.getElementById('total-campaigns');
-    const totalSentElement = document.getElementById('total-sent');
-    const totalErrorsElement = document.getElementById('total-errors');
-    const totalRemainingElement = document.getElementById('total-remaining');
+    const statusBadge = getStatusBadge(campaign.status);
+    const progress = campaign.total_attempted > 0 ? (campaign.total_sent / campaign.total_attempted) * 100 : 0;
     
-    if (totalCampaignsElement) totalCampaignsElement.textContent = totalCampaigns;
-    if (totalSentElement) totalSentElement.textContent = totalSent;
-    if (totalErrorsElement) totalErrorsElement.textContent = totalErrors;
-    if (totalRemainingElement) totalRemainingElement.textContent = totalRemaining;
+    colDiv.innerHTML = `
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">${campaign.name}</h6>
+                ${statusBadge}
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <small class="text-muted">Sent</small>
+                        <div class="h6 mb-0">${campaign.total_sent || 0}</div>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Errors</small>
+                        <div class="h6 mb-0 text-danger">${(campaign.total_attempted || 0) - (campaign.total_sent || 0)}</div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <small class="text-muted">Left</small>
+                        <div class="h6 mb-0">${Math.max(0, (campaign.total_attempted || 0) - (campaign.total_sent || 0))}</div>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Progress</small>
+                        <div class="h6 mb-0">${progress.toFixed(1)}%</div>
+                    </div>
+                </div>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: ${progress}%" 
+                         aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <small class="text-muted">Started: ${formatTimestamp(campaign.created_at)}</small>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="viewCampaignLogs(${campaign.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${campaign.status === 'running' ? 
+                            `<button class="btn btn-outline-warning" onclick="stopCampaign(${campaign.id})">
+                                <i class="fas fa-stop"></i>
+                            </button>` : 
+                            `<button class="btn btn-outline-success" onclick="startCampaign(${campaign.id})">
+                                <i class="fas fa-play"></i>
+                            </button>`
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return colDiv;
+}
+
+// Get status badge HTML
+function getStatusBadge(status) {
+    const statusLower = status ? status.toLowerCase() : '';
+    let badgeClass = 'badge bg-secondary';
+    let icon = 'fas fa-question';
+    
+    switch(statusLower) {
+        case 'running':
+            badgeClass = 'badge bg-success';
+            icon = 'fas fa-play';
+            break;
+        case 'ready':
+            badgeClass = 'badge bg-primary';
+            icon = 'fas fa-clock';
+            break;
+        case 'paused':
+            badgeClass = 'badge bg-warning';
+            icon = 'fas fa-pause';
+            break;
+        case 'stopped':
+            badgeClass = 'badge bg-danger';
+            icon = 'fas fa-stop';
+            break;
+        case 'completed':
+            badgeClass = 'badge bg-info';
+            icon = 'fas fa-check';
+            break;
+    }
+    
+    return `<span class="${badgeClass}"><i class="${icon} me-1"></i>${status}</span>`;
+}
+
+// Format timestamp
+function formatTimestamp(timestamp) {
+    if (!timestamp) return 'Unknown';
+    try {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
+    } catch {
+        return timestamp;
+    }
 }
 
 function addLogToContainer(campaignId, data) {
@@ -791,34 +862,70 @@ function filterCampaigns(filterType) {
         activeButton.classList.add('active');
     }
     
-    // Get all campaign cards
-    const campaignCards = document.querySelectorAll('[data-campaign-id]');
+    // Refresh campaigns with new filter
+    refreshCampaigns();
+}
+
+// Show loading indicator
+function showLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const campaignsContainer = document.getElementById('campaigns-container');
     
-    campaignCards.forEach(card => {
-        const statusBadge = card.querySelector('.badge');
-        const status = statusBadge ? statusBadge.textContent.toLowerCase().trim() : '';
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'block';
+    }
+    
+    if (campaignsContainer) {
+        campaignsContainer.style.opacity = '0.6';
+    }
+}
+
+// Hide loading indicator
+function hideLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const campaignsContainer = document.getElementById('campaigns-container');
+    
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'none';
+    }
+    
+    if (campaignsContainer) {
+        campaignsContainer.style.opacity = '1';
+    }
+}
+
+// Update statistics based on visible campaigns
+function updateStatistics() {
+    const visibleCampaigns = document.querySelectorAll('[data-campaign-id]');
+    
+    let totalCampaigns = visibleCampaigns.length;
+    let totalSent = 0;
+    let totalErrors = 0;
+    let totalRemaining = 0;
+    
+    visibleCampaigns.forEach(card => {
+        const sentElement = card.querySelector('.h6.mb-0');
+        const errorElement = card.querySelector('.h6.mb-0.text-danger');
         
-        let shouldShow = false;
-        
-        switch(filterType) {
-            case 'live':
-                shouldShow = status === 'running' || status === 'ready';
-                break;
-            case 'interrupted':
-                shouldShow = status === 'paused' || status === 'stopped';
-                break;
-            case 'finished':
-                shouldShow = status === 'completed';
-                break;
-            default:
-                shouldShow = true;
+        if (sentElement) {
+            totalSent += parseInt(sentElement.textContent) || 0;
         }
         
-        card.style.display = shouldShow ? 'block' : 'none';
+        if (errorElement) {
+            totalErrors += parseInt(errorElement.textContent) || 0;
+        }
     });
     
-    // Update statistics for visible campaigns
-    updateStatistics();
+    // Update statistics display
+    const totalCampaignsElement = document.getElementById('total-campaigns');
+    const totalSentElement = document.getElementById('total-sent');
+    const totalErrorsElement = document.getElementById('total-errors');
+    const totalRemainingElement = document.getElementById('total-remaining');
+    
+    if (totalCampaignsElement) totalCampaignsElement.textContent = totalCampaigns;
+    if (totalSentElement) totalSentElement.textContent = totalSent;
+    if (totalErrorsElement) totalErrorsElement.textContent = totalErrors;
+    if (totalRemainingElement) totalRemainingElement.textContent = totalRemaining;
 }
 
 // Event listeners for controls

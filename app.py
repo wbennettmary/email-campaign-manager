@@ -88,12 +88,11 @@ def check_rate_limit(user_id, campaign_id=None):
     campaign_config = None
     if campaign_id:
         try:
-            with open(CAMPAIGNS_FILE, 'r') as f:
-                campaigns = json.load(f)
+            campaigns = read_json_file_simple(CAMPAIGNS_FILE)
             campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
             if campaign and campaign.get('rate_limits'):
                 campaign_config = campaign['rate_limits']
-        except (FileNotFoundError, json.JSONDecodeError):
+        except:
             pass
     
     # Use campaign-specific config if available, otherwise use default
@@ -121,57 +120,68 @@ def check_rate_limit(user_id, campaign_id=None):
     # Check cooldown period
     if current_time < rate_limit_data['cooldown_until'][user_id]:
         wait_time = rate_limit_data['cooldown_until'][user_id] - current_time
+        # Don't wait more than 60 seconds for cooldown
+        if wait_time > 60:
+            rate_limit_data['cooldown_until'][user_id] = current_time + 60
+            wait_time = 60
         return False, wait_time, f"Cooldown period active. Wait {wait_time:.1f} seconds"
     
     # Check burst limit
     if rate_limit_data['burst_count'][user_id] >= config.get('burst_limit', 5):
-        cooldown_duration = config.get('cooldown_period', 60)
+        cooldown_duration = min(config.get('cooldown_period', 60), 60)  # Max 60 seconds
         rate_limit_data['cooldown_until'][user_id] = current_time + cooldown_duration
         rate_limit_data['burst_count'][user_id] = 0
         return False, cooldown_duration, f"Burst limit exceeded. Cooldown for {cooldown_duration} seconds"
     
-    # Check wait time between emails
-    wait_time_between = config.get('wait_time_between_emails', 0.5)
+    # Check wait time between emails (reduced for better delivery)
+    wait_time_between = max(config.get('wait_time_between_emails', 0.5), 0.1)  # Min 0.1 seconds
     time_since_last = current_time - rate_limit_data['last_send_time'][user_id]
     if time_since_last < wait_time_between:
         wait_time = wait_time_between - time_since_last
+        # Don't wait more than 5 seconds between emails
+        if wait_time > 5:
+            wait_time = 5
         return False, wait_time, f"Wait {wait_time:.1f} seconds between emails"
     
     # Check daily quota
     if current_day not in rate_limit_data['daily_sent'][user_id]:
         rate_limit_data['daily_sent'][user_id][current_day] = 0
     
-    if rate_limit_data['daily_sent'][user_id][current_day] >= config.get('daily_quota', 10000):
+    daily_quota = config.get('daily_quota', 10000)
+    if rate_limit_data['daily_sent'][user_id][current_day] >= daily_quota:
         next_day = current_day + 1
         wait_time = (next_day * 86400) - current_time
-        return False, wait_time, f"Daily quota exceeded ({config.get('daily_quota', 10000)} emails)"
+        return False, wait_time, f"Daily quota exceeded ({daily_quota} emails)"
     
     # Check hourly quota
     if current_hour not in rate_limit_data['hourly_sent'][user_id]:
         rate_limit_data['hourly_sent'][user_id][current_hour] = 0
     
-    if rate_limit_data['hourly_sent'][user_id][current_hour] >= config.get('hourly_quota', 1000):
+    hourly_quota = config.get('hourly_quota', 1000)
+    if rate_limit_data['hourly_sent'][user_id][current_hour] >= hourly_quota:
         next_hour = current_hour + 1
         wait_time = (next_hour * 3600) - current_time
-        return False, wait_time, f"Hourly quota exceeded ({config.get('hourly_quota', 1000)} emails)"
+        return False, wait_time, f"Hourly quota exceeded ({hourly_quota} emails)"
     
     # Check minute quota
     if current_minute not in rate_limit_data['minute_sent'][user_id]:
         rate_limit_data['minute_sent'][user_id][current_minute] = 0
     
-    if rate_limit_data['minute_sent'][user_id][current_minute] >= config.get('minute_quota', 100):
+    minute_quota = config.get('minute_quota', 100)
+    if rate_limit_data['minute_sent'][user_id][current_minute] >= minute_quota:
         next_minute = current_minute + 1
         wait_time = (next_minute * 60) - current_time
-        return False, wait_time, f"Minute quota exceeded ({config.get('minute_quota', 100)} emails)"
+        return False, wait_time, f"Minute quota exceeded ({minute_quota} emails)"
     
     # Check second quota
     if current_second not in rate_limit_data['second_sent'][user_id]:
         rate_limit_data['second_sent'][user_id][current_second] = 0
     
-    if rate_limit_data['second_sent'][user_id][current_second] >= config.get('second_quota', 2):
+    second_quota = config.get('second_quota', 2)
+    if rate_limit_data['second_sent'][user_id][current_second] >= second_quota:
         next_second = current_second + 1
         wait_time = next_second - current_time
-        return False, wait_time, f"Second quota exceeded ({config.get('second_quota', 2)} emails)"
+        return False, wait_time, f"Second quota exceeded ({second_quota} emails)"
     
     return True, 0, "Rate limit check passed"
 

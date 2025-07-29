@@ -1,5 +1,29 @@
 [
   {
+    "id": "89c872e1-4313-4dc4-8450-7ad68e68adff",
+    "message": "\ud83d\udea8 Zoho Rate Limit Exceeded for campaign. Smart retry system activated with 10s pause.",
+    "type": "warning",
+    "timestamp": "2025-07-29T16:49:56.849874",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "775ead96-ef5f-44b3-be65-020a54a1b269",
+    "message": "Campaign 'jayjay' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T16:49:56.164055",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "8ccf7f65-311a-43f1-8592-137da0728253",
+    "message": "Campaign 'jayjay' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-29T16:49:53.061114",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
     "id": "f7034c0c-5234-46d1-89a0-5a2dcfe3d719",
     "message": "Campaign 'chahin' completed with delivery issues. 0/5 emails delivered (0.0% delivery rate).",
     "type": "error",
