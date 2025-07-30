@@ -1,724 +1,246 @@
 {
-  "1": [
+  "10": [
     {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:42:46.332468",
-      "status": "info",
-      "message": "\ud83d\ude80 Campaign 'xxxx' started with IMPROVED delivery feedback",
-      "type": "start"
-    },
-    {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:42:50.546946",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
+      "timestamp": "2025-07-30T17:41:44.774674",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
       "email": "salssapp@gmail.com",
-      "subject": "odszqfsqfddqes",
-      "sender": "dfgvesdg",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T18:42:50.515992",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>"
     },
     {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:42:56.219907",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
+      "timestamp": "2025-07-30T17:41:47.528373",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
       "email": "jetalpha@outlook.fr",
-      "subject": "odszqfsqfddqes",
-      "sender": "dfgvesdg",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T18:42:56.206939",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>"
     },
     {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:43:01.783031",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
+      "timestamp": "2025-07-30T17:41:50.253705",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
       "email": "lesgavasimind@gmx.com",
-      "subject": "odszqfsqfddqes",
-      "sender": "dfgvesdg",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T18:43:01.765079",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>"
     },
     {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:43:06.941114",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
+      "timestamp": "2025-07-30T17:41:52.962408",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
       "email": "abdo.charhamane@gmail.com",
-      "subject": "odszqfsqfddqes",
-      "sender": "dfgvesdg",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T18:43:06.925158",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>"
     },
     {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:43:12.635388",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
+      "timestamp": "2025-07-30T17:41:55.657726",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
       "email": "wbennettmary@gmail.com",
-      "subject": "odszqfsqfddqes",
-      "sender": "dfgvesdg",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T18:43:12.624902",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>"
     },
     {
-      "campaign_id": 1,
-      "timestamp": "2025-07-28T18:43:14.160203",
-      "status": "info",
-      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
-      "type": "completion",
-      "total_sent": 5,
-      "total_attempted": 5,
-      "delivered_count": 5,
-      "bounced_count": 0,
-      "error_count": 0,
-      "delivery_rate": 100.0,
-      "bounce_rate": 0.0
+      "timestamp": "2025-07-30T17:41:55.669749",
+      "type": "error",
+      "message": "Campaign error: 'recipients_count'",
+      "details": {
+        "error": "'recipients_count'"
+      }
     }
   ],
-  "2": [
+  "11": [
     {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:35:48.205827",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:50.830438",
       "status": "info",
-      "message": "\ud83d\ude80 Campaign 'albert' started with IMPROVED delivery feedback",
+      "message": "\ud83d\ude80 Campaign 'Rlm' started with SIMPLE delivery",
       "type": "start"
     },
     {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:35:49.443285",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
-      "email": "salssapp@gmail.com",
-      "subject": "we are ready sir",
-      "sender": "alberto",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T19:35:49.430299",
-        "details": "Email delivered successfully (pattern-based detection)",
-        "source": "pattern_detection",
-        "note": "Zoho detector not available, using pattern detection"
-      }
-    },
-    {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:35:51.992387",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
-      "email": "jetalpha@outlook.fr",
-      "subject": "we are ready sir",
-      "sender": "alberto",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T19:35:51.984416",
-        "details": "Email delivered successfully (pattern-based detection)",
-        "source": "pattern_detection",
-        "note": "Zoho detector not available, using pattern detection"
-      }
-    },
-    {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:35:54.627248",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
-      "email": "lesgavasimind@gmx.com",
-      "subject": "we are ready sir",
-      "sender": "alberto",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T19:35:54.615770",
-        "details": "Email delivered successfully (pattern-based detection)",
-        "source": "pattern_detection",
-        "note": "Zoho detector not available, using pattern detection"
-      }
-    },
-    {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:35:57.512455",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
-      "email": "abdo.charhamane@gmail.com",
-      "subject": "we are ready sir",
-      "sender": "alberto",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T19:35:57.502679",
-        "details": "Email delivered successfully (pattern-based detection)",
-        "source": "pattern_detection",
-        "note": "Zoho detector not available, using pattern detection"
-      }
-    },
-    {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:35:59.582132",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
-      "email": "wbennettmary@gmail.com",
-      "subject": "we are ready sir",
-      "sender": "alberto",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-28T19:35:59.554207",
-        "details": "Email delivered successfully (pattern-based detection)",
-        "source": "pattern_detection",
-        "note": "Zoho detector not available, using pattern detection"
-      }
-    },
-    {
-      "campaign_id": 2,
-      "timestamp": "2025-07-28T19:36:01.322886",
-      "status": "info",
-      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
-      "type": "completion",
-      "total_sent": 5,
-      "total_attempted": 5,
-      "delivered_count": 5,
-      "bounced_count": 0,
-      "error_count": 0,
-      "delivery_rate": 100.0,
-      "bounce_rate": 0.0
-    }
-  ],
-  "3": [
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:23:30.865078",
-      "status": "info",
-      "message": "\ud83d\ude80 Campaign 'ml' started with IMPROVED delivery feedback",
-      "type": "start"
-    },
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:23:35.928959",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
-      "email": "salssapp@gmail.com",
-      "subject": "we are waiting here",
-      "sender": "armando",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T00:23:35.898096",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:23:42.761786",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
-      "email": "jetalpha@outlook.fr",
-      "subject": "we are waiting here",
-      "sender": "armando",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T00:23:42.748849",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:23:49.405246",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
-      "email": "lesgavasimind@gmx.com",
-      "subject": "we are waiting here",
-      "sender": "armando",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T00:23:49.394277",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:23:56.364651",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
-      "email": "abdo.charhamane@gmail.com",
-      "subject": "we are waiting here",
-      "sender": "armando",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T00:23:56.312791",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:24:03.196860",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
-      "email": "wbennettmary@gmail.com",
-      "subject": "we are waiting here",
-      "sender": "armando",
-      "type": "delivery_status",
-      "attempt": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T00:24:03.113078",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 3,
-      "timestamp": "2025-07-29T00:24:04.734322",
-      "status": "info",
-      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
-      "type": "completion",
-      "total_sent": 5,
-      "total_attempted": 5,
-      "delivered_count": 5,
-      "bounced_count": 0,
-      "error_count": 0,
-      "delivery_rate": 100.0,
-      "bounce_rate": 0.0
-    }
-  ],
-  "4": [
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:12.061265",
-      "status": "info",
-      "message": "\ud83d\ude80 Campaign 'ww' started with IMPROVED delivery feedback",
-      "type": "start"
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:17.217013",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to salssapp@gmail.com",
-      "email": "salssapp@gmail.com",
-      "subject": "Send notifications to keep users informed",
-      "sender": "Adds",
-      "type": "delivery_status",
-      "attempts": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T14:01:17.207040",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:19.106269",
-      "status": "warning",
-      "message": "\u23f3 Rate limit: Wait 2.1 seconds between emails",
-      "type": "rate_limit"
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:26.248710",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to jetalpha@outlook.fr",
-      "email": "jetalpha@outlook.fr",
-      "subject": "Send notifications to keep users informed",
-      "sender": "campaign",
-      "type": "delivery_status",
-      "attempts": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T14:01:26.209289",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:28.191920",
-      "status": "warning",
-      "message": "\u23f3 Rate limit: Wait 2.1 seconds between emails",
-      "type": "rate_limit"
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:35.285542",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to lesgavasimind@gmx.com",
-      "email": "lesgavasimind@gmx.com",
-      "subject": "Automatically detect 401 rate limit errors from Zoho",
-      "sender": "rate",
-      "type": "delivery_status",
-      "attempts": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T14:01:35.273037",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:37.243617",
-      "status": "warning",
-      "message": "\u23f3 Rate limit: Wait 2.1 seconds between emails",
-      "type": "rate_limit"
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:44.371442",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to abdo.charhamane@gmail.com",
-      "email": "abdo.charhamane@gmail.com",
-      "subject": "Implement smart pauses with exponential backoff",
-      "sender": "Adds",
-      "type": "delivery_status",
-      "attempts": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T14:01:44.360531",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:46.363105",
-      "status": "warning",
-      "message": "\u23f3 Rate limit: Wait 2.0 seconds between emails",
-      "type": "rate_limit"
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:53.236416",
-      "status": "delivered",
-      "message": "\u2705 Email DELIVERED successfully to wbennettmary@gmail.com",
-      "email": "wbennettmary@gmail.com",
-      "subject": "Retry automatically up to 6 times with increasing delays",
-      "sender": "campaign",
-      "type": "delivery_status",
-      "attempts": 1,
-      "delivery_details": {
-        "status": "delivered",
-        "delivery_status": "success",
-        "timestamp": "2025-07-29T14:01:53.225445",
-        "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
-        "source": "fallback_detection",
-        "note": "Zoho APIs not accessible, using fallback"
-      }
-    },
-    {
-      "campaign_id": 4,
-      "timestamp": "2025-07-29T14:01:54.779946",
-      "status": "info",
-      "message": "\ud83c\udfc1 Campaign completed! Sent: 5/5 | Delivered: 5 | Bounced: 0 | Errors: 0 | Delivery Rate: 100.0% | Bounce Rate: 0.0%",
-      "type": "completion",
-      "total_sent": 5,
-      "total_attempted": 5,
-      "delivered_count": 5,
-      "bounced_count": 0,
-      "error_count": 0,
-      "delivery_rate": 100.0,
-      "bounce_rate": 0.0
-    }
-  ],
-  "5": [
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:33.859882",
-      "status": "info",
-      "message": "\ud83d\ude80 Campaign 'chahin' started with IMPROVED delivery feedback",
-      "type": "start"
-    },
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:34.654180",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:51.471876",
       "status": "error",
       "message": "\u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA",
       "email": "salssapp@gmail.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
+      "subject": "klnkbjklh",
+      "sender": "hjklhj",
       "type": "api_error",
-      "attempt": 1,
       "response_code": 400,
       "api_message": "the Function API Name given seems to be invalid",
       "api_code": "INVALID_DATA"
     },
     {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:34.673083",
-      "status": "error",
-      "message": "\u274c FAILED: \u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA to salssapp@gmail.com",
-      "email": "salssapp@gmail.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
-      "type": "smart_retry_failure",
-      "attempts": 1,
-      "failure_status": "api_error"
-    },
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:37.363608",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:52.668958",
       "status": "error",
       "message": "\u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA",
       "email": "jetalpha@outlook.fr",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
+      "subject": "klnkbjklh",
+      "sender": "hjklhj",
       "type": "api_error",
-      "attempt": 1,
       "response_code": 400,
       "api_message": "the Function API Name given seems to be invalid",
       "api_code": "INVALID_DATA"
     },
     {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:37.384552",
-      "status": "error",
-      "message": "\u274c FAILED: \u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA to jetalpha@outlook.fr",
-      "email": "jetalpha@outlook.fr",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
-      "type": "smart_retry_failure",
-      "attempts": 1,
-      "failure_status": "api_error"
-    },
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:39.260182",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:53.789801",
       "status": "error",
       "message": "\u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA",
       "email": "lesgavasimind@gmx.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
+      "subject": "klnkbjklh",
+      "sender": "hjklhj",
       "type": "api_error",
-      "attempt": 1,
       "response_code": 400,
       "api_message": "the Function API Name given seems to be invalid",
       "api_code": "INVALID_DATA"
     },
     {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:39.312895",
-      "status": "error",
-      "message": "\u274c FAILED: \u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA to lesgavasimind@gmx.com",
-      "email": "lesgavasimind@gmx.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
-      "type": "smart_retry_failure",
-      "attempts": 1,
-      "failure_status": "api_error"
-    },
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:41.766495",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:54.929508",
       "status": "error",
       "message": "\u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA",
       "email": "abdo.charhamane@gmail.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
+      "subject": "klnkbjklh",
+      "sender": "hjklhj",
       "type": "api_error",
-      "attempt": 1,
       "response_code": 400,
       "api_message": "the Function API Name given seems to be invalid",
       "api_code": "INVALID_DATA"
     },
     {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:41.802075",
-      "status": "error",
-      "message": "\u274c FAILED: \u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA to abdo.charhamane@gmail.com",
-      "email": "abdo.charhamane@gmail.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
-      "type": "smart_retry_failure",
-      "attempts": 1,
-      "failure_status": "api_error"
-    },
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:44.168288",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:56.035578",
       "status": "error",
       "message": "\u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA",
       "email": "wbennettmary@gmail.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
+      "subject": "klnkbjklh",
+      "sender": "hjklhj",
       "type": "api_error",
-      "attempt": 1,
       "response_code": 400,
       "api_message": "the Function API Name given seems to be invalid",
       "api_code": "INVALID_DATA"
     },
     {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:44.183253",
-      "status": "error",
-      "message": "\u274c FAILED: \u274c API Error (400): the Function API Name given seems to be invalid | Code: INVALID_DATA to wbennettmary@gmail.com",
-      "email": "wbennettmary@gmail.com",
-      "subject": "Now let me update the campaign creation",
-      "sender": "campaign creation pro",
-      "type": "smart_retry_failure",
-      "attempts": 1,
-      "failure_status": "api_error"
-    },
-    {
-      "campaign_id": 5,
-      "timestamp": "2025-07-29T16:44:45.957496",
+      "campaign_id": 11,
+      "timestamp": "2025-07-30T18:03:56.555798",
       "status": "info",
-      "message": "\ud83c\udfc1 Campaign completed! Sent: 0/5 | Delivered: 0 | Bounced: 0 | Errors: 5 | Delivery Rate: 0.0% | Bounce Rate: 0.0%",
+      "message": "\ud83c\udfc1 Campaign 'Rlm' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
       "type": "completion",
       "total_sent": 0,
-      "total_attempted": 5,
-      "delivered_count": 0,
-      "bounced_count": 0,
-      "error_count": 5,
-      "delivery_rate": 0.0,
-      "bounce_rate": 0.0
+      "total_errors": 5,
+      "total_delivered": 0,
+      "total_bounced": 0
     }
   ],
-  "6": [
+  "12": [
     {
-      "campaign_id": 6,
-      "timestamp": "2025-07-29T16:49:56.164055",
-      "status": "info",
-      "message": "\ud83d\ude80 Campaign 'jayjay' started with IMPROVED delivery feedback",
-      "type": "start"
+      "timestamp": "2025-07-30T18:14:55.259782",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>"
     },
     {
-      "campaign_id": 6,
-      "timestamp": "2025-07-29T16:49:56.840898",
-      "status": "warning",
-      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 10s",
-      "email": "salssapp@gmail.com",
-      "subject": "Send notifications to keep users informed plaese",
-      "sender": "Addalin",
-      "type": "zoho_rate_limit",
-      "attempt": 1,
-      "retry_delay": 10,
-      "response_code": 401,
-      "api_message": "Authentication failed",
-      "api_code": "AUTHENTICATION_FAILURE"
+      "timestamp": "2025-07-30T18:14:58.943869",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>"
     },
     {
-      "campaign_id": 6,
-      "timestamp": "2025-07-29T16:50:07.462804",
-      "status": "warning",
-      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 20s",
-      "email": "salssapp@gmail.com",
-      "subject": "Send notifications to keep users informed plaese",
-      "sender": "Addalin",
-      "type": "zoho_rate_limit",
-      "attempt": 2,
-      "retry_delay": 20,
-      "response_code": 401,
-      "api_message": "Authentication failed",
-      "api_code": "AUTHENTICATION_FAILURE"
+      "timestamp": "2025-07-30T18:15:02.778190",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>"
     },
     {
-      "campaign_id": 6,
-      "timestamp": "2025-07-29T16:50:28.264836",
-      "status": "warning",
-      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 60s",
-      "email": "salssapp@gmail.com",
-      "subject": "Send notifications to keep users informed plaese",
-      "sender": "Addalin",
-      "type": "zoho_rate_limit",
-      "attempt": 3,
-      "retry_delay": 60,
-      "response_code": 401,
-      "api_message": "Authentication failed",
-      "api_code": "AUTHENTICATION_FAILURE"
+      "timestamp": "2025-07-30T18:15:06.541877",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>"
     },
     {
-      "campaign_id": 6,
-      "timestamp": "2025-07-29T16:51:28.918960",
-      "status": "warning",
-      "message": "\ud83d\udea8 Zoho Rate Limit Exceeded (401) - Smart pause for 3600s",
+      "timestamp": "2025-07-30T18:15:10.318881",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:15:10.332843",
+      "type": "error",
+      "message": "Campaign error: 'recipients_count'",
+      "details": {
+        "error": "'recipients_count'"
+      }
+    }
+  ],
+  "13": [
+    {
+      "timestamp": "2025-07-30T18:25:45.424666",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
       "email": "salssapp@gmail.com",
-      "subject": "Send notifications to keep users informed plaese",
-      "sender": "Addalin",
-      "type": "zoho_rate_limit",
-      "attempt": 4,
-      "retry_delay": 3600,
-      "response_code": 401,
-      "api_message": "Authentication failed",
-      "api_code": "AUTHENTICATION_FAILURE"
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:25:51.137708",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:25:56.952210",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:26:02.678000",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:26:08.377324",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:26:08.386300",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "this is the final test ever",
+        "from_used": "Rodri <893477875@zoho.com>",
+        "account_name": "phungvanhuonghie"
+      }
     }
   ]
 }

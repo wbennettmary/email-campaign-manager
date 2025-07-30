@@ -41,20 +41,20 @@ import psutil
 # Rate Limiting Configuration
 RATE_LIMIT_CONFIG_FILE = 'rate_limit_config.json'
 
-# Default rate limiting settings - Conservative for reliable delivery
+# Default rate limiting settings
 DEFAULT_RATE_LIMIT = {
     'enabled': True,
-    'emails_per_second': 1,       # 1 email per second
-    'emails_per_minute': 50,      # 50 emails per minute (allowing for delays)
-    'emails_per_hour': 500,       # 500 emails per hour
-    'emails_per_day': 5000,       # 5000 emails per day
-    'wait_time_between_emails': 1.0,  # 1 second between emails
-    'burst_limit': 10,            # 10 emails in burst
-    'cooldown_period': 5,         # 5 seconds cooldown after 10 emails
-    'daily_quota': 5000,
-    'hourly_quota': 500,
-    'minute_quota': 50,
-    'second_quota': 1
+    'emails_per_second': 2,
+    'emails_per_minute': 100,
+    'emails_per_hour': 1000,
+    'emails_per_day': 10000,
+    'wait_time_between_emails': 0.5,  # seconds
+    'burst_limit': 5,  # max emails in burst
+    'cooldown_period': 60,  # seconds after burst
+    'daily_quota': 10000,
+    'hourly_quota': 1000,
+    'minute_quota': 100,
+    'second_quota': 2
 }
 
 # Rate limiting storage
@@ -1406,29 +1406,6 @@ def api_accounts():
                 'created_by': current_user.id
             }
             
-            # Detect available templates for this account
-            print(f"🔍 Detecting templates for new account: {data['name']}")
-            try:
-                available_templates = detect_available_templates(new_account)
-                if available_templates:
-                    new_account['template_info'] = available_templates
-                    # Store Zoho templates if available
-                    first_template = available_templates[0] if available_templates else None
-                    if first_template:
-                        new_account['zoho_templates'] = first_template.get('zoho_templates', [])
-                        new_account['template_mapping'] = first_template.get('template_mapping', {})
-                    print(f"✅ Detected {len(available_templates)} templates for account")
-                else:
-                    print(f"⚠️ No templates detected for account")
-                    new_account['template_info'] = []
-                    new_account['zoho_templates'] = []
-                    new_account['template_mapping'] = {}
-            except Exception as e:
-                print(f"⚠️ Error detecting templates: {e}")
-                new_account['template_info'] = []
-                new_account['zoho_templates'] = []
-                new_account['template_mapping'] = {}
-            
             print(f"📝 New account data: {json.dumps(new_account, indent=2)}")
             
             accounts.append(new_account)
@@ -1597,8 +1574,8 @@ def api_campaigns():
             if not data:
                 return jsonify({'error': 'No data provided'}), 400
             
-            # Validate required fields for new universal system
-            required_fields = ['name', 'account_id', 'subject', 'message', 'data_list_id']
+            # Validate required fields
+            required_fields = ['name', 'account_id', 'template_id', 'destinataires', 'subjects', 'froms']
             for field in required_fields:
                 if field not in data or not data[field]:
                     return jsonify({'error': f'Missing required field: {field}'}), 400
@@ -1611,27 +1588,20 @@ def api_campaigns():
             # Generate new campaign ID
             new_id = max([camp['id'] for camp in campaigns], default=0) + 1 if campaigns else 1
             
-            # Handle rate limiting settings
-            rate_limits = data.get('rate_limits')
-            
-            # Create campaign object with new universal structure
+            # Create campaign object
             new_campaign = {
                 'id': new_id,
                 'name': str(data['name'])[:100],  # Limit name length
                 'account_id': int(data['account_id']),
-                'subject': str(data['subject']),
-                'message': str(data['message']),  # Custom template content
-                'data_list_id': int(data['data_list_id']),
-                'from_name': str(data.get('from_name', 'Campaign Sender')),
-                'template_id': str(data.get('template_id', '')),  # Optional Zoho template ID
-                'use_custom_template': data.get('use_custom_template', True),  # Default to custom template
-                'rate_limits': rate_limits,  # Custom rate limits for this campaign
+                'template_id': str(data['template_id']),
+                'destinataires': str(data['destinataires']),
+                'subjects': str(data['subjects']),
+                'froms': str(data['froms']),
                 'status': 'ready',
                 'created_at': datetime.now().isoformat(),
                 'created_by': current_user.id,
                 'total_sent': 0,
-                'total_attempted': 0,
-                'system_version': 'universal_v2'  # Mark as using new system
+                'total_attempted': 0
             }
             
             # Add to campaigns list
@@ -1729,59 +1699,28 @@ def start_campaign(campaign_id):
     if not account:
         return jsonify({'error': 'Account not found'}), 404
     
-    # Check if campaign uses new universal system
-    if campaign.get('system_version') == 'universal_v2':
-        # Use new universal system
-        print(f"🚀 Starting universal campaign: {campaign['name']}")
-        
-        # Update campaign status
-        campaign['status'] = 'running'
-        campaign['started_at'] = datetime.now().isoformat()
-        campaign['total_sent'] = 0
-        campaign['total_attempted'] = 0
-        
-        with open(CAMPAIGNS_FILE, 'w') as f:
-            json.dump(campaigns, f)
-        
-        # Clear previous logs
-        save_campaign_logs(campaign_id, [])
-        
-        # Add to running campaigns
-        running_campaigns[campaign_id] = True
-        
-        # Start campaign in background thread using universal system
-        thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
-        thread.daemon = True
-        thread.start()
-        
-        add_notification(f"Campaign '{campaign['name']}' started successfully", 'success', campaign_id)
-        return jsonify({'message': 'Campaign started successfully'})
-    else:
-        # Legacy campaign - use old system for backward compatibility
-        print(f"🚀 Starting legacy campaign: {campaign['name']}")
-        
-        # Update campaign status
-        campaign['status'] = 'running'
-        campaign['started_at'] = datetime.now().isoformat()
-        campaign['total_sent'] = 0
-        campaign['total_attempted'] = 0
-        
-        with open(CAMPAIGNS_FILE, 'w') as f:
-            json.dump(campaigns, f)
-        
-        # Clear previous logs
-        save_campaign_logs(campaign_id, [])
-        
-        # Add to running campaigns
-        running_campaigns[campaign_id] = True
-        
-        # Start campaign in background thread using old system
-        thread = threading.Thread(target=send_campaign_emails, args=(campaign, account))
-        thread.daemon = True
-        thread.start()
-        
-        add_notification(f"Campaign '{campaign['name']}' started successfully (legacy mode)", 'success', campaign_id)
-        return jsonify({'message': 'Campaign started successfully (legacy mode)'})
+    # Update campaign status
+    campaign['status'] = 'running'
+    campaign['started_at'] = datetime.now().isoformat()
+    campaign['total_sent'] = 0
+    campaign['total_attempted'] = 0
+    
+    with open(CAMPAIGNS_FILE, 'w') as f:
+        json.dump(campaigns, f)
+    
+    # Clear previous logs
+    save_campaign_logs(campaign_id, [])
+    
+    # Add to running campaigns
+    running_campaigns[campaign_id] = True
+    
+    # Start campaign in background thread
+    thread = threading.Thread(target=send_campaign_emails, args=(campaign, account))
+    thread.daemon = True
+    thread.start()
+    
+    add_notification(f"Campaign '{campaign['name']}' started successfully", 'success', campaign_id)
+    return jsonify({'message': 'Campaign started successfully'})
 
 @app.route('/api/campaigns/<int:campaign_id>/stop', methods=['POST'])
 @login_required
@@ -1847,11 +1786,8 @@ def relaunch_campaign(campaign_id):
     # Add to running campaigns
     running_campaigns[campaign_id] = True
     
-    # Start campaign in background thread using new sequential sending
-    if campaign.get('system_version') == 'universal_v2':
-        thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
-    else:
-        thread = threading.Thread(target=send_campaign_emails, args=(campaign, account))
+    # Start campaign in background thread
+    thread = threading.Thread(target=send_campaign_emails, args=(campaign, account))
     thread.daemon = True
     thread.start()
     
@@ -2555,6 +2491,17 @@ def data_lists():
         flash(f'Error loading data lists: {str(e)}', 'error')
         return render_template('data_lists.html', data_lists=[], user_permissions=[])
 
+@app.route('/template-manager')
+@login_required
+def template_manager():
+    """Template management page"""
+    try:
+        accounts = get_user_accounts(current_user)
+        return render_template('template_manager.html', accounts=accounts)
+    except Exception as e:
+        flash(f'Error loading template manager: {str(e)}', 'error')
+        return render_template('template_manager.html', accounts=[])
+
 @app.route('/api/data-lists', methods=['GET', 'POST'])
 @login_required
 def api_data_lists():
@@ -2825,14 +2772,14 @@ def send_campaign_emails(campaign, account):
     
     try:
         print(f"🚀 Starting campaign: {campaign['name']} (ID: {campaign_id})")
-        print(f"📧 Using SIMPLE email sending without rate limits")
+        print(f"📧 Using ENHANCED email sending with template management")
         
         # Create initial log entry
         start_log = {
             'campaign_id': campaign_id,
             'timestamp': datetime.now().isoformat(),
             'status': 'info',
-            'message': f"🚀 Campaign '{campaign['name']}' started with SIMPLE delivery",
+            'message': f"🚀 Campaign '{campaign['name']}' started with ENHANCED delivery",
             'type': 'start'
         }
         
@@ -2876,18 +2823,12 @@ def send_campaign_emails(campaign, account):
         error_count = 0
         
         print(f"📊 Campaign stats: {total_emails} emails to send")
-        print(f"🎯 SIMPLE delivery tracking enabled")
+        print(f"🎯 ENHANCED delivery tracking enabled")
         print(f"🔍 Bounce detection enabled")
+        print(f"📝 Template ID: {campaign['template_id']}")
         
-        # Get the correct template URL and function for this account
-        template_config = get_template_url_and_function(account, campaign.get('template_id'))
-        url = template_config['url']
-        function_name = template_config['function_name']
-        template_number = template_config['template_number']
-        
-        print(f"📧 Using template {template_number} for account: {account['name']}")
-        print(f"🔗 Template URL: {url}")
-        print(f"⚙️ Function: {function_name}")
+        # Zoho API endpoint - using the correct function name from your working curl
+        url = "https://crm.zoho.com/crm/v7/settings/functions/send_email_template2/actions/test"
         
         for i, email in enumerate(destinataires):
             if campaign_id not in running_campaigns:
@@ -2907,8 +2848,8 @@ def send_campaign_emails(campaign, account):
             subject = random.choice(subjects) if subjects else "Default Subject"
             sender = random.choice(froms) if froms else "Default Sender"
             
-            # Deluge script matching your working curl format with dynamic template function
-            script = f'''void automation.{function_name}()
+            # Enhanced Deluge script matching your working curl format exactly
+            script = f'''void automation.Send_Email_Template2()
 {{
     curl = "https://www.zohoapis.com/crm/v7/settings/email_templates/{campaign['template_id']}";
 
@@ -2943,16 +2884,20 @@ def send_campaign_emails(campaign, account):
                 ],
             }
 
-            # Add missing headers from your working curl
+            # Enhanced headers matching your working curl exactly
             enhanced_headers = account['headers'].copy()
             enhanced_headers.update({
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0',
                 'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Language': 'fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3',
                 'Accept-Encoding': 'gzip, deflate, br, zstd',
                 'Referer': 'https://crm.zoho.com/',
                 'X-Requested-With': 'XMLHttpRequest',
+                'X-Client-SubVersion': '3a0d3e15b9286610fce2ead2fab6bc2b',
+                'X-Static-Version': '11139775',
+                'x-my-normurl': 'crm.settings.section.workflow-rules.create-workflow-rule',
                 'Origin': 'https://crm.zoho.com',
+                'Sec-GPC': '1',
                 'Connection': 'keep-alive',
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
@@ -2961,7 +2906,7 @@ def send_campaign_emails(campaign, account):
                 'TE': 'trailers'
             })
 
-            # Simple send without rate limits
+            # Enhanced send with proper error handling
             print(f"📤 Sending email to: {email}")
             print(f"   Subject: {subject}")
             print(f"   Sender: {sender}")
@@ -2987,7 +2932,7 @@ def send_campaign_emails(campaign, account):
                     result = {}
                 
                 # Check response
-                if response.status_code == 200:
+                if response.status_code == 200 and code == "SUCCESS":
                     print(f"✅ Email sent successfully to {email}")
                     sent_count += 1
                     
@@ -3021,13 +2966,17 @@ def send_campaign_emails(campaign, account):
                         print(f"❌ Email bounced: {email} - {delivery_status.get('bounce_reason', 'Unknown')}")
                     else:
                         print(f"⚠️ Delivery status unknown for {email}")
-                    
+                        
                 else:
-                    # Handle errors
-                    error_msg = f"❌ API Error ({response.status_code}): {message} | Code: {code}"
+                    # Handle API errors
+                    error_msg = f"❌ API Error ({response.status_code}): {message}"
+                    if code:
+                        error_msg += f" | Code: {code}"
                     print(error_msg)
+                    
                     error_count += 1
                     
+                    # Log error
                     error_log = {
                         'campaign_id': campaign_id,
                         'timestamp': datetime.now().isoformat(),
@@ -3036,71 +2985,57 @@ def send_campaign_emails(campaign, account):
                         'email': email,
                         'subject': subject,
                         'sender': sender,
-                        'type': 'api_error',
-                        'response_code': response.status_code,
-                        'api_message': message,
-                        'api_code': code
+                        'type': 'email_error',
+                        'total_errors': error_count,
+                        'total_attempted': i + 1
                     }
                     add_campaign_log(campaign_id, error_log)
                     socketio.emit('email_progress', error_log)
                     
-                    # If it's an authentication error, stop the campaign
-                    if response.status_code == 401:
-                        auth_error_msg = f"❌ Authentication error - stopping campaign. Please check account credentials."
-                        print(auth_error_msg)
-                        add_notification(auth_error_msg, 'error', campaign_id)
-                        break
-                    
-            except requests.exceptions.Timeout:
-                timeout_msg = f"⏰ Timeout sending email to {email}"
-                print(timeout_msg)
-                error_count += 1
-                
-                timeout_log = {
-                    'campaign_id': campaign_id,
-                    'timestamp': datetime.now().isoformat(),
-                    'status': 'error',
-                    'message': timeout_msg,
-                    'email': email,
-                    'subject': subject,
-                    'sender': sender,
-                    'type': 'timeout'
-                }
-                add_campaign_log(campaign_id, timeout_log)
-                socketio.emit('email_progress', timeout_log)
-                
             except requests.exceptions.RequestException as e:
-                network_error = f"❌ Network error sending email to {email}: {str(e)}"
-                print(network_error)
+                error_msg = f"❌ Network error sending to {email}: {str(e)}"
+                print(error_msg)
                 error_count += 1
                 
-                network_log = {
+                error_log = {
                     'campaign_id': campaign_id,
                     'timestamp': datetime.now().isoformat(),
                     'status': 'error',
-                    'message': network_error,
+                    'message': error_msg,
                     'email': email,
                     'subject': subject,
                     'sender': sender,
                     'type': 'network_error',
-                    'exception': str(e)
+                    'total_errors': error_count,
+                    'total_attempted': i + 1
                 }
-                add_campaign_log(campaign_id, network_log)
-                socketio.emit('email_progress', network_log)
-            
-            # Update campaign progress
-            campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-            campaign_index = next((i for i, c in enumerate(campaigns) if c['id'] == campaign_id), None)
-            
-            if campaign_index is not None:
-                campaigns[campaign_index]['total_sent'] = sent_count
-                campaigns[campaign_index]['total_attempted'] = i + 1
-                write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+                add_campaign_log(campaign_id, error_log)
+                socketio.emit('email_progress', error_log)
+                
+            except Exception as e:
+                error_msg = f"❌ Unexpected error sending to {email}: {str(e)}"
+                print(error_msg)
+                error_count += 1
+                
+                error_log = {
+                    'campaign_id': campaign_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'status': 'error',
+                    'message': error_msg,
+                    'email': email,
+                    'subject': subject,
+                    'sender': sender,
+                    'type': 'unexpected_error',
+                    'total_errors': error_count,
+                    'total_attempted': i + 1
+                }
+                add_campaign_log(campaign_id, error_log)
+                socketio.emit('email_progress', error_log)
             
             # Small delay between emails to avoid overwhelming the API
             time.sleep(0.5)
         
-        # Campaign completed
+        # Campaign completion
         completion_msg = f"🏁 Campaign '{campaign['name']}' completed! Sent: {sent_count}, Errors: {error_count}, Delivered: {delivered_count}, Bounced: {bounced_count}"
         print(completion_msg)
         
@@ -3120,24 +3055,24 @@ def send_campaign_emails(campaign, account):
         
         # Update campaign status
         campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-        campaign_index = next((i for i, c in enumerate(campaigns) if c['id'] == campaign_id), None)
+        for camp in campaigns:
+            if camp['id'] == campaign_id:
+                camp['status'] = 'completed'
+                camp['total_sent'] = sent_count
+                camp['total_errors'] = error_count
+                break
         
-        if campaign_index is not None:
-            campaigns[campaign_index]['status'] = 'completed'
-            campaigns[campaign_index]['completed_at'] = datetime.now().isoformat()
-            campaigns[campaign_index]['total_sent'] = sent_count
-            campaigns[campaign_index]['total_attempted'] = total_emails
-            write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+        write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
         # Remove from running campaigns
         if campaign_id in running_campaigns:
-            del running_campaigns[campaign_id]
+            running_campaigns.remove(campaign_id)
         
-        # Send completion notification
-        add_notification(completion_msg, 'success', campaign_id)
+        # Add completion notification
+        add_notification(f"Campaign '{campaign['name']}' completed: {sent_count} sent, {error_count} errors", 'success', campaign_id)
         
     except Exception as e:
-        error_msg = f"❌ Campaign error: {str(e)}"
+        error_msg = f"❌ Critical error in campaign {campaign_id}: {str(e)}"
         print(error_msg)
         
         error_log = {
@@ -3145,26 +3080,26 @@ def send_campaign_emails(campaign, account):
             'timestamp': datetime.now().isoformat(),
             'status': 'error',
             'message': error_msg,
-            'type': 'campaign_error',
-            'exception': str(e)
+            'type': 'critical_error'
         }
         add_campaign_log(campaign_id, error_log)
         socketio.emit('email_progress', error_log)
         
         # Update campaign status to error
         campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-        campaign_index = next((i for i, c in enumerate(campaigns) if c['id'] == campaign_id), None)
+        for camp in campaigns:
+            if camp['id'] == campaign_id:
+                camp['status'] = 'error'
+                break
         
-        if campaign_index is not None:
-            campaigns[campaign_index]['status'] = 'error'
-            write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+        write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
         # Remove from running campaigns
         if campaign_id in running_campaigns:
-            del running_campaigns[campaign_id]
+            running_campaigns.remove(campaign_id)
         
-        # Send error notification
-        add_notification(f"❌ Campaign '{campaign['name']}' failed: {str(e)}", 'error', campaign_id)
+        # Add error notification
+        add_notification(f"Campaign '{campaign['name']}' failed: {str(e)}", 'error', campaign_id)
 
 # Template filters
 @app.template_filter('get_status_badge_class')
@@ -3836,9 +3771,9 @@ def test_smtp_config():
     except Exception as e:
         return jsonify({'error': f'Error testing SMTP configuration: {str(e)}'}), 500
 
-def test_account_authentication(account_id, test_email=None, custom_message=None, custom_subject=None, custom_from_name=None):
+def test_account_authentication(account_id):
     """
-    Test account by sending a test email to verify both authentication and email sending
+    Test account authentication to check if credentials are valid
     """
     try:
         # Load account
@@ -3851,353 +3786,56 @@ def test_account_authentication(account_id, test_email=None, custom_message=None
                 'message': f'Account {account_id} not found'
             }
         
-        # Use provided test email or default
-        if not test_email:
-            test_email = 'test@example.com'
+        # Test URL - simple API call to check authentication
+        test_url = "https://crm.zoho.com/crm/v7/settings/email_templates"
         
-        print(f"🧪 Testing account: {account['name']}")
-        print(f"📧 Test email: {test_email}")
-        
-        # Get the correct template URL and function for this account
-        template_config = get_template_url_and_function(account)
-        url = template_config['url']
-        function_name = template_config['function_name']
-        template_number = template_config['template_number']
-        
-        print(f"📧 Using template {template_number}")
-        print(f"🔗 Template URL: {url}")
-        print(f"⚙️ Function: {function_name}")
-        
-        # Create test email content
-        if custom_subject:
-            test_subject = custom_subject
-        else:
-            test_subject = f"🧪 Test Email - {account['name']} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        
-        # Use custom message if provided, otherwise use default
-        if custom_message:
-            test_message = custom_message
-        else:
-            test_message = f"This is a test email from the Email Campaign Manager.\\n\\nAccount: {account['name']}\\nTemplate Function: {function_name}\\nTime: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\\n\\nIf you receive this email, the test was successful!\\n\\nThis confirms that:\\n- Your account authentication is working\\n- The template function is available\\n- Email sending is functional\\n\\nYou can now use this account for campaigns."
-        
-        # Set from name - use custom name if provided, otherwise use default
-        if custom_from_name:
-            from_name = custom_from_name
-        else:
-            from_name = "Test Sender"
-        
-        # Deluge script for test email - simple approach without fetching templates
-        script = f'''void automation.{function_name}()
-{{
-    // Simple test email without fetching template
-    testSubject = "{test_subject}";
-    testMessage = "{test_message}";
-
-    // Test recipient
-    destinataires = list();
-    destinataires.add("{test_email}");
-
-    sendmail
-    [
-        from: "{from_name} <" + zoho.loginuserid + ">"
-        to: destinataires
-        subject: testSubject
-        message: testMessage
-    ];
-    
-    info "Test email sent successfully to {test_email}";
-}}'''
-        
-        json_data = {'functions': [{'script': script, 'arguments': {}}]}
-        headers = account['headers'].copy()
-        headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-            'Accept': 'application/json',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Referer': 'https://crm.zoho.com/',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Origin': 'https://crm.zoho.com',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin',
-            'Priority': 'u=0',
-            'TE': 'trailers'
-        })
-        
-        print(f"🚀 Sending test request to: {url}")
-        response = requests.post(url, json=json_data, cookies=account['cookies'], headers=headers, timeout=30)
-        
-        print(f"📊 Response status: {response.status_code}")
-        print(f"📄 Response text: {response.text[:500]}...")
+        # Make a simple GET request to test authentication
+        response = requests.get(
+            test_url,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=10
+        )
         
         if response.status_code == 200:
-            print(f"✅ Test email sent successfully to {test_email}")
             return {
                 'success': True,
-                'message': f'Test email sent successfully to {test_email}',
-                'template_used': template_number,
-                'function_used': function_name,
-                'subject_used': test_subject,
-                'from_used': f"{from_name} <{account.get('org_id', 'test')}@zoho.com>",
+                'message': 'Account authentication successful',
                 'account_name': account.get('name', 'Unknown')
             }
-        else:
-            error_msg = f"❌ Test email failed (Status: {response.status_code})"
-            print(error_msg)
-            print(f"📄 Full response: {response.text}")
+        elif response.status_code == 401:
             return {
                 'success': False,
-                'message': f'Test email failed: HTTP {response.status_code}',
-                'error': response.text,
+                'message': 'Account authentication failed (401) - Invalid credentials or expired session',
                 'account_name': account.get('name', 'Unknown'),
-                'status_code': response.status_code,
-                'template_used': template_number,
-                'function_used': function_name,
-                'subject_used': test_subject,
-                'from_used': f"{from_name} <{account.get('org_id', 'test')}@zoho.com>"
+                'status_code': 401
+            }
+        else:
+            return {
+                'success': False,
+                'message': f'Account test failed with status {response.status_code}',
+                'account_name': account.get('name', 'Unknown'),
+                'status_code': response.status_code
             }
             
     except Exception as e:
-        error_msg = f"❌ Error sending test email: {str(e)}"
-        print(error_msg)
         return {
             'success': False,
-            'message': f'Error sending test email: {str(e)}',
-            'error': str(e)
+            'message': f'Error testing account: {str(e)}'
         }
-
-@app.route('/api/accounts/<int:account_id>/refresh-templates', methods=['POST'])
-@login_required
-def refresh_account_templates(account_id):
-    """Refresh template detection for an account"""
-    try:
-        accounts = read_json_file_simple(ACCOUNTS_FILE)
-        account = next((a for a in accounts if a['id'] == account_id), None)
-        
-        if not account:
-            return jsonify({'error': 'Account not found'}), 404
-        
-        # Check permissions
-        if current_user.role != 'admin' and account.get('created_by') != current_user.id:
-            return jsonify({'error': 'Permission denied'}), 403
-        
-        # Detect templates
-        print(f"🔍 Refreshing templates for account: {account['name']}")
-        available_templates = detect_available_templates(account)
-        
-        # Update account with new template info
-        for i, acc in enumerate(accounts):
-            if acc['id'] == account_id:
-                accounts[i]['template_info'] = available_templates
-                write_json_file_simple(ACCOUNTS_FILE, accounts)
-                break
-        
-        # Get the first available template info for additional details
-        first_template = available_templates[0] if available_templates else None
-        zoho_templates = first_template.get('zoho_templates', []) if first_template else []
-        template_mapping = first_template.get('template_mapping', {}) if first_template else {}
-        
-        return jsonify({
-            'success': True,
-            'message': f'Found {len(available_templates)} templates and {len(zoho_templates)} Zoho templates',
-            'templates': available_templates,
-            'zoho_templates': zoho_templates,
-            'template_mapping': template_mapping
-        })
-        
-    except Exception as e:
-        return jsonify({'error': f'Error refreshing templates: {str(e)}'}), 500
 
 @app.route('/api/accounts/<int:account_id>/test', methods=['POST'])
 @login_required
 def test_account(account_id):
     """Test account authentication"""
     try:
-        # Get test email and custom parameters from request
-        data = request.get_json() if request.is_json else {}
-        test_email = data.get('test_email', 'test@example.com')
-        custom_message = data.get('custom_message')
-        custom_subject = data.get('custom_subject')
-        custom_from_name = data.get('custom_from_name')
-        
-        result = test_account_authentication(account_id, test_email, custom_message, custom_subject, custom_from_name)
+        result = test_account_authentication(account_id)
         return jsonify(result)
     except Exception as e:
         return jsonify({
             'success': False,
             'message': f'Error testing account: {str(e)}'
         }), 500
-
-@app.route('/api/campaigns/<int:campaign_id>/test', methods=['POST'])
-@login_required
-def test_campaign(campaign_id):
-    """Test campaign by sending a single test email"""
-    try:
-        # Get campaign data
-        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-        campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
-        
-        if not campaign:
-            return jsonify({'success': False, 'message': 'Campaign not found'}), 404
-        
-        # Check permissions
-        if not has_permission(current_user, 'manage_campaigns'):
-            return jsonify({'success': False, 'message': 'Permission denied'}), 403
-        
-        # Get account data
-        accounts = read_json_file_simple(ACCOUNTS_FILE)
-        account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
-        
-        if not account:
-            return jsonify({'success': False, 'message': 'Account not found'}), 404
-        
-        # Get test email and custom parameters from request
-        data = request.get_json()
-        test_email = data.get('test_email')
-        custom_message = data.get('custom_message')
-        custom_subject = data.get('custom_subject')
-        custom_from_name = data.get('custom_from_name')
-        
-        if not test_email:
-            return jsonify({'success': False, 'message': 'Test email is required'}), 400
-        
-        # Send test email using campaign template
-        result = send_test_email(account, test_email, campaign.get('template_id'), custom_message, custom_subject, custom_from_name)
-        
-        if result['success']:
-            # Add test log
-            add_campaign_log(campaign_id, {
-                'timestamp': datetime.now().isoformat(),
-                'type': 'test',
-                'message': f'Test email sent to {test_email}',
-                'details': result
-            })
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        print(f"❌ Error testing campaign: {str(e)}")
-        return jsonify({'success': False, 'message': f'Error testing campaign: {str(e)}'}), 500
-
-# Test email functionality
-def send_test_email(account, test_email, template_id=None, custom_message=None, custom_subject=None, custom_from_name=None):
-    """Send a test email to verify account connection and template functionality"""
-    try:
-        print(f"🧪 Sending test email to: {test_email}")
-        print(f"📧 Using account: {account['name']}")
-        
-        # Get the correct template URL and function for this account
-        template_config = get_template_url_and_function(account, template_id)
-        url = template_config['url']
-        function_name = template_config['function_name']
-        template_number = template_config['template_number']
-        
-        print(f"📧 Using template {template_number} for test")
-        print(f"🔗 Template URL: {url}")
-        print(f"⚙️ Function: {function_name}")
-        
-        # Create test email content
-        if custom_subject:
-            test_subject = custom_subject
-        else:
-            test_subject = f"🧪 Test Email - {account['name']} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        
-        # Use custom message if provided, otherwise use default
-        if custom_message:
-            test_message = custom_message
-        else:
-            test_message = f"This is a test email from the Email Campaign Manager.\\n\\nAccount: {account['name']}\\nTemplate Function: {function_name}\\nTime: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\\n\\nIf you receive this email, the test was successful!\\n\\nThis confirms that:\\n- Your account authentication is working\\n- The template function is available\\n- Email sending is functional\\n\\nYou can now use this account for campaigns."
-        
-        # Set from name - use custom name if provided, otherwise use default
-        if custom_from_name:
-            from_name = custom_from_name
-        else:
-            from_name = "Test Sender"
-        
-        # Deluge script for test email - simple approach without fetching templates
-        script = f'''void automation.{function_name}()
-{{
-    // Simple test email without fetching template
-    testSubject = "{test_subject}";
-    testMessage = "{test_message}";
-
-    // Test recipient
-    destinataires = list();
-    destinataires.add("{test_email}");
-
-    sendmail
-    [
-        from: "{from_name} <" + zoho.loginuserid + ">"
-        to: destinataires
-        subject: testSubject
-        message: testMessage
-    ];
-    
-    info "Test email sent successfully to {test_email}";
-}}'''
-        
-        json_data = {'functions': [{'script': script, 'arguments': {}}]}
-        
-        # Use the exact same headers as the working campaign function
-        headers = account['headers'].copy()
-        headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-            'Accept': 'application/json',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Referer': 'https://crm.zoho.com/',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Origin': 'https://crm.zoho.com',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin',
-            'Priority': 'u=0',
-            'TE': 'trailers'
-        })
-        
-        print(f"🚀 Sending test request to: {url}")
-        print(f"📄 Request data: {json_data}")
-        
-        response = requests.post(url, json=json_data, cookies=account['cookies'], headers=headers, timeout=30)
-        
-        print(f"📊 Response status: {response.status_code}")
-        print(f"📄 Response text: {response.text[:500]}...")
-        
-        if response.status_code == 200:
-            print(f"✅ Test email sent successfully to {test_email}")
-            return {
-                'success': True,
-                'message': f'Test email sent successfully to {test_email}',
-                'template_used': template_number,
-                'function_used': function_name,
-                'subject_used': test_subject,
-                'from_used': f"{from_name} <{account.get('org_id', 'test')}@zoho.com>"
-            }
-        else:
-            error_msg = f"❌ Test email failed (Status: {response.status_code})"
-            print(error_msg)
-            print(f"📄 Full response: {response.text}")
-            return {
-                'success': False,
-                'message': f'Test email failed: HTTP {response.status_code}',
-                'error': response.text,
-                'template_used': template_number,
-                'function_used': function_name,
-                'subject_used': test_subject,
-                'from_used': f"{from_name} <{account.get('org_id', 'test')}@zoho.com>"
-            }
-            
-    except Exception as e:
-        error_msg = f"❌ Error sending test email: {str(e)}"
-        print(error_msg)
-        return {
-            'success': False,
-            'message': f'Error sending test email: {str(e)}',
-            'error': str(e)
-        }
 
 # Simple memory optimization functions
 def log_memory_usage():
@@ -4238,818 +3876,365 @@ def write_json_file_simple(filename, data):
         print(f"❌ Error writing {filename}: {e}")
         return False
 
-# Template detection and management functions
-def detect_available_templates(account):
-    """Detect available email templates for an account and fetch template IDs"""
-    try:
-        print(f"🔍 Detecting templates for account: {account['name']}")
-        
-        available_templates = []
-        template_numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10]  # Common template numbers
-        
-        # First, try to fetch all email templates from Zoho CRM
-        print(f"📧 Fetching email templates from Zoho CRM...")
-        try:
-            templates_url = "https://www.zohoapis.com/crm/v7/settings/email_templates"
-            headers = account['headers'].copy()
-            headers.update({
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-                'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate, br, zstd',
-                'Referer': 'https://crm.zoho.com/',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Origin': 'https://crm.zoho.com',
-                'Connection': 'keep-alive',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'same-origin',
-                'Priority': 'u=0',
-                'TE': 'trailers'
-            })
-            
-            response = requests.get(
-                templates_url,
-                cookies=account['cookies'],
-                headers=headers,
-                timeout=15
-            )
-            
-            if response.status_code == 200:
-                templates_data = response.json()
-                zoho_templates = templates_data.get('email_templates', [])
-                print(f"✅ Successfully fetched {len(zoho_templates)} templates from Zoho CRM")
-                
-                # Create a mapping of template names to IDs
-                template_mapping = {}
-                for template in zoho_templates:
-                    template_name = template.get('name', 'Unknown')
-                    template_id = template.get('id', '')
-                    template_mapping[template_name.lower()] = {
-                        'id': template_id,
-                        'name': template_name,
-                        'subject': template.get('subject', ''),
-                        'content': template.get('content', '')[:100] + '...' if template.get('content') else ''
-                    }
-                    print(f"📋 Found template: {template_name} (ID: {template_id})")
-            else:
-                print(f"⚠️ Could not fetch templates from Zoho CRM (Status: {response.status_code})")
-                zoho_templates = []
-                template_mapping = {}
-                
-        except Exception as e:
-            print(f"⚠️ Error fetching templates from Zoho CRM: {str(e)}")
-            zoho_templates = []
-            template_mapping = {}
-        
-        # Now test each template function
-        for template_num in template_numbers:
-            try:
-                # Test template endpoint
-                url = f"https://crm.zoho.com/crm/v7/settings/functions/send_email_template{template_num}/actions/test"
-                
-                # Create a simple test script
-                test_script = f'''void automation.Send_Email_Template{template_num}()
-{{
-    // Simple test to check if template exists
-    info "Template {template_num} test";
-}}'''
-                
-                json_data = {
-                    'functions': [
-                        {
-                            'script': test_script,
-                            'arguments': {},
-                        },
-                    ],
-                }
-                
-                headers = account['headers'].copy()
-                headers.update({
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-                    'Accept': 'application/json',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Accept-Encoding': 'gzip, deflate, br, zstd',
-                    'Referer': 'https://crm.zoho.com/',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Origin': 'https://crm.zoho.com',
-                    'Connection': 'keep-alive',
-                    'Sec-Fetch-Dest': 'empty',
-                    'Sec-Fetch-Mode': 'cors',
-                    'Sec-Fetch-Site': 'same-origin',
-                    'Priority': 'u=0',
-                    'TE': 'trailers'
-                })
-                
-                response = requests.post(
-                    url,
-                    json=json_data,
-                    cookies=account['cookies'],
-                    headers=headers,
-                    timeout=10
-                )
-                
-                if response.status_code == 200:
-                    template_info = {
-                        'number': template_num,
-                        'url': url,
-                        'function_name': f'Send_Email_Template{template_num}',
-                        'status': 'available',
-                        'zoho_templates': zoho_templates,  # Include all fetched templates
-                        'template_mapping': template_mapping  # Include template mapping
-                    }
-                    available_templates.append(template_info)
-                    print(f"✅ Template {template_num} is available")
-                else:
-                    print(f"❌ Template {template_num} not available (Status: {response.status_code})")
-                    
-            except Exception as e:
-                print(f"⚠️ Error testing template {template_num}: {str(e)}")
-                continue
-        
-        print(f"📊 Found {len(available_templates)} available templates")
-        return available_templates
-        
-    except Exception as e:
-        print(f"❌ Error detecting templates: {str(e)}")
-        return []
-
-def get_account_template_info(account, template_id=None):
-    """Get template information for an account"""
-    try:
-        # If account has stored template info, use it
-        if 'template_info' in account and account['template_info']:
-            templates = account['template_info']
-            
-            # If specific template_id requested, find it
-            if template_id:
-                for template in templates:
-                    if template.get('template_id') == template_id:
-                        return template
-                return None
-            
-            # Return first available template as default
-            return templates[0] if templates else None
-        
-        # Fallback: detect templates if not stored
-        print(f"🔍 No stored template info, detecting templates for account: {account['name']}")
-        available_templates = detect_available_templates(account)
-        
-        # Update account with template info
-        if available_templates:
-            account['template_info'] = available_templates
-            # Save updated account info
-            try:
-                accounts = read_json_file_simple(ACCOUNTS_FILE)
-                for i, acc in enumerate(accounts):
-                    if acc['id'] == account['id']:
-                        accounts[i]['template_info'] = available_templates
-                        write_json_file_simple(ACCOUNTS_FILE, accounts)
-                        break
-            except Exception as e:
-                print(f"⚠️ Could not save template info: {e}")
-        
-        return available_templates[0] if available_templates else None
-        
-    except Exception as e:
-        print(f"❌ Error getting template info: {str(e)}")
-        return None
-
-def get_template_url_and_function(account, template_id=None):
-    """Get the correct URL and function name for an account's template"""
-    try:
-        template_info = get_account_template_info(account, template_id)
-        
-        if template_info:
-            return {
-                'url': template_info['url'],
-                'function_name': template_info['function_name'],
-                'template_number': template_info['number']
-            }
-        else:
-            # Fallback to template3 if no template info available
-            print(f"⚠️ No template info found for account {account['name']}, using fallback template3")
-            return {
-                'url': "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
-                'function_name': 'Send_Email_Template3',
-                'template_number': 3
-            }
-            
-    except Exception as e:
-        print(f"❌ Error getting template URL: {str(e)}")
-        # Fallback
-        return {
-            'url': "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
-            'function_name': 'Send_Email_Template3',
-            'template_number': 3
-        }
-
-def send_universal_email(account, recipients, subject, message, from_name=None, template_id=None, campaign_id=None):
+def update_email_template(account, template_id, new_content, new_subject=None):
     """
-    Universal email sending function based on the test email mechanism
-    This replaces the old campaign sending logic with the proven test email approach
-    """
-    try:
-        print(f"📧 Sending universal email to {len(recipients)} recipients")
-        print(f"📧 Using account: {account['name']}")
-        print(f"📨 Subject: {subject}")
-        print(f"👤 From: {from_name or 'Default Sender'}")
-        
-        # Rate limiting check
-        user_id = current_user.id if current_user else 1
-        allowed, wait_time, reason = check_rate_limit(user_id, campaign_id)
-        if not allowed:
-            print(f"⏱️ Rate limit exceeded: {reason}")
-            return {
-                'success': False,
-                'message': f'Rate limit exceeded: {reason}',
-                'rate_limited': True,
-                'wait_time': wait_time
-            }
-        
-        # Get the correct template URL and function for this account
-        template_config = get_template_url_and_function(account, template_id)
-        url = template_config['url']
-        function_name = template_config['function_name']
-        template_number = template_config['template_number']
-        
-        print(f"📧 Using template {template_number}")
-        print(f"🔗 Template URL: {url}")
-        print(f"⚙️ Function: {function_name}")
-        
-        # Set from name - use provided name or default
-        if from_name:
-            from_display = from_name
-        else:
-            from_display = "Campaign Sender"
-        
-        # Properly escape the message content for Deluge script
-        # Replace quotes and escape special characters
-        escaped_message = message.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-        escaped_subject = subject.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-        
-        # Create the Deluge script for sending emails
-        # Convert recipients list to Deluge list format
-        recipients_list = '[' + ', '.join([f'"{email}"' for email in recipients]) + ']'
-        
-        script = f'''void automation.{function_name}()
-{{
-    // Universal email sending using custom content
-    emailSubject = "{escaped_subject}";
-    emailMessage = "{escaped_message}";
+    Update an email template using Zoho CRM API
     
-    // Recipients list
-    destinataires = {recipients_list};
+    Args:
+        account: Account dictionary with cookies and headers
+        template_id: The template ID to update
+        new_content: New HTML content for the template
+        new_subject: New subject line (optional)
     
-    sendmail
-    [
-        from: "{from_display} <" + zoho.loginuserid + ">"
-        to: destinataires
-        subject: emailSubject
-        message: emailMessage
-    ];
-    
-    info "Universal email sent successfully to " + destinataires.size() + " recipients";
-}}'''
-        
-        json_data = {'functions': [{'script': script, 'arguments': {}}]}
-        
-        # Use the exact same headers as the working test email function
-        headers = account['headers'].copy()
-        headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-            'Accept': 'application/json',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Referer': 'https://crm.zoho.com/',
-            'X-Requested-With': 'XMLHttpRequest',
-            'Origin': 'https://crm.zoho.com',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin',
-            'Priority': 'u=0',
-            'TE': 'trailers'
-        })
-        
-        print(f"🚀 Sending universal email request to: {url}")
-        print(f"📄 Recipients count: {len(recipients)}")
-        
-        response = requests.post(url, json=json_data, cookies=account['cookies'], headers=headers, timeout=60)
-        
-        print(f"📊 Response status: {response.status_code}")
-        print(f"📄 Response text: {response.text[:500]}...")
-        
-        if response.status_code == 200:
-            print(f"✅ Universal email sent successfully to {len(recipients)} recipients")
-            
-            # Update rate limit counters
-            update_rate_limit_counters(user_id)
-            
-            # Log successful sends
-            if campaign_id:
-                for recipient in recipients:
-                    add_delivered_email(recipient, campaign_id, subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>", {
-                        'template_used': template_number,
-                        'function_used': function_name,
-                        'account_name': account['name']
-                    })
-            
-            return {
-                'success': True,
-                'message': f'Email sent successfully to {len(recipients)} recipients',
-                'recipients_count': len(recipients),
-                'template_used': template_number,
-                'function_used': function_name,
-                'subject_used': subject,
-                'from_used': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>",
-                'account_name': account['name']
-            }
-        else:
-            error_msg = f"❌ Universal email failed (Status: {response.status_code})"
-            print(error_msg)
-            print(f"📄 Full response: {response.text}")
-            
-            # Log failed sends
-            if campaign_id:
-                for recipient in recipients:
-                    add_bounce_email(recipient, campaign_id, "API Error", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
-            
-            return {
-                'success': False,
-                'message': f'Email sending failed: HTTP {response.status_code}',
-                'error': response.text,
-                'recipients_count': len(recipients),
-                'template_used': template_number,
-                'function_used': function_name,
-                'subject_used': subject,
-                'from_used': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>",
-                'account_name': account['name']
-            }
-            
-    except Exception as e:
-        error_msg = f"❌ Error sending universal email: {str(e)}"
-        print(error_msg)
-        
-        # Log error for all recipients
-        if campaign_id:
-            for recipient in recipients:
-                add_bounce_email(recipient, campaign_id, "System Error", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
-        
-        return {
-            'success': False,
-            'message': f'Error sending email: {str(e)}',
-            'error': str(e),
-            'recipients_count': len(recipients)
-        }
-
-def send_universal_campaign_emails(campaign, account):
-    """
-    Universal campaign sending function using the new universal email system
-    This replaces the old send_campaign_emails function
+    Returns:
+        Dict with success status and response
     """
     try:
-        print(f"🚀 Starting universal campaign: {campaign['name']}")
-        print(f"📧 Account: {account['name']}")
-        print(f"📨 Subject: {campaign['subject']}")
-        print(f"👤 From: {campaign.get('from_name', 'Campaign Sender')}")
+        print(f"📝 Updating email template {template_id}")
         
-        # Get data list emails
-        data_list_id = campaign.get('data_list_id')
-        if not data_list_id:
-            print("❌ No data list ID found in campaign")
-            return
+        # First, get the current template to preserve other fields
+        get_url = f"https://www.zohoapis.com/crm/v7/settings/email_templates/{template_id}"
         
-        # Get emails from data list
-        try:
-            emails = get_data_list_emails(data_list_id)
-            if not emails:
-                print("❌ No emails found in data list")
-                return
-            print(f"📧 Found {len(emails)} emails in data list")
-        except Exception as e:
-            print(f"❌ Error getting emails from data list: {str(e)}")
-            return
-        
-        # Filter out bounced emails
-        bounced_emails = get_bounced_emails(campaign['id'])
-        filtered_emails = [email for email in emails if email not in bounced_emails]
-        
-        if len(filtered_emails) != len(emails):
-            print(f"⚠️ Filtered out {len(emails) - len(filtered_emails)} bounced emails")
-        
-        if not filtered_emails:
-            print("❌ No valid emails to send to after filtering")
-            return
-        
-        # Get campaign content
-        subject = campaign['subject']
-        message = campaign['message']  # Custom template content
-        from_name = campaign.get('from_name', 'Campaign Sender')
-        template_id = campaign.get('template_id', None)
-        
-        print(f"📄 Message length: {len(message)} characters")
-        print(f"📋 Using custom template: {campaign.get('use_custom_template', True)}")
-        
-        # Send emails using sequential email function (one by one)
-        result = send_sequential_emails(
-            account=account,
-            recipients=filtered_emails,
-            subject=subject,
-            message=message,
-            from_name=from_name,
-            template_id=template_id,
-            campaign_id=campaign['id']
+        get_response = requests.get(
+            get_url,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=30
         )
         
-        # Update campaign status based on result
-        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-        campaign_index = next((i for i, c in enumerate(campaigns) if c['id'] == campaign['id']), None)
-        if campaign_index is not None:
-            if result['success']:
-                campaigns[campaign_index]['status'] = 'completed'
-                campaigns[campaign_index]['completed_at'] = datetime.now().isoformat()
-                campaigns[campaign_index]['total_sent'] = result.get('emails_sent', 0)
-                campaigns[campaign_index]['total_attempted'] = result.get('total_attempted', 0)
-                # Add success log
-                add_campaign_log(campaign['id'], {
-                    'timestamp': datetime.now().isoformat(),
-                    'type': 'success',
-                    'message': f'Campaign completed successfully. Sent to {result.get("emails_sent", 0)} recipients.',
-                    'details': result
-                })
-                print(f"✅ Campaign completed successfully - {result.get('emails_sent', 0)} emails sent")
-                add_notification(f"Campaign '{campaign['name']}' completed successfully", 'success', campaign['id'])
+        if get_response.status_code != 200:
+            return {
+                'success': False,
+                'message': f"Failed to get template: HTTP {get_response.status_code}",
+                'error': 'template_not_found'
+            }
+        
+        current_template = get_response.json()
+        template_data = current_template.get('email_templates', [{}])[0]
+        
+        # Prepare update data
+        update_data = {
+            'data': [{
+                'id': template_id,
+                'content': new_content
+            }]
+        }
+        
+        # Add subject if provided
+        if new_subject:
+            update_data['data'][0]['subject'] = new_subject
+        
+        # Update the template
+        update_url = f"https://www.zohoapis.com/crm/v7/settings/email_templates"
+        
+        update_response = requests.put(
+            update_url,
+            json=update_data,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=30
+        )
+        
+        if update_response.status_code == 200:
+            result = update_response.json()
+            if result.get('data', [{}])[0].get('status', {}).get('code') == 'SUCCESS':
+                print(f"✅ Template {template_id} updated successfully")
+                return {
+                    'success': True,
+                    'message': 'Template updated successfully',
+                    'template_id': template_id
+                }
             else:
-                campaigns[campaign_index]['status'] = 'failed'
-                campaigns[campaign_index]['failed_at'] = datetime.now().isoformat()
-                campaigns[campaign_index]['total_attempted'] = result.get('total_attempted', 0)
-                # Add failure log
-                add_campaign_log(campaign['id'], {
-                    'timestamp': datetime.now().isoformat(),
-                    'type': 'error',
-                    'message': f'Campaign failed: {result.get("message", "Unknown error")}',
-                    'details': result
-                })
-                print(f"❌ Campaign failed: {result.get('message', 'Unknown error')}")
-                add_notification(f"Campaign '{campaign['name']}' failed: {result.get('message', 'Unknown error')}", 'error', campaign['id'])
-            # Save updated campaign
-            write_json_file_simple(CAMPAIGNS_FILE, campaigns)
-        
-        # Remove from running campaigns
-        if campaign['id'] in running_campaigns:
-            del running_campaigns[campaign['id']]
-        
-    except Exception as e:
-        print(f"❌ Error in universal campaign sending: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        
-        # Update campaign status to failed
-        try:
-            campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-            campaign_index = next((i for i, c in enumerate(campaigns) if c['id'] == campaign['id']), None)
-            
-            if campaign_index is not None:
-                campaigns[campaign_index]['status'] = 'failed'
-                campaigns[campaign_index]['failed_at'] = datetime.now().isoformat()
-                
-                # Add error log
-                add_campaign_log(campaign['id'], {
-                    'timestamp': datetime.now().isoformat(),
-                    'type': 'error',
-                    'message': f'Campaign error: {str(e)}',
-                    'details': {'error': str(e)}
-                })
-                
-                write_json_file_simple(CAMPAIGNS_FILE, campaigns)
-        except:
-            pass
-        
-        # Remove from running campaigns
-        if campaign['id'] in running_campaigns:
-            del running_campaigns[campaign['id']]
-        
-        add_notification(f"Campaign '{campaign['name']}' failed with error: {str(e)}", 'error', campaign['id'])
-
-def send_sequential_emails(account, recipients, subject, message, from_name=None, template_id=None, campaign_id=None):
-    """
-    Sequential email sending function - sends emails one by one with proper delays
-    This ensures emails are sent sequentially, not in parallel
-    """
-    try:
-        print(f"📧 Starting sequential email sending to {len(recipients)} recipients")
-        print(f"📧 Using account: {account['name']}")
-        print(f"📨 Subject: {subject}")
-        print(f"👤 From: {from_name or 'Default Sender'}")
-        
-        # Get the correct template URL and function for this account
-        template_config = get_template_url_and_function(account, template_id)
-        url = template_config['url']
-        function_name = template_config['function_name']
-        template_number = template_config['template_number']
-        
-        print(f"📧 Using template {template_number}")
-        print(f"🔗 Template URL: {url}")
-        print(f"⚙️ Function: {function_name}")
-        
-        # Set from name - use provided name or default
-        if from_name:
-            from_display = from_name
+                error_msg = result.get('data', [{}])[0].get('status', {}).get('message', 'Unknown error')
+                return {
+                    'success': False,
+                    'message': f"Template update failed: {error_msg}",
+                    'error': 'update_failed'
+                }
         else:
-            from_display = "Campaign Sender"
-        
-        # Properly escape the message content for Deluge script
-        escaped_message = message.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-        escaped_subject = subject.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-        
-        # Rate limiting variables
-        user_id = current_user.id if current_user else 1
-        emails_sent = 0
-        emails_failed = 0
-        burst_count = 0
-        
-        # Send emails one by one
-        for i, recipient in enumerate(recipients):
-            try:
-                # Check rate limit before each email
-                allowed, wait_time, reason = check_rate_limit(user_id, campaign_id)
-                if not allowed:
-                    print(f"⏱️ Rate limit exceeded: {reason}")
-                    # Wait for the required time
-                    time.sleep(wait_time)
-                    # Check again after waiting
-                    allowed, wait_time, reason = check_rate_limit(user_id, campaign_id)
-                    if not allowed:
-                        print(f"❌ Still rate limited after waiting: {reason}")
-                        break
-                
-                # Create Deluge script for single email
-                script = f'''void automation.{function_name}()
-{{
-    // Sequential email sending - single recipient
-    emailSubject = "{escaped_subject}";
-    emailMessage = "{escaped_message}";
-    
-    // Single recipient
-    destinataires = ["{recipient}"];
-    
-    sendmail
-    [
-        from: "{from_display} <" + zoho.loginuserid + ">"
-        to: destinataires
-        subject: emailSubject
-        message: emailMessage
-    ];
-    
-    info "Sequential email sent successfully to " + destinataires.size() + " recipient";
-}}'''
-                
-                json_data = {'functions': [{'script': script, 'arguments': {}}]}
-                
-                # Use the exact same headers as the working test email function
-                headers = account['headers'].copy()
-                headers.update({
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
-                    'Accept': 'application/json',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Accept-Encoding': 'gzip, deflate, br, zstd',
-                    'Referer': 'https://crm.zoho.com/',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Origin': 'https://crm.zoho.com',
-                    'Connection': 'keep-alive',
-                    'Sec-Fetch-Dest': 'empty',
-                    'Sec-Fetch-Mode': 'cors',
-                    'Sec-Fetch-Site': 'same-origin',
-                    'Priority': 'u=0',
-                    'TE': 'trailers'
-                })
-                
-                print(f"📧 Sending email {i+1}/{len(recipients)} to: {recipient}")
-                
-                response = requests.post(url, json=json_data, cookies=account['cookies'], headers=headers, timeout=60)
-                
-                if response.status_code == 200:
-                    print(f"✅ Email {i+1} sent successfully to {recipient}")
-                    emails_sent += 1
-                    burst_count += 1
-                    
-                    # Update rate limit counters
-                    update_rate_limit_counters(user_id)
-                    
-                    # Log successful send
-                    if campaign_id:
-                        add_delivered_email(recipient, campaign_id, subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>", {
-                            'template_used': template_number,
-                            'function_used': function_name,
-                            'account_name': account['name'],
-                            'email_number': i + 1
-                        })
-                    
-                    # Add campaign log
-                    if campaign_id:
-                        add_campaign_log(campaign_id, {
-                            'timestamp': datetime.now().isoformat(),
-                            'status': 'success',
-                            'message': f'Email {i+1}/{len(recipients)} sent successfully to {recipient}',
-                            'email': recipient,
-                            'subject': subject,
-                            'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
-                        })
-                    
-                else:
-                    print(f"❌ Email {i+1} failed to {recipient} (Status: {response.status_code})")
-                    emails_failed += 1
-                    
-                    # Log failed send
-                    if campaign_id:
-                        add_bounce_email(recipient, campaign_id, f"API Error {response.status_code}", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
-                    
-                    # Add campaign log
-                    if campaign_id:
-                        add_campaign_log(campaign_id, {
-                            'timestamp': datetime.now().isoformat(),
-                            'status': 'error',
-                            'message': f'Email {i+1}/{len(recipients)} failed to {recipient}: HTTP {response.status_code}',
-                            'email': recipient,
-                            'subject': subject,
-                            'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
-                        })
-                
-                # Wait between emails (1 second)
-                if i < len(recipients) - 1:  # Don't wait after the last email
-                    time.sleep(1.0)
-                
-                # Check if we need a burst cooldown (every 10 emails)
-                if burst_count >= 10:
-                    print(f"⏱️ Burst limit reached ({burst_count} emails). Waiting 5 seconds...")
-                    time.sleep(5.0)
-                    burst_count = 0
-                
-            except Exception as e:
-                print(f"❌ Error sending email {i+1} to {recipient}: {str(e)}")
-                emails_failed += 1
-                
-                # Log error
-                if campaign_id:
-                    add_bounce_email(recipient, campaign_id, f"System Error: {str(e)}", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
-                
-                # Add campaign log
-                if campaign_id:
-                    add_campaign_log(campaign_id, {
-                        'timestamp': datetime.now().isoformat(),
-                        'status': 'error',
-                        'message': f'Email {i+1}/{len(recipients)} error to {recipient}: {str(e)}',
-                        'email': recipient,
-                        'subject': subject,
-                        'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
-                    })
-        
-        print(f"🏁 Sequential email sending completed!")
-        print(f"✅ Successfully sent: {emails_sent}")
-        print(f"❌ Failed: {emails_failed}")
-        print(f"📊 Total attempted: {len(recipients)}")
-        
-        return {
-            'success': True,
-            'message': f'Sequential email sending completed. Sent: {emails_sent}, Failed: {emails_failed}',
-            'emails_sent': emails_sent,
-            'emails_failed': emails_failed,
-            'total_attempted': len(recipients),
-            'template_used': template_number,
-            'function_used': function_name,
-            'subject_used': subject,
-            'from_used': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>",
-            'account_name': account['name']
-        }
-            
-    except Exception as e:
-        error_msg = f"❌ Error in sequential email sending: {str(e)}"
-        print(error_msg)
-        
-        return {
-            'success': False,
-            'message': f'Error in sequential email sending: {str(e)}',
-            'error': str(e),
-            'emails_sent': emails_sent if 'emails_sent' in locals() else 0,
-            'emails_failed': emails_failed if 'emails_failed' in locals() else 0,
-            'total_attempted': len(recipients)
-        }
-
-@app.route('/rate-limits')
-@login_required
-def rate_limits():
-    """Rate limiting configuration page"""
-    config = load_rate_limit_config()
-    return render_template('rate_limits.html', config=config)
-
-@app.route('/api/rate-limits', methods=['GET', 'PUT'])
-@login_required
-def api_rate_limits():
-    """API endpoint for rate limiting configuration"""
-    if request.method == 'GET':
-        config = load_rate_limit_config()
-        return jsonify(config)
-    
-    elif request.method == 'PUT':
-        try:
-            data = request.get_json()
-            
-            # Validate the configuration
-            required_fields = ['emails_per_second', 'emails_per_minute', 'emails_per_hour', 'emails_per_day', 
-                             'wait_time_between_emails', 'burst_limit', 'cooldown_period']
-            
-            for field in required_fields:
-                if field not in data:
-                    return jsonify({'success': False, 'message': f'Missing required field: {field}'}), 400
-                
-                # Validate numeric values
-                try:
-                    value = float(data[field])
-                    if value < 0:
-                        return jsonify({'success': False, 'message': f'{field} must be positive'}), 400
-                except (ValueError, TypeError):
-                    return jsonify({'success': False, 'message': f'{field} must be a number'}), 400
-            
-            # Additional validation
-            if data['wait_time_between_emails'] < 0.1:
-                return jsonify({'success': False, 'message': 'Wait time between emails must be at least 0.1 seconds'}), 400
-            
-            if data['burst_limit'] < 1:
-                return jsonify({'success': False, 'message': 'Burst limit must be at least 1'}), 400
-            
-            if data['cooldown_period'] < 1:
-                return jsonify({'success': False, 'message': 'Cooldown period must be at least 1 second'}), 400
-            
-            # Update the configuration
-            config = {
-                'enabled': data.get('enabled', True),
-                'emails_per_second': data['emails_per_second'],
-                'emails_per_minute': data['emails_per_minute'],
-                'emails_per_hour': data['emails_per_hour'],
-                'emails_per_day': data['emails_per_day'],
-                'wait_time_between_emails': data['wait_time_between_emails'],
-                'burst_limit': data['burst_limit'],
-                'cooldown_period': data['cooldown_period'],
-                'daily_quota': data['emails_per_day'],
-                'hourly_quota': data['emails_per_hour'],
-                'minute_quota': data['emails_per_minute'],
-                'second_quota': data['emails_per_second']
+            return {
+                'success': False,
+                'message': f"HTTP {update_response.status_code}: {update_response.text}",
+                'error': 'http_error'
             }
             
-            save_rate_limit_config(config)
-            
-            # Add notification
-            add_notification(f'Rate limiting configuration updated successfully', 'success')
-            
-            return jsonify({
-                'success': True, 
-                'message': 'Rate limiting configuration updated successfully',
-                'config': config
-            })
-            
-        except Exception as e:
-            return jsonify({'success': False, 'message': f'Error updating configuration: {str(e)}'}), 500
-
-@app.route('/api/rate-limits/reset', methods=['POST'])
-@login_required
-def reset_rate_limits():
-    """Reset rate limiting configuration to defaults"""
-    try:
-        save_rate_limit_config(DEFAULT_RATE_LIMIT.copy())
-        add_notification('Rate limiting configuration reset to defaults', 'info')
-        return jsonify({
-            'success': True, 
-            'message': 'Rate limiting configuration reset to defaults',
-            'config': DEFAULT_RATE_LIMIT.copy()
-        })
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Error resetting configuration: {str(e)}'}), 500
+        error_msg = f"Error updating template: {str(e)}"
+        print(f"❌ {error_msg}")
+        return {
+            'success': False,
+            'message': error_msg,
+            'error': 'exception'
+        }
 
-@app.route('/api/rate-limits/stats')
-@login_required
-def get_rate_limit_stats_api():
-    """Get current rate limiting statistics"""
+def create_email_template(account, template_name, subject, content, description=""):
+    """
+    Create a new email template using Zoho CRM API
+    
+    Args:
+        account: Account dictionary with cookies and headers
+        template_name: Name for the new template
+        subject: Subject line for the template
+        content: HTML content for the template
+        description: Optional description
+    
+    Returns:
+        Dict with success status and template ID
+    """
     try:
-        user_id = current_user.id
-        stats = get_rate_limit_stats(user_id)
-        return jsonify({
-            'success': True,
-            'stats': stats
-        })
+        print(f"📝 Creating new email template: {template_name}")
+        
+        # Prepare template data
+        template_data = {
+            'data': [{
+                'name': template_name,
+                'subject': subject,
+                'content': content,
+                'description': description
+            }]
+        }
+        
+        # Create the template
+        create_url = "https://www.zohoapis.com/crm/v7/settings/email_templates"
+        
+        response = requests.post(
+            create_url,
+            json=template_data,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=30
+        )
+        
+        if response.status_code == 201:
+            result = response.json()
+            if result.get('data', [{}])[0].get('status', {}).get('code') == 'SUCCESS':
+                template_id = result.get('data', [{}])[0].get('details', {}).get('id')
+                print(f"✅ Template created successfully with ID: {template_id}")
+                return {
+                    'success': True,
+                    'message': 'Template created successfully',
+                    'template_id': template_id
+                }
+            else:
+                error_msg = result.get('data', [{}])[0].get('status', {}).get('message', 'Unknown error')
+                return {
+                    'success': False,
+                    'message': f"Template creation failed: {error_msg}",
+                    'error': 'creation_failed'
+                }
+        else:
+            return {
+                'success': False,
+                'message': f"HTTP {response.status_code}: {response.text}",
+                'error': 'http_error'
+            }
+            
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Error getting stats: {str(e)}'}), 500
+        error_msg = f"Error creating template: {str(e)}"
+        print(f"❌ {error_msg}")
+        return {
+            'success': False,
+            'message': error_msg,
+            'error': 'exception'
+        }
+
+def delete_email_template(account, template_id):
+    """
+    Delete an email template using Zoho CRM API
+    
+    Args:
+        account: Account dictionary with cookies and headers
+        template_id: The template ID to delete
+    
+    Returns:
+        Dict with success status
+    """
+    try:
+        print(f"🗑️ Deleting email template {template_id}")
+        
+        # Delete the template
+        delete_url = f"https://www.zohoapis.com/crm/v7/settings/email_templates/{template_id}"
+        
+        response = requests.delete(
+            delete_url,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('data', [{}])[0].get('status', {}).get('code') == 'SUCCESS':
+                print(f"✅ Template {template_id} deleted successfully")
+                return {
+                    'success': True,
+                    'message': 'Template deleted successfully'
+                }
+            else:
+                error_msg = result.get('data', [{}])[0].get('status', {}).get('message', 'Unknown error')
+                return {
+                    'success': False,
+                    'message': f"Template deletion failed: {error_msg}",
+                    'error': 'deletion_failed'
+                }
+        else:
+            return {
+                'success': False,
+                'message': f"HTTP {response.status_code}: {response.text}",
+                'error': 'http_error'
+            }
+            
+    except Exception as e:
+        error_msg = f"Error deleting template: {str(e)}"
+        print(f"❌ {error_msg}")
+        return {
+            'success': False,
+            'message': error_msg,
+            'error': 'exception'
+        }
+
+@app.route('/api/accounts/<int:account_id>/templates/<template_id>/update', methods=['PUT'])
+@login_required
+def update_template_api(account_id, template_id):
+    """Update an email template via API"""
+    try:
+        # Get account
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((acc for acc in accounts if acc['id'] == account_id), None)
+        
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+        
+        # Check permissions
+        if current_user.role != 'admin' and account.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        new_content = data.get('content')
+        new_subject = data.get('subject')
+        
+        if not new_content:
+            return jsonify({'error': 'Content is required'}), 400
+        
+        # Update template
+        result = update_email_template(account, template_id, new_content, new_subject)
+        
+        if result['success']:
+            add_notification(f"Template {template_id} updated successfully", 'success')
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'Failed to update template: {str(e)}'}), 500
+
+@app.route('/api/accounts/<int:account_id>/templates/create', methods=['POST'])
+@login_required
+def create_template_api(account_id):
+    """Create a new email template via API"""
+    try:
+        # Get account
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((acc for acc in accounts if acc['id'] == account_id), None)
+        
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+        
+        # Check permissions
+        if current_user.role != 'admin' and account.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        template_name = data.get('name')
+        subject = data.get('subject')
+        content = data.get('content')
+        description = data.get('description', '')
+        
+        if not all([template_name, subject, content]):
+            return jsonify({'error': 'Name, subject, and content are required'}), 400
+        
+        # Create template
+        result = create_email_template(account, template_name, subject, content, description)
+        
+        if result['success']:
+            add_notification(f"Template '{template_name}' created successfully", 'success')
+            return jsonify(result), 201
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'Failed to create template: {str(e)}'}), 500
+
+@app.route('/api/accounts/<int:account_id>/templates/<template_id>/delete', methods=['DELETE'])
+@login_required
+def delete_template_api(account_id, template_id):
+    """Delete an email template via API"""
+    try:
+        # Get account
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((acc for acc in accounts if acc['id'] == account_id), None)
+        
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+        
+        # Check permissions
+        if current_user.role != 'admin' and account.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        # Delete template
+        result = delete_email_template(account, template_id)
+        
+        if result['success']:
+            add_notification(f"Template {template_id} deleted successfully", 'success')
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'Failed to delete template: {str(e)}'}), 500
+
+@app.route('/api/accounts/<int:account_id>/templates/<template_id>', methods=['GET'])
+@login_required
+def get_template_details_api(account_id, template_id):
+    """Get detailed information about a specific template"""
+    try:
+        # Get account
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((acc for acc in accounts if acc['id'] == account_id), None)
+        
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+        
+        # Check permissions
+        if current_user.role != 'admin' and account.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        # Get template details
+        url = f"https://www.zohoapis.com/crm/v7/settings/email_templates/{template_id}"
+        
+        response = requests.get(
+            url,
+            cookies=account['cookies'],
+            headers=account['headers'],
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            template_data = response.json()
+            return jsonify(template_data)
+        else:
+            return jsonify({'error': f'Failed to get template: HTTP {response.status_code}'}), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'Failed to get template details: {str(e)}'}), 500
 
 
 
 if __name__ == '__main__':
-    # Production vs Development settings
-    import os
-    is_production = os.environ.get('FLASK_ENV') == 'production'
-    
-    if is_production:
-        # Production settings
-        socketio.run(app, host='127.0.0.1', port=5000, debug=False, threaded=True)
-    else:
-        # Development settings
-        socketio.run(app, host='0.0.0.0', port=5000, debug=True) 
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True) 

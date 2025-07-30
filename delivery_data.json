@@ -31,6 +31,32 @@
       "sender": "Pro Send",
       "details": "Email delivered successfully (simulated)",
       "timestamp": "2025-07-26T15:51:28.820772"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 11,
+      "subject": "prediction time",
+      "sender": "Angelo <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie",
+        "email_number": 4
+      },
+      "timestamp": "2025-07-30T17:59:51.709261"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 11,
+      "subject": "prediction time",
+      "sender": "Angelo <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie",
+        "email_number": 5
+      },
+      "timestamp": "2025-07-30T17:59:53.626326"
     }
   ],
   "12": [
@@ -41,6 +67,71 @@
       "sender": "paloma",
       "details": "Email delivered successfully (simulated)",
       "timestamp": "2025-07-26T15:52:54.122022"
+    },
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 12,
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 1
+      },
+      "timestamp": "2025-07-30T18:14:55.250827"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 12,
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 2
+      },
+      "timestamp": "2025-07-30T18:14:58.936863"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 12,
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 3
+      },
+      "timestamp": "2025-07-30T18:15:02.761843"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 12,
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 4
+      },
+      "timestamp": "2025-07-30T18:15:06.528913"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 12,
+      "subject": "team is down",
+      "sender": "Marco <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 5
+      },
+      "timestamp": "2025-07-30T18:15:10.306406"
     }
   ],
   "13": [
@@ -99,6 +190,32 @@
       "sender": "willow",
       "details": "Email delivered successfully (pattern-based detection)",
       "timestamp": "2025-07-26T16:08:04.494680"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 13,
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie",
+        "email_number": 4
+      },
+      "timestamp": "2025-07-30T18:26:02.654064"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 13,
+      "subject": "this is the final test ever",
+      "sender": "Rodri <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie",
+        "email_number": 5
+      },
+      "timestamp": "2025-07-30T18:26:08.368349"
     }
   ],
   "14": [
@@ -467,6 +584,347 @@
       "sender": "campaign",
       "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
       "timestamp": "2025-07-29T14:01:53.231429"
+    }
+  ],
+  "7": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 7,
+      "subject": "hjkghkjghjghj",
+      "sender": "kjyujh,",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:07:07.852944"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 7,
+      "subject": "hjkghkjghjghj",
+      "sender": "kjyujh,",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:07:14.587181"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 7,
+      "subject": "hjkghkjghjghj",
+      "sender": "kjyujh,",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:07:21.460837"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 7,
+      "subject": "hjkghkjghjghj",
+      "sender": "kjyujh,",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:07:28.367969"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 7,
+      "subject": "hjkghkjghjghj",
+      "sender": "kjyujh,",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:08:34.401971"
+    }
+  ],
+  "8": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 8,
+      "subject": "iuokukf jutfyj dfvghrdst",
+      "sender": "dyhfdgyut g",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:07:24.917794"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 8,
+      "subject": "iuokukf jutfyj dfvghrdst",
+      "sender": "dyhfdgyut g",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:07:27.882569"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 8,
+      "subject": "iuokukf jutfyj dfvghrdst",
+      "sender": "dyhfdgyut g",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:08:30.265580"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 8,
+      "subject": "iuokukf jutfyj dfvghrdst",
+      "sender": "dyhfdgyut g",
+      "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
+      "timestamp": "2025-07-29T17:08:33.217580"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 8,
+      "subject": "Lavida sin carnaval",
+      "sender": "Canrnin <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T17:14:28.950138"
+    }
+  ],
+  "5": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 5,
+      "subject": "v13 is bad app",
+      "sender": "Nicola <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T16:24:15.521319"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 5,
+      "subject": "v13 is bad app",
+      "sender": "Nicola <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T16:24:15.540273"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 5,
+      "subject": "v13 is bad app",
+      "sender": "Nicola <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T16:24:15.546785"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 5,
+      "subject": "v13 is bad app",
+      "sender": "Nicola <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T16:24:15.554763"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 5,
+      "subject": "v13 is bad app",
+      "sender": "Nicola <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T16:24:15.562743"
+    }
+  ],
+  "6": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 6,
+      "subject": "we are here sir dear",
+      "sender": "Alban <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan"
+      },
+      "timestamp": "2025-07-30T16:58:35.421004"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 6,
+      "subject": "we are here sir dear",
+      "sender": "Alban <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan"
+      },
+      "timestamp": "2025-07-30T16:58:35.436280"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 6,
+      "subject": "we are here sir dear",
+      "sender": "Alban <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan"
+      },
+      "timestamp": "2025-07-30T16:58:35.450596"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 6,
+      "subject": "we are here sir dear",
+      "sender": "Alban <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan"
+      },
+      "timestamp": "2025-07-30T16:58:35.466066"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 6,
+      "subject": "we are here sir dear",
+      "sender": "Alban <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan"
+      },
+      "timestamp": "2025-07-30T16:58:35.482987"
+    }
+  ],
+  "9": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 9,
+      "subject": "joan is a leader in the marines",
+      "sender": "joan <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T17:24:03.062475"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 9,
+      "subject": "joan is a leader in the marines",
+      "sender": "joan <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T17:24:03.070968"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 9,
+      "subject": "joan is a leader in the marines",
+      "sender": "joan <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T17:24:03.078466"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 9,
+      "subject": "joan is a leader in the marines",
+      "sender": "joan <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T17:24:03.085957"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 9,
+      "subject": "joan is a leader in the marines",
+      "sender": "joan <893477875@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "phungvanhuonghie"
+      },
+      "timestamp": "2025-07-30T17:24:03.092942"
+    }
+  ],
+  "10": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 10,
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 1
+      },
+      "timestamp": "2025-07-30T17:41:44.767185"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 10,
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 2
+      },
+      "timestamp": "2025-07-30T17:41:47.517369"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 10,
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 3
+      },
+      "timestamp": "2025-07-30T17:41:50.240203"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 10,
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 4
+      },
+      "timestamp": "2025-07-30T17:41:52.956422"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 10,
+      "subject": "we are here sir dear and madeame",
+      "sender": "Nicolay <893358824@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "jaylan",
+        "email_number": 5
+      },
+      "timestamp": "2025-07-30T17:41:55.650160"
     }
   ]
 }

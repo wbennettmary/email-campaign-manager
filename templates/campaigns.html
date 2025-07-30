@@ -28,15 +28,35 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <small class="text-muted">
-                                <i class="fas fa-users"></i> {{ campaign.destinataires.split('\n')|length }} recipients
+                                {% if campaign.system_version == 'universal_v2' %}
+                                    <i class="fas fa-database"></i> Data List: {{ campaign.data_list_id }}
+                                    <br>
+                                    <i class="fas fa-envelope"></i> Subject: {{ campaign.subject[:50] }}{% if campaign.subject|length > 50 %}...{% endif %}
+                                    <br>
+                                    <i class="fas fa-user"></i> From: {{ campaign.from_name or 'Default' }}
+                                    <br>
+                                    <i class="fas fa-code"></i> Template: {% if campaign.use_custom_template %}Custom{% else %}Zoho{% endif %}
+                                {% else %}
+                                    <i class="fas fa-users"></i> {{ campaign.destinataires.split('\n')|length }} recipients
+                                    <br>
+                                    <i class="fas fa-tag"></i> Legacy System
+                                {% endif %}
                             </small>
                         </div>
                         
                         {% if campaign.status == 'running' %}
                             <div class="progress mb-3" style="height: 20px;">
-                                {% set progress = ((campaign.total_sent or 0) / campaign.destinataires.split('\n')|length * 100) %}
+                                {% if campaign.system_version == 'universal_v2' %}
+                                    {% set total_emails = campaign.total_attempted or 0 %}
+                                    {% set sent_emails = campaign.total_sent or 0 %}
+                                    {% set progress = (sent_emails / total_emails * 100) if total_emails > 0 else 0 %}
+                                {% else %}
+                                    {% set total_emails = campaign.destinataires.split('\n')|length %}
+                                    {% set sent_emails = campaign.total_sent or 0 %}
+                                    {% set progress = (sent_emails / total_emails * 100) if total_emails > 0 else 0 %}
+                                {% endif %}
                                 <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%">
-                                    {{ campaign.total_sent or 0 }}/{{ campaign.destinataires.split('\n')|length }}
+                                    {{ sent_emails }}/{{ total_emails }}
                                 </div>
                             </div>
                         {% endif %}
@@ -52,6 +72,9 @@
                                 <a href="/campaigns/{{ campaign.id }}/edit" class="btn btn-outline-secondary" title="Edit Campaign">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                <button class="btn btn-outline-info" onclick="testCampaign({{ campaign.id }})" title="Test Campaign">
+                                    <i class="fas fa-vial"></i>
+                                </button>
                                 {% if campaign.status == 'running' %}
                                     <button class="btn btn-outline-warning" onclick="pauseCampaign({{ campaign.id }})" title="Pause Campaign">
                                         <i class="fas fa-pause"></i>
@@ -99,51 +122,150 @@
 
 <!-- Add Campaign Modal -->
 <div class="modal fade" id="addCampaignModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Create New Campaign</h5>
+                <h5 class="modal-title">Create New Campaign (Universal System)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="campaignForm">
-                    <div class="row">
+                    <!-- Basic Campaign Info -->
+                    <div class="row mb-3">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="campaignName" class="form-label">Campaign Name</label>
-                                <input type="text" class="form-control" id="campaignName" required>
-                            </div>
+                            <label for="campaignName" class="form-label">Campaign Name *</label>
+                            <input type="text" class="form-control" id="campaignName" required placeholder="Enter campaign name">
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="accountSelect" class="form-label">Account</label>
-                                <select class="form-select" id="accountSelect" required onchange="loadAccountTemplates()">
-                                    <option value="">Select Account</option>
-                                </select>
-                            </div>
+                            <label for="accountSelect" class="form-label">Account *</label>
+                            <select class="form-select" id="accountSelect" required>
+                                <option value="">Select Account</option>
+                            </select>
                         </div>
                     </div>
                     
+                    <!-- Email Content -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="campaignSubject" class="form-label">Email Subject *</label>
+                            <input type="text" class="form-control" id="campaignSubject" required placeholder="Enter email subject">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="campaignFrom" class="form-label">From Name</label>
+                            <input type="text" class="form-control" id="campaignFrom" placeholder="e.g., 'Service Client' or 'Marketing Team'">
+                            <div class="form-text">Leave empty to use default sender name</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Template Selection -->
                     <div class="mb-3">
-                        <label for="templateSelect" class="form-label">Email Template</label>
-                        <select class="form-select" id="templateSelect" required onchange="updateTemplateId()">
+                        <label class="form-label">Template Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="templateType" id="customTemplate" value="custom" checked>
+                            <label class="form-check-label" for="customTemplate">
+                                <strong>Custom Template</strong> - Create your own email content
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="templateType" id="zohoTemplate" value="zoho">
+                            <label class="form-check-label" for="zohoTemplate">
+                                <strong>Zoho Template</strong> - Use existing Zoho email template
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Template Editor -->
+                    <div id="customTemplateSection" class="mb-3">
+                        <label for="campaignMessage" class="form-label">Email Content *</label>
+                        <textarea class="form-control" id="campaignMessage" rows="12" required placeholder="Enter your email content here...&#10;&#10;You can use HTML formatting:&#10;&lt;h1&gt;Title&lt;/h1&gt;&#10;&lt;p&gt;Paragraph text&lt;/p&gt;&#10;&lt;a href='https://example.com'&gt;Link&lt;/a&gt;&#10;&#10;Or plain text:&#10;Hello,&#10;&#10;This is a test email.&#10;&#10;Best regards,&#10;Your Team"></textarea>
+                        <div class="form-text">
+                            <strong>Custom Template Features:</strong><br>
+                            • Write your own email content directly in the app<br>
+                            • Support for HTML formatting<br>
+                            • No need to upload templates to Zoho<br>
+                            • Full control over email appearance
+                        </div>
+                    </div>
+                    
+                    <!-- Zoho Template Selection -->
+                    <div id="zohoTemplateSection" class="mb-3" style="display: none;">
+                        <label for="templateSelect" class="form-label">Zoho Template</label>
+                        <select class="form-select" id="templateSelect">
                             <option value="">Select Account First</option>
                         </select>
-                        <input type="hidden" id="templateId" required>
-                        <div class="form-text">Select an account to see available templates</div>
+                        <div class="form-text">Select an existing Zoho email template</div>
                     </div>
                     
+                    <!-- Rate Limiting Settings -->
                     <div class="mb-3">
-                        <label class="form-label">Recipients</label>
+                        <label class="form-label">Rate Limiting Settings</label>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Rate Limiting:</strong> Control how fast emails are sent to avoid spam filters and improve delivery rates.
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="useCustomRateLimit" onchange="toggleCustomRateLimit()">
+                                    <label class="form-check-label" for="useCustomRateLimit">
+                                        <strong>Use Custom Rate Limits</strong>
+                                    </label>
+                                    <div class="form-text">Override default rate limits for this campaign</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-info btn-sm" onclick="loadDefaultRateLimits()">
+                                    <i class="fas fa-sync-alt"></i> Load Default Settings
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="customRateLimitSection" style="display: none;">
+                            <div class="row mt-3">
+                                <div class="col-md-3">
+                                    <label for="emailsPerSecond" class="form-label">Emails per Second</label>
+                                    <input type="number" class="form-control" id="emailsPerSecond" min="0.1" step="0.1" value="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="emailsPerMinute" class="form-label">Emails per Minute</label>
+                                    <input type="number" class="form-control" id="emailsPerMinute" min="1" value="50">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="waitTimeBetween" class="form-label">Wait Time (seconds)</label>
+                                    <input type="number" class="form-control" id="waitTimeBetween" min="0.1" step="0.1" value="1.0">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="burstLimit" class="form-label">Burst Limit</label>
+                                    <input type="number" class="form-control" id="burstLimit" min="1" value="10">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-3">
+                                    <label for="cooldownPeriod" class="form-label">Cooldown (seconds)</label>
+                                    <input type="number" class="form-control" id="cooldownPeriod" min="1" value="5">
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="form-text">
+                                        <strong>Current Settings:</strong> 
+                                        <span id="rateLimitSummary">1 email/sec, 50/min, 1s wait, 10 burst, 5s cooldown</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recipients -->
+                    <div class="mb-3">
+                        <label class="form-label">Recipients *</label>
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="recipientType" class="form-label">Recipient Source</label>
                                 <select class="form-select" id="recipientType" onchange="toggleRecipientSource()">
+                                    <option value="data_list">Data List (Recommended)</option>
                                     <option value="manual">Manual Entry</option>
-                                    <option value="data_list">Data List</option>
                                 </select>
                             </div>
-                            <div class="col-md-6" id="dataListContainer" style="display: none;">
+                            <div class="col-md-6" id="dataListContainer">
                                 <label for="dataListSelect" class="form-label">Select Data List</label>
                                 <select class="form-select" id="dataListSelect" onchange="loadDataListEmails()">
                                     <option value="">Select Data List</option>
@@ -151,11 +273,11 @@
                             </div>
                         </div>
                         <div class="mt-2">
-                            <label for="destinataires" class="form-label">Email Addresses</label>
-                            <div id="manualEmailContainer">
-                                <textarea class="form-control" id="destinataires" rows="5" required placeholder="email1@example.com&#10;email2@example.com&#10;email3@example.com"></textarea>
+                            <div id="manualEmailContainer" style="display: none;">
+                                <label for="destinataires" class="form-label">Email Addresses</label>
+                                <textarea class="form-control" id="destinataires" rows="5" placeholder="email1@example.com&#10;email2@example.com&#10;email3@example.com"></textarea>
                             </div>
-                            <div id="dataListInfoContainer" style="display: none;">
+                            <div id="dataListInfoContainer">
                                 <div class="alert alert-info">
                                     <i class="fas fa-list"></i>
                                     <strong>Data List Selected:</strong> <span id="selectedListName">-</span>
@@ -169,102 +291,6 @@
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="subjects" class="form-label">Email Subjects (one per line)</label>
-                        <textarea class="form-control" id="subjects" rows="3" required placeholder="Subject 1&#10;Subject 2&#10;Subject 3"></textarea>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="froms" class="form-label">Sender Names (one per line)</label>
-                        <textarea class="form-control" id="froms" rows="3" required placeholder="Sender 1&#10;Sender 2&#10;Sender 3"></textarea>
-                    </div>
-                    
-                    <!-- Rate Limiting Configuration -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">
-                                <i class="fas fa-tachometer-alt me-2"></i>Rate Limiting Settings
-                                <button type="button" class="btn btn-sm btn-outline-info float-end" onclick="loadDefaultRateLimits()">
-                                    <i class="fas fa-undo me-1"></i>Load Defaults
-                                </button>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="useCustomRateLimit" onchange="toggleCustomRateLimit()">
-                                    <label class="form-check-label" for="useCustomRateLimit">
-                                        <strong>Use Custom Rate Limits for this Campaign</strong>
-                                    </label>
-                                </div>
-                                <div class="form-text">If unchecked, the system will use the default rate limiting settings.</div>
-                            </div>
-                            
-                            <div id="customRateLimitSettings" style="display: none;">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h6 class="text-primary mb-3">
-                                            <i class="fas fa-clock me-2"></i>Time-based Limits
-                                        </h6>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_emails_per_second" class="form-label">Emails per Second</label>
-                                            <input type="number" class="form-control" id="campaign_emails_per_second" min="1" max="100" value="2">
-                                            <div class="form-text">Maximum emails per second for this campaign.</div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_emails_per_minute" class="form-label">Emails per Minute</label>
-                                            <input type="number" class="form-control" id="campaign_emails_per_minute" min="1" max="10000" value="100">
-                                            <div class="form-text">Maximum emails per minute for this campaign.</div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_emails_per_hour" class="form-label">Emails per Hour</label>
-                                            <input type="number" class="form-control" id="campaign_emails_per_hour" min="1" max="100000" value="1000">
-                                            <div class="form-text">Maximum emails per hour for this campaign.</div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_emails_per_day" class="form-label">Emails per Day</label>
-                                            <input type="number" class="form-control" id="campaign_emails_per_day" min="1" max="1000000" value="10000">
-                                            <div class="form-text">Maximum emails per day for this campaign.</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <h6 class="text-warning mb-3">
-                                            <i class="fas fa-shield-alt me-2"></i>Protection Settings
-                                        </h6>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_wait_time" class="form-label">Wait Time Between Emails (seconds)</label>
-                                            <input type="number" class="form-control" id="campaign_wait_time" min="0" max="60" step="0.1" value="0.5">
-                                            <div class="form-text">Minimum time to wait between emails.</div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_burst_limit" class="form-label">Burst Limit</label>
-                                            <input type="number" class="form-control" id="campaign_burst_limit" min="1" max="100" value="5">
-                                            <div class="form-text">Maximum emails in a burst before cooldown.</div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="campaign_cooldown_period" class="form-label">Cooldown Period (seconds)</label>
-                                            <input type="number" class="form-control" id="campaign_cooldown_period" min="1" max="3600" value="60">
-                                            <div class="form-text">Cooldown time after burst limit is exceeded.</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="alert alert-info small">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Note:</strong> These settings will override the default rate limits for this campaign only. 
-                                    Other campaigns will continue to use the default settings unless customized.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -280,75 +306,33 @@
 
 {% block scripts %}
 <script>
-// Rate Limiting Functions
-function toggleCustomRateLimit() {
-    const useCustom = document.getElementById('useCustomRateLimit').checked;
-    const settingsDiv = document.getElementById('customRateLimitSettings');
-    
-    if (useCustom) {
-        settingsDiv.style.display = 'block';
-        loadDefaultRateLimits(); // Load current default values
-    } else {
-        settingsDiv.style.display = 'none';
-    }
-}
-
-function loadDefaultRateLimits() {
-    fetch('/api/rate-limits')
-        .then(response => response.json())
-        .then(data => {
-            const config = data.config;
-            
-            // Update campaign rate limit fields with current default values
-            document.getElementById('campaign_emails_per_second').value = config.emails_per_second;
-            document.getElementById('campaign_emails_per_minute').value = config.emails_per_minute;
-            document.getElementById('campaign_emails_per_hour').value = config.emails_per_hour;
-            document.getElementById('campaign_emails_per_day').value = config.emails_per_day;
-            document.getElementById('campaign_wait_time').value = config.wait_time_between_emails;
-            document.getElementById('campaign_burst_limit').value = config.burst_limit;
-            document.getElementById('campaign_cooldown_period').value = config.cooldown_period;
-        })
-        .catch(error => {
-            console.error('Error loading default rate limits:', error);
-            // Use fallback values if API fails
-            document.getElementById('campaign_emails_per_second').value = 2;
-            document.getElementById('campaign_emails_per_minute').value = 100;
-            document.getElementById('campaign_emails_per_hour').value = 1000;
-            document.getElementById('campaign_emails_per_day').value = 10000;
-            document.getElementById('campaign_wait_time').value = 0.5;
-            document.getElementById('campaign_burst_limit').value = 5;
-            document.getElementById('campaign_cooldown_period').value = 60;
-        });
-}
-
-function getCampaignRateLimits() {
-    const useCustom = document.getElementById('useCustomRateLimit').checked;
-    
-    if (!useCustom) {
-        return null; // Use default rate limits
-    }
-    
-    return {
-        enabled: true,
-        emails_per_second: parseInt(document.getElementById('campaign_emails_per_second').value) || 2,
-        emails_per_minute: parseInt(document.getElementById('campaign_emails_per_minute').value) || 100,
-        emails_per_hour: parseInt(document.getElementById('campaign_emails_per_hour').value) || 1000,
-        emails_per_day: parseInt(document.getElementById('campaign_emails_per_day').value) || 10000,
-        wait_time_between_emails: parseFloat(document.getElementById('campaign_wait_time').value) || 0.5,
-        burst_limit: parseInt(document.getElementById('campaign_burst_limit').value) || 5,
-        cooldown_period: parseInt(document.getElementById('campaign_cooldown_period').value) || 60,
-        daily_quota: parseInt(document.getElementById('campaign_emails_per_day').value) || 10000,
-        hourly_quota: parseInt(document.getElementById('campaign_emails_per_hour').value) || 1000,
-        minute_quota: parseInt(document.getElementById('campaign_emails_per_minute').value) || 100,
-        second_quota: parseInt(document.getElementById('campaign_emails_per_second').value) || 2
-    };
-}
-
 // Load accounts when modal opens
 document.getElementById('addCampaignModal').addEventListener('show.bs.modal', function () {
     loadAccounts();
     loadDataLists();
+    setupTemplateTypeHandlers();
 });
+
+function setupTemplateTypeHandlers() {
+    // Handle template type radio buttons
+    document.querySelectorAll('input[name="templateType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const customSection = document.getElementById('customTemplateSection');
+            const zohoSection = document.getElementById('zohoTemplateSection');
+            const accountSelect = document.getElementById('accountSelect');
+            
+            if (this.value === 'custom') {
+                customSection.style.display = 'block';
+                zohoSection.style.display = 'none';
+                accountSelect.removeAttribute('onchange');
+            } else {
+                customSection.style.display = 'none';
+                zohoSection.style.display = 'block';
+                accountSelect.setAttribute('onchange', 'loadAccountTemplates()');
+            }
+        });
+    });
+}
 
 function loadAccounts() {
     fetch('/api/accounts')
@@ -453,106 +437,195 @@ function toggleRecipientSource() {
 }
 
 function loadDataListEmails() {
-    const listId = document.getElementById('dataListSelect').value;
-    if (!listId) {
-        document.getElementById('selectedListName').textContent = '-';
-        document.getElementById('selectedListCount').textContent = '0';
-        document.getElementById('selectedListGeo').textContent = '-';
-        document.getElementById('selectedListIsp').textContent = '-';
-        document.getElementById('emailCount').textContent = '0';
+    const dataListId = document.getElementById('dataListSelect').value;
+    const selectedListName = document.getElementById('selectedListName');
+    const selectedListCount = document.getElementById('selectedListCount');
+    const selectedListGeo = document.getElementById('selectedListGeo');
+    const selectedListIsp = document.getElementById('selectedListIsp');
+    const emailCount = document.getElementById('emailCount');
+    
+    if (!dataListId) {
+        selectedListName.textContent = '-';
+        selectedListCount.textContent = '0';
+        selectedListGeo.textContent = '-';
+        selectedListIsp.textContent = '-';
+        emailCount.textContent = '0';
         return;
     }
     
-    // Get the selected option to display list info
-    const select = document.getElementById('dataListSelect');
-    const selectedOption = select.options[select.selectedIndex];
-    const listInfo = selectedOption.textContent;
-    
-    // Extract count from the option text (format: "Name (count emails - geo/isp)")
-    const countMatch = listInfo.match(/\((\d+) emails/);
-    const count = countMatch ? countMatch[1] : '0';
-    
-    // Extract geography and ISP from the option text
-    const geoIspMatch = listInfo.match(/emails - ([^\/]+)\/([^\)]+)\)/);
-    const geography = geoIspMatch ? geoIspMatch[1] : 'Unknown';
-    const isp = geoIspMatch ? geoIspMatch[2] : 'Unknown';
-    
-    // Update the display
-    document.getElementById('selectedListName').textContent = selectedOption.textContent.split(' (')[0];
-    document.getElementById('selectedListCount').textContent = count;
-    document.getElementById('selectedListGeo').textContent = geography;
-    document.getElementById('selectedListIsp').textContent = isp;
-    document.getElementById('emailCount').textContent = count;
+    fetch(`/api/data-lists/${dataListId}/campaign-emails`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                selectedListName.textContent = data.list_name;
+                selectedListCount.textContent = data.email_count;
+                selectedListGeo.textContent = data.geography || 'Unknown';
+                selectedListIsp.textContent = data.isp || 'Unknown';
+                emailCount.textContent = data.email_count;
+            } else {
+                console.error('Error loading data list emails:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading data list emails:', error);
+        });
+}
+
+function updateEmailCount() {
+    const destinataires = document.getElementById('destinataires').value;
+    const emails = destinataires.split('\n').filter(email => email.trim() && validateEmail(email.trim()));
+    document.getElementById('emailCount').textContent = emails.length;
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
 }
 
 function saveCampaign() {
+    // Get form values
+    const name = document.getElementById('campaignName').value.trim();
+    const accountId = document.getElementById('accountSelect').value;
+    const subject = document.getElementById('campaignSubject').value.trim();
+    const message = document.getElementById('campaignMessage').value.trim();
+    const fromName = document.getElementById('campaignFrom').value.trim();
+    const templateType = document.querySelector('input[name="templateType"]:checked').value;
     const recipientType = document.getElementById('recipientType').value;
-    const listId = document.getElementById('dataListSelect').value;
     
-    // If data list is selected, we need to fetch the emails first
-    if (recipientType === 'data_list' && listId) {
-        fetch(`/api/data-lists/${listId}/campaign-emails`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.emails && data.emails.length > 0) {
-                    createCampaignWithEmails(data.emails.join('\n'));
-                } else {
-                    alert('No emails found in selected data list');
-                }
-            })
-            .catch(error => {
-                console.error('Error loading data list emails:', error);
-                alert('Error loading emails from data list');
-            });
-    } else {
-        // Manual entry - use the textarea value
-        const destinataires = document.getElementById('destinataires').value;
-        if (!destinataires.trim()) {
-            alert('Please enter email addresses or select a data list');
-            return;
-        }
-        createCampaignWithEmails(destinataires);
-    }
-}
-
-function createCampaignWithEmails(destinataires) {
-    const formData = {
-        name: document.getElementById('campaignName').value,
-        account_id: parseInt(document.getElementById('accountSelect').value),
-        template_id: document.getElementById('templateId').value,
-        destinataires: destinataires,
-        subjects: document.getElementById('subjects').value,
-        froms: document.getElementById('froms').value,
-        rate_limits: getCampaignRateLimits() // Add rate limiting configuration
-    };
-
-    if (!formData.name || !formData.account_id || !formData.template_id || 
-        !formData.destinataires || !formData.subjects || !formData.froms) {
-        alert('Please fill in all fields');
+    // Validation
+    if (!name || !accountId || !subject || !message) {
+        alert('Please fill in all required fields');
         return;
     }
+    
+    // Handle rate limiting settings
+    const useCustomRateLimit = document.getElementById('useCustomRateLimit').checked;
+    let rateLimits = null;
+    
+    if (useCustomRateLimit) {
+        rateLimits = {
+            emails_per_second: parseFloat(document.getElementById('emailsPerSecond').value),
+            emails_per_minute: parseInt(document.getElementById('emailsPerMinute').value),
+            emails_per_hour: parseInt(document.getElementById('emailsPerMinute').value) * 60, // Calculate hourly
+            emails_per_day: parseInt(document.getElementById('emailsPerMinute').value) * 60 * 24, // Calculate daily
+            wait_time_between_emails: parseFloat(document.getElementById('waitTimeBetween').value),
+            burst_limit: parseInt(document.getElementById('burstLimit').value),
+            cooldown_period: parseInt(document.getElementById('cooldownPeriod').value)
+        };
+    }
+    
+    // Prepare campaign data
+    const campaignData = {
+        name: name,
+        account_id: parseInt(accountId),
+        subject: subject,
+        message: message,
+        from_name: fromName || 'Campaign Sender',
+        use_custom_template: templateType === 'custom',
+        system_version: 'universal_v2',
+        rate_limits: rateLimits
+    };
+    
+    // Handle template ID for Zoho templates
+    if (templateType === 'zoho') {
+        const templateId = document.getElementById('templateSelect').value;
+        if (!templateId) {
+            alert('Please select a Zoho template');
+            return;
+        }
+        campaignData.template_id = templateId;
+    }
+    
+    // Handle recipients
+    if (recipientType === 'data_list') {
+        const dataListId = document.getElementById('dataListSelect').value;
+        if (!dataListId) {
+            alert('Please select a data list');
+            return;
+        }
+        campaignData.data_list_id = parseInt(dataListId);
+    } else {
+        const destinataires = document.getElementById('destinataires').value.trim();
+        if (!destinataires) {
+            alert('Please enter email addresses');
+            return;
+        }
+        
+        // For manual emails, we'll create a temporary data list
+        const emails = destinataires.split('\n').filter(email => email.trim() && validateEmail(email.trim()));
+        if (emails.length === 0) {
+            alert('Please enter valid email addresses');
+            return;
+        }
+        
+        // Create a temporary data list for manual emails
+        const tempListName = `Manual_${Date.now()}`;
+        const tempListData = {
+            name: tempListName,
+            geography: 'Manual',
+            isp: 'Manual',
+            emails: emails,
+            description: `Manual email list for campaign: ${name}`
+        };
+        
+        // Create the temporary data list first
+        fetch('/api/data-lists', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tempListData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                campaignData.data_list_id = data.id;
+                createCampaign(campaignData);
+            } else {
+                alert('Error creating temporary data list: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error creating temporary data list:', error);
+            alert('Error creating temporary data list');
+        });
+        
+        return;
+    }
+    
+    // Create campaign directly if using data list
+    createCampaign(campaignData);
+}
 
+function createCampaign(campaignData) {
     fetch('/api/campaigns', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(campaignData)
     })
     .then(response => response.json())
     .then(data => {
         if (data.id) {
-            // Close modal and reload page
+            // Close modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('addCampaignModal'));
             modal.hide();
-            window.location.reload();
+            
+            // Show success message
+            showAlert('Campaign created successfully!', 'success');
+            
+            // Reload page to show new campaign
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } else {
-            alert('Error creating campaign');
+            alert('Error creating campaign: ' + (data.error || 'Unknown error'));
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Error creating campaign');
+        console.error('Error creating campaign:', error);
+        alert('Error creating campaign. Please try again.');
     });
 }
 
@@ -733,5 +806,195 @@ function deleteCampaign(campaignId) {
         });
     }
 }
+
+function testCampaign(campaignId) {
+    // Create a modal for test email input
+    const modalHtml = `
+        <div class="modal fade" id="testCampaignModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Send Test Campaign Email</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="testCampaignEmail" class="form-label">Test Email Address *</label>
+                                    <input type="email" class="form-control" id="testCampaignEmail" placeholder="Enter test email address" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="testCampaignSubject" class="form-label">Custom Subject (Optional)</label>
+                                    <input type="text" class="form-control" id="testCampaignSubject" placeholder="Enter custom subject or leave empty for default">
+                                    <div class="form-text">Leave empty to use default test subject</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="testCampaignFrom" class="form-label">Custom From Name (Optional)</label>
+                            <input type="text" class="form-control" id="testCampaignFrom" placeholder="e.g., 'Service Client' or 'Marketing Team'">
+                            <div class="form-text">Enter only the display name. The email address will be automatically set to your Zoho account.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="testCampaignMessage" class="form-label">Custom Message (Optional)</label>
+                            <textarea class="form-control" id="testCampaignMessage" rows="6" placeholder="Enter custom message or leave empty for default message"></textarea>
+                            <div class="form-text">Leave empty to use the default test message, or enter your own custom content.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="sendTestCampaignEmail(${campaignId})">Send Test Email</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('testCampaignModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('testCampaignModal'));
+    modal.show();
+}
+
+function sendTestCampaignEmail(campaignId) {
+    const testEmail = document.getElementById('testCampaignEmail').value.trim();
+    const customMessage = document.getElementById('testCampaignMessage').value.trim();
+    const customSubject = document.getElementById('testCampaignSubject').value.trim();
+    const customFrom = document.getElementById('testCampaignFrom').value.trim();
+    
+    if (!testEmail) {
+        showAlert('Please enter a test email address', 'danger');
+        return;
+    }
+    
+    if (!validateEmail(testEmail)) {
+        showAlert('Please enter a valid email address', 'danger');
+        return;
+    }
+    
+    // Show loading state
+    showAlert('Sending test email...', 'info');
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('testCampaignModal'));
+    modal.hide();
+    
+    fetch(`/api/campaigns/${campaignId}/test`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            test_email: testEmail,
+            custom_message: customMessage || null,
+            custom_subject: customSubject || null,
+            custom_from_name: customFrom || null
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            return response.json().then(data => {
+                throw new Error(data.message || 'Error testing campaign');
+            });
+        }
+    })
+    .then(data => {
+        console.log('Test result:', data);
+        
+        if (data.success) {
+            let message = `✅ Test successful!\n\n`;
+            message += `📧 Sent to: ${testEmail}\n`;
+            message += `📋 Template: ${data.template_used}\n`;
+            message += `⚙️ Function: ${data.function_used}\n`;
+            message += `📨 Subject: ${data.subject_used}\n`;
+            message += `👤 From: ${data.from_used}`;
+            
+            showAlert(message, 'success');
+        } else {
+            let errorMessage = `❌ Test failed!\n\n`;
+            errorMessage += `📧 Target: ${testEmail}\n`;
+            errorMessage += `📋 Template: ${data.template_used || 'Unknown'}\n`;
+            errorMessage += `⚙️ Function: ${data.function_used || 'Unknown'}\n`;
+            errorMessage += `📨 Subject: ${data.subject_used || 'Unknown'}\n`;
+            errorMessage += `👤 From: ${data.from_used || 'Unknown'}\n\n`;
+            errorMessage += `Error: ${data.message}`;
+            
+            if (data.error) {
+                errorMessage += `\n\nDetails: ${data.error}`;
+            }
+            
+            showAlert(errorMessage, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error testing campaign: ' + error.message, 'danger');
+    });
+}
+
+// Rate Limiting Functions
+function toggleCustomRateLimit() {
+    const useCustom = document.getElementById('useCustomRateLimit').checked;
+    const customSection = document.getElementById('customRateLimitSection');
+    
+    if (useCustom) {
+        customSection.style.display = 'block';
+        updateRateLimitSummary();
+    } else {
+        customSection.style.display = 'none';
+    }
+}
+
+function loadDefaultRateLimits() {
+    fetch('/api/rate-limits')
+        .then(response => response.json())
+        .then(config => {
+            document.getElementById('emailsPerSecond').value = config.emails_per_second;
+            document.getElementById('emailsPerMinute').value = config.emails_per_minute;
+            document.getElementById('waitTimeBetween').value = config.wait_time_between_emails;
+            document.getElementById('burstLimit').value = config.burst_limit;
+            document.getElementById('cooldownPeriod').value = config.cooldown_period;
+            updateRateLimitSummary();
+        })
+        .catch(error => {
+            console.error('Error loading default rate limits:', error);
+            showAlert('Error loading default rate limits', 'danger');
+        });
+}
+
+function updateRateLimitSummary() {
+    const perSecond = document.getElementById('emailsPerSecond').value;
+    const perMinute = document.getElementById('emailsPerMinute').value;
+    const waitTime = document.getElementById('waitTimeBetween').value;
+    const burst = document.getElementById('burstLimit').value;
+    const cooldown = document.getElementById('cooldownPeriod').value;
+    
+    const summary = `${perSecond} email/sec, ${perMinute}/min, ${waitTime}s wait, ${burst} burst, ${cooldown}s cooldown`;
+    document.getElementById('rateLimitSummary').textContent = summary;
+}
+
+// Add event listeners for rate limit inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const rateLimitInputs = ['emailsPerSecond', 'emailsPerMinute', 'waitTimeBetween', 'burstLimit', 'cooldownPeriod'];
+    rateLimitInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateRateLimitSummary);
+        }
+    });
+});
 </script>
 {% endblock %} 

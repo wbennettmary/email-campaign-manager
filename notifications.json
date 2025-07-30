@@ -1,74 +1,802 @@
 [
   {
-    "id": "89c872e1-4313-4dc4-8450-7ad68e68adff",
-    "message": "\ud83d\udea8 Zoho Rate Limit Exceeded for campaign. Smart retry system activated with 10s pause.",
-    "type": "warning",
-    "timestamp": "2025-07-29T16:49:56.849874",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "775ead96-ef5f-44b3-be65-020a54a1b269",
-    "message": "Campaign 'jayjay' started successfully",
+    "id": "5776870a-7d73-466b-ad50-f8f28e40f4c6",
+    "message": "Campaign 'Final test' completed successfully",
     "type": "success",
-    "timestamp": "2025-07-29T16:49:56.164055",
+    "timestamp": "2025-07-30T18:26:08.396274",
     "read": false,
-    "campaign_id": 6
+    "campaign_id": 13
   },
   {
-    "id": "8ccf7f65-311a-43f1-8592-137da0728253",
-    "message": "Campaign 'jayjay' created successfully",
+    "id": "54499df0-538c-44cc-8e1f-11d610a81923",
+    "message": "Campaign 'Final test' started successfully",
     "type": "success",
-    "timestamp": "2025-07-29T16:49:53.061114",
+    "timestamp": "2025-07-30T18:25:44.644531",
     "read": false,
-    "campaign_id": 6
+    "campaign_id": 13
   },
   {
-    "id": "f7034c0c-5234-46d1-89a0-5a2dcfe3d719",
-    "message": "Campaign 'chahin' completed with delivery issues. 0/5 emails delivered (0.0% delivery rate).",
+    "id": "dd9923e3-b917-4508-a068-0d6d16f3bb3e",
+    "message": "Campaign 'Final test' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T18:25:39.026444",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "4d162900-7c35-4993-99ab-e8a6b618c8dc",
+    "message": "Campaign 'carlos' failed with error: 'recipients_count'",
     "type": "error",
-    "timestamp": "2025-07-29T16:44:45.975591",
+    "timestamp": "2025-07-30T18:15:10.346805",
     "read": false,
-    "campaign_id": 5
+    "campaign_id": 12
   },
   {
-    "id": "c422c1ef-29eb-4de8-ba92-af440a592a94",
-    "message": "Campaign 'chahin' started successfully",
+    "id": "ee40f120-88da-4d96-9561-071054302f8b",
+    "message": "Campaign 'carlos' started successfully",
     "type": "success",
-    "timestamp": "2025-07-29T16:44:33.859882",
+    "timestamp": "2025-07-30T18:14:54.484445",
     "read": false,
-    "campaign_id": 5
+    "campaign_id": 12
   },
   {
-    "id": "ed326f9a-763f-4fa8-a8db-c079b30151eb",
-    "message": "Campaign 'chahin' created successfully",
+    "id": "035924e3-6c6f-4b93-bd3e-575468e44eb2",
+    "message": "Campaign 'carlos' created successfully",
     "type": "success",
-    "timestamp": "2025-07-29T16:44:30.236650",
+    "timestamp": "2025-07-30T18:14:46.727550",
     "read": false,
-    "campaign_id": 5
+    "campaign_id": 12
   },
   {
-    "id": "ba7e26ab-9a72-45c0-b522-93f5d985356b",
-    "message": "Account 'chahinezol' added successfully",
+    "id": "ea652e96-b538-4298-a380-6b23ca8cc307",
+    "message": "\ud83c\udfc1 Campaign 'Rlm' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
     "type": "success",
-    "timestamp": "2025-07-29T16:43:45.197546",
+    "timestamp": "2025-07-30T18:03:56.606207",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "792e6ce3-aa26-4fcb-b5b5-bc3334018311",
+    "message": "Campaign 'Rlm' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T18:03:50.830438",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "7c4e3367-9217-4d2a-a608-3c7a66055300",
+    "message": "\ud83c\udfc1 Campaign 'Rlm' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T18:03:24.626216",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "91b6e1cf-5fef-407e-8786-4a49e7374075",
+    "message": "Campaign 'Rlm' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T18:03:18.978333",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "aacc5803-982c-490b-9a8f-f2118a3cefbc",
+    "message": "Campaign 'Rlm' updated successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T18:03:16.858137",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "c6c2f122-dcf6-4786-99cc-0b24168ee802",
+    "message": "Campaign 'Rlm' failed with error: 'recipients_count'",
+    "type": "error",
+    "timestamp": "2025-07-30T17:59:53.692355",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "c0d4ad72-2b79-47df-9ebe-ea715c871200",
+    "message": "Campaign 'Rlm' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:59:45.643748",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "49321f83-e45a-44f4-bd97-b34a50952629",
+    "message": "Campaign 'Rlm' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:59:26.213035",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "bac9eb35-cabc-48b9-b460-3ba38b029cf1",
+    "message": "Rate limiting configuration updated successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:58:33.054674",
     "read": false,
     "campaign_id": null
   },
   {
-    "id": "8dacfbfa-2a7e-42fe-8729-dad131d70eef",
-    "message": "User 'oussamaac' updated successfully",
+    "id": "2d1ec81e-6fe1-49e1-be8c-902ec0b84e08",
+    "message": "Campaign 'ONMq' failed with error: 'recipients_count'",
+    "type": "error",
+    "timestamp": "2025-07-30T17:41:55.686760",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
+    "id": "3baeae96-48b2-4879-a39f-ead4ed24e3fd",
+    "message": "Campaign 'ONMq' started successfully",
     "type": "success",
-    "timestamp": "2025-07-29T15:58:54.660226",
+    "timestamp": "2025-07-30T17:41:43.983802",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
+    "id": "b3384b65-c265-48af-9676-252cd56bd217",
+    "message": "Campaign 'ONMq' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:41:37.183177",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
+    "id": "152a3bb2-898f-42bc-a454-b00783a71076",
+    "message": "Campaign 'cc' completed successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:24:03.109966",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "39039dcd-b131-4bcd-8806-f34b292bbd96",
+    "message": "Campaign 'cc' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:24:02.252567",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "cefab901-da99-492c-a7ee-d29d65848cef",
+    "message": "Campaign 'cc' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:23:54.132651",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "d9dc965a-8f89-4ee4-aa00-37efff206c51",
+    "message": "Campaign 'jamal' completed successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:14:28.994207",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "873c0f2c-7123-48d5-bb01-2af12c91f137",
+    "message": "Campaign 'jamal' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:14:28.048666",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "85e59ebd-f8cd-4ae8-9db6-f4f2f95d4cf5",
+    "message": "Campaign 'jamal' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:14:10.579822",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "6d6bbd12-7bb2-446e-8418-dbd3d819c165",
+    "message": "Campaign 'jimmy' completed successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:02:56.709206",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "b91bcefe-9849-4131-ad26-0adda35681e8",
+    "message": "Campaign 'jimmy' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:02:55.799571",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "45186805-5c7e-4a0e-a664-80f9993ec0a2",
+    "message": "Campaign 'jimmy' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T17:02:46.234566",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "9ac24f63-610c-4f9b-8881-96c58db0d2f7",
+    "message": "Campaign 'Patrick' completed successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:58:35.515603",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "a391f264-b45d-4e65-b03e-313167ce2957",
+    "message": "Campaign 'Patrick' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:58:34.620781",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "ad7c8396-c145-4eed-9dc8-c88b3cf0f7bf",
+    "message": "Campaign 'Patrick' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:58:27.747914",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "99e5888d-7921-4f99-80ee-f16b1b985c8b",
+    "message": "\u274c Campaign 'albertons' failed: 'destinataires'",
+    "type": "error",
+    "timestamp": "2025-07-30T16:44:10.260685",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "94bb22ce-43fc-4fdf-a553-d17e5104c6b3",
+    "message": "Campaign 'albertons' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:44:10.209944",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "c3c77096-d7ff-4466-90a6-0ee5181211ab",
+    "message": "Campaign 'albertons' completed successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:24:15.584692",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "959388db-9ad5-4463-b0bd-6bacf1e91d84",
+    "message": "Campaign 'albertons' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:24:14.752398",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "b58df5c0-1dfd-4223-bc7a-8a9fb573fe79",
+    "message": "Campaign 'albertons' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T16:24:06.612898",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "821e2bc6-37f4-4812-b0cb-e96ac1cdfb3f",
+    "message": "\ud83c\udfc1 Campaign 'monn' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T14:28:29.130370",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "31028ef9-1bb5-41d7-ad9b-30c701a79d32",
+    "message": "Campaign 'monn' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:28:23.523861",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "cbe09406-94c2-4d3c-b649-88db885eb61e",
+    "message": "Campaign 'monn' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:28:20.193580",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "17a00c65-9e0f-4ea5-80cd-c1006894ffe5",
+    "message": "\ud83c\udfc1 Campaign 'JAY' completed! Sent: 5, Errors: 0, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T14:19:54.758970",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "e87185d7-48eb-489a-9021-3be31d3c2041",
+    "message": "Campaign 'JAY' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:19:28.270149",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "d7e0cc66-cf72-40a5-91a3-1e86dc73d36e",
+    "message": "Account 'qq' added successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:13:53.193731",
     "read": false,
     "campaign_id": null
   },
   {
-    "id": "bc414ad3-b847-4612-ab8a-5ef87e28bb4a",
-    "message": "Account 'jaylan' added successfully",
+    "id": "899aace8-e6f4-4b77-bf61-4036db2ec541",
+    "message": "\ud83c\udfc1 Campaign 'incc' completed! Sent: 5, Errors: 0, Delivered: 0, Bounced: 0",
     "type": "success",
-    "timestamp": "2025-07-29T15:05:41.779438",
+    "timestamp": "2025-07-30T14:09:12.725598",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "a54beadb-3243-423b-a75c-296450f711a7",
+    "message": "Campaign 'incc' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:08:46.171281",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "ccd1e5eb-7d9c-46e1-bf99-5df691b0a85a",
+    "message": "Campaign 'incc' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:08:41.095179",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "a33d7dfa-9c04-43af-ac64-3a62f6e40555",
+    "message": "Campaign 'cccc' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:06:48.719329",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "24a0389f-1b76-4006-b7e0-7cb500a9954f",
+    "message": "\ud83c\udfc1 Campaign 'wqwq' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T14:05:38.859264",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "924d2ba2-3d57-4e81-9406-45cb24ee846d",
+    "message": "Campaign 'wqwq' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:05:33.211776",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "0951db0e-3fc0-4a67-a864-7c1409fdd8ed",
+    "message": "Campaign 'wqwq' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T14:05:30.725030",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "1032123e-0af4-4c2c-8ddd-d632c6aeb1fd",
+    "message": "Campaign 'ONMMM' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:49:07.345800",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "43d5ee3b-e9a3-4932-99c1-1598a50cebd7",
+    "message": "Campaign 'ONMMM' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:49:02.607599",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "20a3f91d-92b8-46f1-9f6e-ec4a43c2ba69",
+    "message": "\ud83c\udfc1 Campaign 'sc' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:40:57.222244",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "bb12a5a6-a9c8-464a-98db-1107ce05efd7",
+    "message": "Campaign 'sc' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:40:51.618115",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "32c2883e-ffb6-4778-b5f3-1a7bb09a982d",
+    "message": "Campaign 'sc' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:40:49.363544",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "ea9a0f24-f2d9-40d6-bf6b-3daec31437e0",
+    "message": "Account 'phungvanhuonghie' added successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:40:11.471118",
     "read": false,
     "campaign_id": null
+  },
+  {
+    "id": "f6e32289-eca7-45f4-8de4-b2c59558b768",
+    "message": "Account 'phungvanhuonghien@gmail.com' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:39:15.290085",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "eb588a33-c5a8-421c-8d8c-32fd4f3ada6c",
+    "message": "\ud83c\udfc1 Campaign 'SCO' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:38:35.519402",
+    "read": false,
+    "campaign_id": 2
+  },
+  {
+    "id": "70d9d339-4b94-4b0f-a20c-3270dd6b3e4a",
+    "message": "Campaign 'SCO' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:38:29.976014",
+    "read": false,
+    "campaign_id": 2
+  },
+  {
+    "id": "f95f4cdd-fa7d-4851-a6a8-a152cbd8c9fe",
+    "message": "Campaign 'SCO' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:38:18.210235",
+    "read": false,
+    "campaign_id": 2
+  },
+  {
+    "id": "80832133-07ff-417f-b561-805c9a7c30c6",
+    "message": "\ud83c\udfc1 Campaign 'JAY' completed! Sent: 5, Errors: 0, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:38:06.865494",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "bc41eac0-cb99-44d1-af57-754ca7ca0b96",
+    "message": "Campaign 'JAY' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:37:41.217412",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "7411055b-31df-48c5-892c-e78f0900d1b7",
+    "message": "Campaign 'JAY' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:37:38.355997",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "e1746038-b5eb-4db6-8608-ed725ca9dc4c",
+    "message": "\ud83c\udfc1 Campaign 'RINO' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:36:07.025932",
+    "read": false,
+    "campaign_id": 23
+  },
+  {
+    "id": "2c1d28c7-6f2d-4af2-a631-aee56d2da898",
+    "message": "Campaign 'RINO' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:36:01.182271",
+    "read": false,
+    "campaign_id": 23
+  },
+  {
+    "id": "9c07948c-e7d9-4bde-b97d-c78f64f4207c",
+    "message": "Campaign 'RINO' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:35:58.162120",
+    "read": false,
+    "campaign_id": 23
+  },
+  {
+    "id": "a048f1b5-d4e7-464d-81c2-60c68b4a765b",
+    "message": "\ud83c\udfc1 Campaign 'pmlLL' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:28:10.799661",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "01c4010f-aefc-4555-ac37-5d4ef55b5a5a",
+    "message": "Campaign 'pmlLL' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:28:05.124017",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "d982814c-9c69-4add-921e-8756a478bce1",
+    "message": "\ud83c\udfc1 Campaign 'pmlLL' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:27:19.872195",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "592c120a-87d8-40b1-89c9-bbca9cd68ec0",
+    "message": "Campaign 'pmlLL' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:27:14.190980",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "38711438-2cd2-4cc8-8f0d-410ca0227b39",
+    "message": "\ud83c\udfc1 Campaign 'pmlLL' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:26:24.638916",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "de61b15f-4875-4c9c-8e05-e5a50a797ef9",
+    "message": "Campaign 'pmlLL' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:26:19.021589",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "67eea38b-ea67-4b17-b943-be1f636ec500",
+    "message": "Campaign 'pmlLL' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:26:15.763920",
+    "read": false,
+    "campaign_id": 22
+  },
+  {
+    "id": "001196f2-6c93-4be2-b870-d73ebaea2eea",
+    "message": "\ud83c\udfc1 Campaign 'ONMNN' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:25:55.701476",
+    "read": false,
+    "campaign_id": 21
+  },
+  {
+    "id": "e97d7edd-c87d-4a27-8c48-a58446980df1",
+    "message": "Campaign 'ONMNN' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:25:50.044802",
+    "read": false,
+    "campaign_id": 21
+  },
+  {
+    "id": "196b4677-106a-4c74-bb4e-c1f7f617ac45",
+    "message": "\ud83c\udfc1 Campaign 'ONMNN' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:25:04.249681",
+    "read": false,
+    "campaign_id": 21
+  },
+  {
+    "id": "7be2668c-b26f-4850-b79a-2c1be2df47ad",
+    "message": "Campaign 'ONMNN' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:24:58.442473",
+    "read": false,
+    "campaign_id": 21
+  },
+  {
+    "id": "3bb3025e-d426-4ac4-b00b-3166bb873766",
+    "message": "Campaign 'ONMNN' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:24:49.102864",
+    "read": false,
+    "campaign_id": 21
+  },
+  {
+    "id": "bd96d0c0-dcd1-4663-ad55-0ce79ab7c554",
+    "message": "\ud83c\udfc1 Campaign 'lllll' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:09:38.991717",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "d90c72bf-f042-4b7b-8f41-f2147471e94d",
+    "message": "Campaign 'lllll' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:09:33.293203",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "4ee2f833-f20a-4934-a249-9f2b15e39750",
+    "message": "Campaign 'lllll' updated successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:09:31.086071",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "8ff24346-98a3-4dee-be05-a9ffc09494fc",
+    "message": "\ud83c\udfc1 Campaign 'malg' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:08:47.443694",
+    "read": false,
+    "campaign_id": 20
+  },
+  {
+    "id": "92a2f2ae-14e1-4672-a35e-858173d64e94",
+    "message": "Campaign 'malg' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:08:41.747442",
+    "read": false,
+    "campaign_id": 20
+  },
+  {
+    "id": "b9373966-1b45-4a65-af23-64b567a247d0",
+    "message": "Campaign 'malg' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:08:36.894832",
+    "read": false,
+    "campaign_id": 20
+  },
+  {
+    "id": "6f2d8f22-97bb-4c41-8698-edd2c6134538",
+    "message": "\ud83c\udfc1 Campaign 'albert (Copy)' completed! Sent: 5, Errors: 0, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T13:08:03.495121",
+    "read": false,
+    "campaign_id": 19
+  },
+  {
+    "id": "3c911970-1f8f-4922-afbc-de6f5adfa34e",
+    "message": "Campaign 'albert (Copy)' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T13:07:36.186088",
+    "read": false,
+    "campaign_id": 19
+  },
+  {
+    "id": "ea1ca0a2-c5ed-43ca-9ef3-5f9723751f5f",
+    "message": "Campaign 'albert (Copy)' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T03:03:09.665817",
+    "read": false,
+    "campaign_id": 19
+  },
+  {
+    "id": "6a9e1a1d-4e88-4641-8437-bc5ec041ddc5",
+    "message": "\ud83c\udfc1 Campaign 'za' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T03:01:59.008760",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "69b0416d-ab3a-486f-a650-4d6976799b51",
+    "message": "Campaign 'za' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T03:01:53.394431",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "472836d7-d90a-435f-8dd0-991b6d0dcff9",
+    "message": "\ud83c\udfc1 Campaign 'lllll' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T03:01:34.001818",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "810fdf0f-d376-47b1-9a16-f40a8c323693",
+    "message": "Campaign 'lllll' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T03:01:27.413875",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "19d41854-63b6-4f97-bbc0-18ca561b4f6a",
+    "message": "\ud83c\udfc1 Campaign 'za' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T02:59:22.736245",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "b40c6cb9-2421-4d71-afe0-7ea0c8b3a345",
+    "message": "Campaign 'za' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:59:15.843610",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "18906879-e5e5-4581-97d7-6c0215feecab",
+    "message": "Campaign 'za' updated successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:59:13.305917",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "a6ec757f-dec7-4e7b-8cc9-1dd865ffab94",
+    "message": "\ud83c\udfc1 Campaign 'lllll' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T02:57:19.507397",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "316d7df1-1b6f-439d-9b92-6d59de0c8944",
+    "message": "Campaign 'lllll' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:57:13.344051",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "88908a6b-9aca-46a4-97c1-03e64f767624",
+    "message": "\ud83c\udfc1 Campaign 'ww' completed! Sent: 0, Errors: 5, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T02:56:14.346135",
+    "read": false,
+    "campaign_id": 18
+  },
+  {
+    "id": "d779f996-9264-4008-9521-e7831ec6f233",
+    "message": "Campaign 'ww' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:56:08.343783",
+    "read": false,
+    "campaign_id": 18
+  },
+  {
+    "id": "aeac1f8b-7aca-42e7-a779-bc414a8594a2",
+    "message": "Campaign 'ww' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:56:04.208737",
+    "read": false,
+    "campaign_id": 18
+  },
+  {
+    "id": "ec3160ef-aee5-49fa-8be4-90ecf8400b45",
+    "message": "\ud83c\udfc1 Campaign 'outlook' completed! Sent: 5, Errors: 0, Delivered: 0, Bounced: 0",
+    "type": "success",
+    "timestamp": "2025-07-30T02:54:38.384761",
+    "read": false,
+    "campaign_id": 17
+  },
+  {
+    "id": "fcdc86db-5b6b-410b-8fb7-96e9cb9de0f5",
+    "message": "Campaign 'outlook' started successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:54:12.273760",
+    "read": false,
+    "campaign_id": 17
+  },
+  {
+    "id": "9923c6e3-c42a-4d00-a7fe-458b088bdd5f",
+    "message": "Campaign 'outlook' created successfully",
+    "type": "success",
+    "timestamp": "2025-07-30T02:54:09.457744",
+    "read": false,
+    "campaign_id": 17
   }
 ]

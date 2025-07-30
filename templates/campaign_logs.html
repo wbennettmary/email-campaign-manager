@@ -29,7 +29,17 @@
                             {{ campaign.status|title }}
                         </span>
                     </p>
-                    <p><strong>Total Recipients:</strong> {{ campaign.destinataires.split('\n')|length }}</p>
+                    {% if campaign.system_version == 'universal_v2' %}
+                        <p><strong>System:</strong> <span class="badge bg-primary">Universal v2</span></p>
+                        <p><strong>Data List ID:</strong> {{ campaign.data_list_id }}</p>
+                        <p><strong>Subject:</strong> {{ campaign.subject[:50] }}{% if campaign.subject|length > 50 %}...{% endif %}</p>
+                        <p><strong>From Name:</strong> {{ campaign.from_name or 'Default' }}</p>
+                        <p><strong>Template Type:</strong> {% if campaign.use_custom_template %}Custom{% else %}Zoho{% endif %}</p>
+                        <p><strong>Total Recipients:</strong> <span id="total-recipients">Loading...</span></p>
+                    {% else %}
+                        <p><strong>System:</strong> <span class="badge bg-secondary">Legacy</span></p>
+                        <p><strong>Total Recipients:</strong> {{ campaign.destinataires.split('\n')|length }}</p>
+                    {% endif %}
                     <p><strong>Emails Sent:</strong> {{ campaign.total_sent or 0 }}</p>
                     <p><strong>Template ID:</strong> {{ campaign.template_id }}</p>
                     <p><strong>Created:</strong> {{ campaign.created_at }}</p>
@@ -53,8 +63,13 @@
                 </div>
                 <div class="card-body">
                     <div class="progress mb-3" style="height: 25px;">
-                        {% set total = campaign.destinataires.split('\n')|length %}
-                        {% set sent = campaign.total_sent or 0 %}
+                        {% if campaign.system_version == 'universal_v2' %}
+                            {% set total = campaign.total_attempted or 0 %}
+                            {% set sent = campaign.total_sent or 0 %}
+                        {% else %}
+                            {% set total = campaign.destinataires.split('\n')|length %}
+                            {% set sent = campaign.total_sent or 0 %}
+                        {% endif %}
                         {% set progress = (sent / total * 100) if total > 0 else 0 %}
                         <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%">
                             {{ sent }}/{{ total }}
@@ -133,10 +148,36 @@
 <script>
 const socket = io();
 const campaignId = {{ campaign.id }};
+const isUniversalCampaign = {{ 'true' if campaign.system_version == 'universal_v2' else 'false' }};
 let logs = [];
 let sentCount = {{ campaign.total_sent or 0 }};
 let errorCount = 0;
-let totalEmails = {{ campaign.destinataires.split('\n')|length }};
+let totalEmails = 0;
+
+// Initialize total emails based on campaign type
+{% if campaign.system_version == 'universal_v2' %}
+    // For universal campaigns, we'll load the count from the data list
+    totalEmails = {{ campaign.total_attempted or 0 }};
+    // Load actual count from data list if available
+    if ({{ campaign.data_list_id }}) {
+        fetch(`/api/data-lists/{{ campaign.data_list_id }}/campaign-emails`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    totalEmails = data.email_count;
+                    document.getElementById('total-recipients').textContent = totalEmails;
+                    document.getElementById('remaining-count').textContent = totalEmails - sentCount;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading data list count:', error);
+                document.getElementById('total-recipients').textContent = totalEmails;
+            });
+    }
+{% else %}
+    // For legacy campaigns, use the destinataires count
+    totalEmails = {{ campaign.destinataires.split('\n')|length }};
+{% endif %}
 
 // Load existing logs from the page
 {% if logs %}

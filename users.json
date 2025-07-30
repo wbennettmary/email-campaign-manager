@@ -1,1 +1,46 @@
-[{"id": 1, "username": "admin", "password": "pbkdf2:sha256:600000$LNpPnPtJg6rMl4Fy$d763003b621720fcfcc7c2e78f250ac872c71fca52cc950d0603edd04633070f", "email": "admin@example.com", "role": "admin", "created_at": "2025-07-28T19:00:00", "is_active": true, "permissions": ["add_account", "manage_accounts", "manage_data", "view_all_campaigns", "manage_all_campaigns", "manage_users", "view_reports"]}, {"id": 2, "username": "oussamaac", "password": "scrypt:32768:8:1$e3BlUTys3srTRafi$2c92dee22cdd31b36b57c09ab9c4b4c30d02ed99aeb46441d08833a57cd87a553c458a27fb1d1ddd3cfefbfa52579ab41aa77108559d1e271cc3616dc483f194", "email": "jetalpha@outlook.fr", "role": "user", "created_at": "2025-07-28T22:54:50.576442", "is_active": true, "permissions": ["add_account", "view_reports"], "updated_at": "2025-07-29T13:02:05.648958"}]
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "pbkdf2:sha256:600000$LNpPnPtJg6rMl4Fy$d763003b621720fcfcc7c2e78f250ac872c71fca52cc950d0603edd04633070f",
+    "email": "admin@example.com",
+    "role": "admin",
+    "created_at": "2025-07-28T19:00:00",
+    "is_active": true,
+    "permissions": [
+      "add_account",
+      "manage_accounts",
+      "manage_data",
+      "view_all_campaigns",
+      "manage_all_campaigns",
+      "manage_users",
+      "view_reports"
+    ]
+  },
+  {
+    "id": 2,
+    "username": "oussamaac",
+    "password": "scrypt:32768:8:1$e3BlUTys3srTRafi$2c92dee22cdd31b36b57c09ab9c4b4c30d02ed99aeb46441d08833a57cd87a553c458a27fb1d1ddd3cfefbfa52579ab41aa77108559d1e271cc3616dc483f194",
+    "email": "jetalpha@outlook.fr",
+    "role": "user",
+    "created_at": "2025-07-28T22:54:50.576442",
+    "is_active": true,
+    "permissions": [
+      "add_account",
+      "view_reports"
+    ],
+    "updated_at": "2025-07-29T13:02:05.648958"
+  },
+  {
+    "id": 3,
+    "username": "rico",
+    "password": "scrypt:32768:8:1$uksiHwlJYu7uBifn$db0fc8ff7c46d8e0b1dc8a1ab58988a6c7a7954220729b8c2668485a06f1a31b17a8c35308439869f6683924e64b90a9eb5286a7a20ada42a41d0a8c0e5b391d",
+    "email": "salssapp@gmail.com",
+    "role": "user",
+    "created_at": "2025-07-29T18:21:24.479130",
+    "is_active": true,
+    "permissions": [
+      "view_reports"
+    ]
+  }
+]

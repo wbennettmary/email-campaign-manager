@@ -4,11 +4,11 @@
   "emails_per_minute": 50,
   "emails_per_hour": 500,
   "emails_per_day": 5000,
-  "wait_time_between_emails": 1,
+  "wait_time_between_emails": 1.0,
   "burst_limit": 10,
   "cooldown_period": 5,
   "daily_quota": 5000,
   "hourly_quota": 500,
   "minute_quota": 50,
   "second_quota": 1
-}
+} 

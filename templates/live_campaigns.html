@@ -11,6 +11,27 @@
             Live Campaigns Monitor
         </h1>
         <div class="d-flex gap-2 align-items-center">
+            <!-- Admin Controls -->
+            {% if is_admin() %}
+            <div class="dropdown me-3">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-cog"></i> Admin
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="showHiddenCampaignsCount()">
+                        <i class="fas fa-eye-slash me-2"></i>Show Hidden Count
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="restoreHiddenCampaigns()">
+                        <i class="fas fa-eye me-2"></i>Restore All Hidden
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="refreshCampaigns()">
+                        <i class="fas fa-sync-alt me-2"></i>Force Refresh
+                    </a></li>
+                </ul>
+            </div>
+            {% endif %}
+            
             <!-- Grid Controls -->
             <div class="d-flex align-items-center me-3">
                 <label class="form-label mb-0 me-2">Grid:</label>
@@ -109,7 +130,11 @@
                         {% set total_recipients = 0 %}
                         {% set total_sent = 0 %}
                         {% for campaign in campaigns %}
-                            {% set total_recipients = total_recipients + (campaign.destinataires.split('\n')|length) %}
+                            {% if campaign.system_version == 'universal_v2' %}
+                                {% set total_recipients = total_recipients + (campaign.total_attempted or 0) %}
+                            {% else %}
+                                {% set total_recipients = total_recipients + (campaign.destinataires.split('\n')|length) %}
+                            {% endif %}
                             {% set total_sent = total_sent + (campaign.total_sent or 0) %}
                         {% endfor %}
                         {{ total_recipients - total_sent }}
@@ -151,14 +176,24 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="text-info">
-                                        <h5 class="mb-0" id="remaining-{{ campaign.id }}">{{ (campaign.destinataires.split('\n')|length) - (campaign.total_sent or 0) }}</h5>
+                                        <h5 class="mb-0" id="remaining-{{ campaign.id }}">
+                                            {% if campaign.system_version == 'universal_v2' %}
+                                                {{ (campaign.total_attempted or 0) - (campaign.total_sent or 0) }}
+                                            {% else %}
+                                                {{ (campaign.destinataires.split('\n')|length) - (campaign.total_sent or 0) }}
+                                            {% endif %}
+                                        </h5>
                                         <small>Left</small>
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="text-success">
                                         <h5 class="mb-0" id="progress-{{ campaign.id }}">
-                                            {% set total = campaign.destinataires.split('\n')|length %}
+                                            {% if campaign.system_version == 'universal_v2' %}
+                                                {% set total = campaign.total_attempted or 0 %}
+                                            {% else %}
+                                                {% set total = campaign.destinataires.split('\n')|length %}
+                                            {% endif %}
                                             {% set sent = campaign.total_sent or 0 %}
                                             {% if total > 0 %}{{ (sent / total * 100)|round|int }}%{% else %}0%{% endif %}
                                         </h5>
@@ -169,7 +204,11 @@
                             
                             <!-- Progress Bar -->
                             <div class="progress mb-3" style="height: 8px;">
-                                {% set total = campaign.destinataires.split('\n')|length %}
+                                {% if campaign.system_version == 'universal_v2' %}
+                                    {% set total = campaign.total_attempted or 0 %}
+                                {% else %}
+                                    {% set total = campaign.destinataires.split('\n')|length %}
+                                {% endif %}
                                 {% set sent = campaign.total_sent or 0 %}
                                 {% set progress = (sent / total * 100) if total > 0 else 0 %}
                                 <div class="progress-bar bg-success" id="progress-bar-{{ campaign.id }}" role="progressbar" style="width: {{ progress }}%"></div>
@@ -297,23 +336,17 @@
 <script>
 const socket = io();
 let campaignLogs = {};
+let hiddenCampaigns = new Set();
 
 // Initialize logs for each campaign
 {% for campaign in campaigns %}
 campaignLogs[{{ campaign.id }}] = {{ campaign.logs|tojson }};
 {% endfor %}
 
-// Load existing logs for each campaign
-{% for campaign in campaigns %}
-// loadCampaignLogs({{ campaign.id }});
-{% endfor %}
-
 // Real-time update variables
 let autoRefreshInterval;
 let currentFilter = 'live';
 let isRefreshing = false;
-let refreshCount = 0;
-const MAX_REFRESH_COUNT = 100; // Prevent infinite refresh
 
 // Start auto-refresh functionality
 function startAutoRefresh() {
@@ -329,12 +362,8 @@ function startAutoRefresh() {
         }
         
         autoRefreshInterval = setInterval(() => {
-            if (!isRefreshing && refreshCount < MAX_REFRESH_COUNT) {
-                refreshCampaigns();
-            } else if (refreshCount >= MAX_REFRESH_COUNT) {
-                console.warn('Maximum refresh count reached, stopping auto-refresh');
-                stopAutoRefresh();
-                showNotification('Auto-refresh stopped due to maximum limit', 'warning');
+            if (!isRefreshing) {
+                updateLiveCampaigns();
             }
         }, interval);
     }
@@ -348,303 +377,251 @@ function stopAutoRefresh() {
     }
 }
 
-// Refresh campaigns with AJAX (not full page reload)
-function refreshCampaigns() {
+// Update live campaigns data without page refresh
+function updateLiveCampaigns() {
     if (isRefreshing) return;
     
     isRefreshing = true;
-    refreshCount++;
-    showLoadingIndicator();
     
-    // Use AJAX to get only the data, not the full page
-    fetch('/api/campaigns')
+    // Update only running campaigns that are not hidden
+    const runningCampaigns = document.querySelectorAll('[data-campaign-id]');
+    
+    runningCampaigns.forEach(campaignCard => {
+        const campaignId = campaignCard.getAttribute('data-campaign-id');
+        
+        // Skip hidden campaigns
+        if (hiddenCampaigns.has(parseInt(campaignId))) {
+            return;
+        }
+        
+        const statusBadge = campaignCard.querySelector('.badge');
+        const status = statusBadge ? statusBadge.textContent.toLowerCase().trim() : '';
+        
+        // Only update running campaigns
+        if (status === 'running') {
+            updateCampaignData(campaignId);
+        }
+    });
+    
+    // Update statistics (excluding hidden campaigns)
+    updateStatistics();
+    
+    isRefreshing = false;
+}
+
+// Update individual campaign data
+function updateCampaignData(campaignId) {
+    fetch(`/api/campaigns/${campaignId}`)
         .then(response => response.json())
-        .then(campaigns => {
-            // Filter campaigns based on current filter
-            const filteredCampaigns = filterCampaignsByType(campaigns, currentFilter);
+        .then(campaign => {
+            // Update sent count
+            const sentElement = document.getElementById(`sent-${campaignId}`);
+            if (sentElement) {
+                sentElement.textContent = campaign.total_sent || 0;
+            }
             
-            // Update the campaigns container with new data
-            updateCampaignsDisplay(filteredCampaigns);
+            // Update remaining count
+            const remainingElement = document.getElementById(`remaining-${campaignId}`);
+            if (remainingElement) {
+                let total = 0;
+                if (campaign.system_version === 'universal_v2') {
+                    total = campaign.total_attempted || 0;
+                } else {
+                    total = campaign.destinataires ? campaign.destinataires.split('\n').length : 0;
+                }
+                const sent = campaign.total_sent || 0;
+                remainingElement.textContent = Math.max(0, total - sent);
+            }
             
-            // Update statistics
-            updateStatistics();
+            // Update progress
+            const progressElement = document.getElementById(`progress-${campaignId}`);
+            const progressBar = document.getElementById(`progress-bar-${campaignId}`);
+            if (progressElement && progressBar) {
+                let total = 0;
+                if (campaign.system_version === 'universal_v2') {
+                    total = campaign.total_attempted || 0;
+                } else {
+                    total = campaign.destinataires ? campaign.destinataires.split('\n').length : 0;
+                }
+                const sent = campaign.total_sent || 0;
+                const progress = total > 0 ? Math.round((sent / total) * 100) : 0;
+                
+                progressElement.textContent = `${progress}%`;
+                progressBar.style.width = `${progress}%`;
+            }
             
-            hideLoadingIndicator();
-            
-            // Show success notification only every 10 refreshes
-            if (refreshCount % 10 === 0) {
-                showNotification('Campaigns refreshed successfully', 'success');
+            // Update logs
+            updateCampaignLogs(campaignId);
+        })
+        .catch(error => {
+            console.error(`Error updating campaign ${campaignId}:`, error);
+        });
+}
+
+// Update campaign logs
+function updateCampaignLogs(campaignId) {
+    fetch(`/api/campaigns/${campaignId}/logs`)
+        .then(response => response.json())
+        .then(logs => {
+            const logsContainer = document.getElementById(`logs-${campaignId}`);
+            if (logsContainer && logs.length > 0) {
+                // Get the last 5 logs
+                const recentLogs = logs.slice(-5);
+                let logsHTML = '';
+                
+                recentLogs.forEach(log => {
+                    if (log.status === 'success') {
+                        logsHTML += `
+                            <div class="activity-entry mb-1 p-1 rounded">
+                                <span class="text-success fw-bold">✓</span>
+                                <span class="text-success">Email ${log.email || 'recipient'} ${log.total_sent || 1}/${log.total_attempted || 1} done</span>
+                            </div>
+                        `;
+                    } else if (log.status === 'error') {
+                        logsHTML += `
+                            <div class="activity-entry mb-1 p-1 rounded">
+                                <span class="text-danger fw-bold">✗</span>
+                                <span class="text-danger">Email ${log.email || 'recipient'} ${log.total_sent || 0}/${log.total_attempted || 1} error</span>
+                                ${log.message ? `<br><small class="text-muted">${log.message}</small>` : ''}
+                            </div>
+                        `;
+                    } else if (log.message && (log.message.toLowerCase().includes('rate limit') || log.message.includes('429'))) {
+                        logsHTML += `
+                            <div class="activity-entry mb-1 p-1 rounded">
+                                <span class="text-primary fw-bold">⏱</span>
+                                <span class="text-primary">Rate limit exceeded - waiting...</span>
+                            </div>
+                        `;
+                    } else if (log.status === 'info' && log.message && log.message.toLowerCase().includes('started')) {
+                        logsHTML += `
+                            <div class="activity-entry mb-1 p-1 rounded">
+                                <span class="text-info fw-bold">🚀</span>
+                                <span class="text-info">${log.message}</span>
+                            </div>
+                        `;
+                    } else {
+                        logsHTML += `
+                            <div class="activity-entry mb-1 p-1 rounded">
+                                <span class="text-muted">${log.message || 'Activity logged'}</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                logsContainer.innerHTML = logsHTML;
+                logsContainer.scrollTop = logsContainer.scrollHeight;
             }
         })
         .catch(error => {
-            console.error('Error refreshing campaigns:', error);
-            hideLoadingIndicator();
-            
-            // Show error notification only every 5 refreshes
-            if (refreshCount % 5 === 0) {
-                showNotification('Error refreshing campaigns', 'error');
-            }
-        })
-        .finally(() => {
-            isRefreshing = false;
+            console.error(`Error updating logs for campaign ${campaignId}:`, error);
         });
 }
 
-// Filter campaigns by type without page reload
-function filterCampaignsByType(campaigns, filterType) {
-    return campaigns.filter(campaign => {
-        const status = campaign.status ? campaign.status.toLowerCase() : '';
+// Manual refresh function
+function refreshCampaigns() {
+    updateLiveCampaigns();
+    showNotification('Campaigns refreshed', 'success');
+}
+
+// Filter campaigns (original functionality)
+function filterCampaigns(filterType) {
+    currentFilter = filterType;
+    
+    // Update button states
+    document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('btn-outline-primary', 'btn-outline-warning', 'btn-outline-secondary');
+    });
+    
+    const activeButton = document.getElementById(`filter-${filterType}`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+    
+    // Get all campaign cards
+    const campaignCards = document.querySelectorAll('[data-campaign-id]');
+    
+    campaignCards.forEach(card => {
+        const campaignId = parseInt(card.getAttribute('data-campaign-id'));
+        
+        // Always hide campaigns that are in the hidden set
+        if (hiddenCampaigns.has(campaignId)) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        const statusBadge = card.querySelector('.badge');
+        const status = statusBadge ? statusBadge.textContent.toLowerCase().trim() : '';
+        
+        let shouldShow = false;
         
         switch(filterType) {
             case 'live':
-                return status === 'running' || status === 'ready';
+                shouldShow = status === 'running' || status === 'ready';
+                break;
             case 'interrupted':
-                return status === 'paused' || status === 'stopped';
+                shouldShow = status === 'paused' || status === 'stopped';
+                break;
             case 'finished':
-                return status === 'completed';
+                shouldShow = status === 'completed';
+                break;
             default:
-                return true;
+                shouldShow = true;
+        }
+        
+        card.style.display = shouldShow ? 'block' : 'none';
+    });
+    
+    // Update statistics for visible campaigns
+    updateStatistics();
+}
+
+// Update statistics based on visible campaigns
+function updateStatistics() {
+    const visibleCampaigns = document.querySelectorAll('[data-campaign-id]:not([style*="display: none"])');
+    
+    let totalCampaigns = 0;
+    let totalSent = 0;
+    let totalErrors = 0;
+    let totalRemaining = 0;
+    
+    visibleCampaigns.forEach(card => {
+        const campaignId = parseInt(card.getAttribute('data-campaign-id'));
+        
+        // Skip hidden campaigns
+        if (hiddenCampaigns.has(campaignId)) {
+            return;
+        }
+        
+        totalCampaigns++;
+        
+        const sentElement = document.getElementById(`sent-${campaignId}`);
+        const errorElement = document.getElementById(`errors-${campaignId}`);
+        const remainingElement = document.getElementById(`remaining-${campaignId}`);
+        
+        if (sentElement) {
+            totalSent += parseInt(sentElement.textContent) || 0;
+        }
+        
+        if (errorElement) {
+            totalErrors += parseInt(errorElement.textContent) || 0;
+        }
+        
+        if (remainingElement) {
+            totalRemaining += parseInt(remainingElement.textContent) || 0;
         }
     });
-}
-
-// Update campaigns display without page reload
-function updateCampaignsDisplay(campaigns) {
-    const container = document.getElementById('campaigns-container');
-    if (!container) return;
     
-    // Clear existing content
-    container.innerHTML = '';
+    // Update statistics display
+    const totalCampaignsElement = document.getElementById('total-campaigns');
+    const totalSentElement = document.getElementById('total-sent');
+    const totalErrorsElement = document.getElementById('total-errors');
+    const totalRemainingElement = document.getElementById('total-remaining');
     
-    if (campaigns.length === 0) {
-        container.innerHTML = `
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="fas fa-broadcast-tower fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No campaigns found</h4>
-                    <p class="text-muted">No campaigns match the current filter</p>
-                </div>
-            </div>
-        `;
-        return;
-    }
-    
-    // Add campaign cards
-    campaigns.forEach(campaign => {
-        const campaignCard = createCampaignCard(campaign);
-        container.appendChild(campaignCard);
-    });
-}
-
-// Create campaign card element
-function createCampaignCard(campaign) {
-    const colDiv = document.createElement('div');
-    colDiv.className = 'col-lg-6 col-xl-4 mb-4';
-    colDiv.setAttribute('data-campaign-id', campaign.id);
-    
-    const statusBadge = getStatusBadge(campaign.status);
-    const progress = campaign.total_attempted > 0 ? (campaign.total_sent / campaign.total_attempted) * 100 : 0;
-    
-    colDiv.innerHTML = `
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">${campaign.name}</h6>
-                ${statusBadge}
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <small class="text-muted">Sent</small>
-                        <div class="h6 mb-0">${campaign.total_sent || 0}</div>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-muted">Errors</small>
-                        <div class="h6 mb-0 text-danger">${(campaign.total_attempted || 0) - (campaign.total_sent || 0)}</div>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <small class="text-muted">Left</small>
-                        <div class="h6 mb-0">${Math.max(0, (campaign.total_attempted || 0) - (campaign.total_sent || 0))}</div>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-muted">Progress</small>
-                        <div class="h6 mb-0">${progress.toFixed(1)}%</div>
-                    </div>
-                </div>
-                <div class="progress mb-3" style="height: 8px;">
-                    <div class="progress-bar" role="progressbar" style="width: ${progress}%" 
-                         aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <small class="text-muted">Started: ${formatTimestamp(campaign.created_at)}</small>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="viewCampaignLogs(${campaign.id})">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        ${campaign.status === 'running' ? 
-                            `<button class="btn btn-outline-warning" onclick="stopCampaign(${campaign.id})">
-                                <i class="fas fa-stop"></i>
-                            </button>` : 
-                            `<button class="btn btn-outline-success" onclick="startCampaign(${campaign.id})">
-                                <i class="fas fa-play"></i>
-                            </button>`
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    return colDiv;
-}
-
-// Get status badge HTML
-function getStatusBadge(status) {
-    const statusLower = status ? status.toLowerCase() : '';
-    let badgeClass = 'badge bg-secondary';
-    let icon = 'fas fa-question';
-    
-    switch(statusLower) {
-        case 'running':
-            badgeClass = 'badge bg-success';
-            icon = 'fas fa-play';
-            break;
-        case 'ready':
-            badgeClass = 'badge bg-primary';
-            icon = 'fas fa-clock';
-            break;
-        case 'paused':
-            badgeClass = 'badge bg-warning';
-            icon = 'fas fa-pause';
-            break;
-        case 'stopped':
-            badgeClass = 'badge bg-danger';
-            icon = 'fas fa-stop';
-            break;
-        case 'completed':
-            badgeClass = 'badge bg-info';
-            icon = 'fas fa-check';
-            break;
-    }
-    
-    return `<span class="${badgeClass}"><i class="${icon} me-1"></i>${status}</span>`;
-}
-
-// Format timestamp
-function formatTimestamp(timestamp) {
-    if (!timestamp) return 'Unknown';
-    try {
-        const date = new Date(timestamp);
-        return date.toLocaleString();
-    } catch {
-        return timestamp;
-    }
-}
-
-function addLogToContainer(campaignId, data) {
-    const logsContainer = document.getElementById(`logs-${campaignId}`);
-    if (!logsContainer) return;
-    
-    const activityEntry = document.createElement('div');
-    activityEntry.className = 'activity-entry mb-1 p-1 rounded';
-    
-    let statusIcon, statusClass, message;
-    
-    if (data.status === 'success') {
-        statusIcon = '✓';
-        statusClass = 'text-success';
-        message = `Email ${data.email || 'recipient'} ${data.total_sent || 1}/${data.total_attempted || 1} done`;
-    } else if (data.status === 'error') {
-        statusIcon = '✗';
-        statusClass = 'text-danger';
-        message = `Email ${data.email || 'recipient'} ${data.total_sent || 0}/${data.total_attempted || 1} error`;
-    } else if (data.message && (data.message.toLowerCase().includes('rate limit') || data.message.includes('429'))) {
-        statusIcon = '⏱';
-        statusClass = 'text-primary';
-        message = 'Rate limit exceeded - waiting...';
-    } else if (data.status === 'info' && data.message.toLowerCase().includes('started')) {
-        statusIcon = '🚀';
-        statusClass = 'text-info';
-        message = data.message;
-    } else if (data.status === 'info' && data.message.toLowerCase().includes('completed')) {
-        statusIcon = '🏁';
-        statusClass = 'text-success';
-        message = data.message;
-    } else {
-        statusIcon = 'ℹ';
-        statusClass = 'text-secondary';
-        message = data.message;
-    }
-    
-    activityEntry.innerHTML = `
-        <span class="${statusClass} fw-bold">${statusIcon}</span>
-        <span class="${statusClass}">${message}</span>
-        ${data.status === 'error' && data.message ? `<br><small class="text-muted">${data.message}</small>` : ''}
-    `;
-    
-    logsContainer.appendChild(activityEntry);
-    logsContainer.scrollTop = logsContainer.scrollHeight;
-    
-    // Keep only last 5 entries in live view
-    const entries = logsContainer.querySelectorAll('.activity-entry');
-    if (entries.length > 5) {
-        entries[0].remove();
-    }
-}
-
-// Socket.IO event listeners
-socket.on('email_progress', function(data) {
-    const campaignId = data.campaign_id;
-    if (campaignLogs[campaignId]) {
-        addLogToContainer(campaignId, data);
-        updateProgress(campaignId, data);
-        updateStatistics();
-    }
-});
-
-socket.on('campaign_completed', function(data) {
-    const campaignId = data.campaign_id;
-    if (campaignLogs[campaignId]) {
-        addLogToContainer(campaignId, {
-            timestamp: new Date().toISOString(),
-            status: 'info',
-            message: `🏁 Campaign completed! Total sent: ${data.total_sent}/${data.total_attempted}`,
-            type: 'completion'
-        });
-        
-        // Update UI to show completed status
-        setTimeout(() => {
-            refreshCampaigns();
-        }, 2000);
-    }
-});
-
-socket.on('new_notification', function(notification) {
-    showNotification(notification.message, notification.type);
-});
-
-function updateProgress(campaignId, data) {
-    const totalEmails = parseInt(document.getElementById(`remaining-${campaignId}`).textContent) + 
-                       parseInt(document.getElementById(`sent-${campaignId}`).textContent);
-    
-    let sentCount = parseInt(document.getElementById(`sent-${campaignId}`).textContent);
-    let errorCount = parseInt(document.getElementById(`errors-${campaignId}`).textContent);
-    
-    if (data.status === 'success') {
-        sentCount++;
-        document.getElementById(`sent-${campaignId}`).textContent = sentCount;
-    } else if (data.status === 'error') {
-        errorCount++;
-        document.getElementById(`errors-${campaignId}`).textContent = errorCount;
-    }
-    
-    const remaining = totalEmails - sentCount - errorCount;
-    document.getElementById(`remaining-${campaignId}`).textContent = remaining;
-    
-    const progress = Math.round((sentCount + errorCount) / totalEmails * 100);
-    document.getElementById(`progress-${campaignId}`).textContent = progress + '%';
-    document.getElementById(`progress-bar-${campaignId}`).style.width = progress + '%';
+    if (totalCampaignsElement) totalCampaignsElement.textContent = totalCampaigns;
+    if (totalSentElement) totalSentElement.textContent = totalSent;
+    if (totalErrorsElement) totalErrorsElement.textContent = totalErrors;
+    if (totalRemainingElement) totalRemainingElement.textContent = totalRemaining;
 }
 
 function getStatusIcon(status) {
@@ -771,19 +748,21 @@ function startCampaign(campaignId) {
 
 function deleteCampaign(campaignId) {
     if (confirm('Remove this campaign from the Live Campaigns Monitor? The campaign will be hidden from this view but not deleted.')) {
-        // Simply hide the campaign card from the live view
+        // Add to hidden campaigns set
+        hiddenCampaigns.add(campaignId);
+        
+        // Hide the campaign card from the live view
         const campaignCard = document.querySelector(`[data-campaign-id="${campaignId}"]`);
         if (campaignCard) {
             campaignCard.style.display = 'none';
             showNotification('Campaign removed from Live Campaigns Monitor', 'success');
+            
+            // Update statistics after hiding
+            updateStatistics();
         } else {
             showNotification('Campaign not found in view', 'error');
         }
     }
-}
-
-function refreshCampaigns() {
-    window.location.reload();
 }
 
 function clearLogs(campaignId) {
@@ -848,84 +827,31 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-function filterCampaigns(filterType) {
-    currentFilter = filterType;
-    
-    // Update button states
-    document.querySelectorAll('[id^="filter-"]').forEach(btn => {
-        btn.classList.remove('active');
-        btn.classList.add('btn-outline-primary', 'btn-outline-warning', 'btn-outline-secondary');
-    });
-    
-    const activeButton = document.getElementById(`filter-${filterType}`);
-    if (activeButton) {
-        activeButton.classList.add('active');
-    }
-    
-    // Refresh campaigns with new filter
-    refreshCampaigns();
-}
-
-// Show loading indicator
-function showLoadingIndicator() {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const campaignsContainer = document.getElementById('campaigns-container');
-    
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'block';
-    }
-    
-    if (campaignsContainer) {
-        campaignsContainer.style.opacity = '0.6';
-    }
-}
-
-// Hide loading indicator
-function hideLoadingIndicator() {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const campaignsContainer = document.getElementById('campaigns-container');
-    
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'none';
-    }
-    
-    if (campaignsContainer) {
-        campaignsContainer.style.opacity = '1';
-    }
-}
-
-// Update statistics based on visible campaigns
-function updateStatistics() {
-    const visibleCampaigns = document.querySelectorAll('[data-campaign-id]');
-    
-    let totalCampaigns = visibleCampaigns.length;
-    let totalSent = 0;
-    let totalErrors = 0;
-    let totalRemaining = 0;
-    
-    visibleCampaigns.forEach(card => {
-        const sentElement = card.querySelector('.h6.mb-0');
-        const errorElement = card.querySelector('.h6.mb-0.text-danger');
+// Add a function to restore hidden campaigns (for admin use)
+function restoreHiddenCampaigns() {
+    if (confirm('Restore all hidden campaigns to the Live Campaigns Monitor?')) {
+        hiddenCampaigns.clear();
         
-        if (sentElement) {
-            totalSent += parseInt(sentElement.textContent) || 0;
-        }
+        // Show all campaign cards
+        const campaignCards = document.querySelectorAll('[data-campaign-id]');
+        campaignCards.forEach(card => {
+            card.style.display = 'block';
+        });
         
-        if (errorElement) {
-            totalErrors += parseInt(errorElement.textContent) || 0;
-        }
-    });
-    
-    // Update statistics display
-    const totalCampaignsElement = document.getElementById('total-campaigns');
-    const totalSentElement = document.getElementById('total-sent');
-    const totalErrorsElement = document.getElementById('total-errors');
-    const totalRemainingElement = document.getElementById('total-remaining');
-    
-    if (totalCampaignsElement) totalCampaignsElement.textContent = totalCampaigns;
-    if (totalSentElement) totalSentElement.textContent = totalSent;
-    if (totalErrorsElement) totalErrorsElement.textContent = totalErrors;
-    if (totalRemainingElement) totalRemainingElement.textContent = totalRemaining;
+        // Re-apply current filter
+        filterCampaigns(currentFilter);
+        
+        showNotification('All hidden campaigns restored', 'success');
+    }
+}
+
+// Add a function to show hidden campaigns count
+function showHiddenCampaignsCount() {
+    if (hiddenCampaigns.size > 0) {
+        showNotification(`${hiddenCampaigns.size} campaign(s) hidden from view`, 'info');
+    } else {
+        showNotification('No campaigns are hidden', 'info');
+    }
 }
 
 // Event listeners for controls

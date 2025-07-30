@@ -527,7 +527,6 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="/smtp-config"><i class="fas fa-envelope me-2"></i>SMTP Configuration</a></li>
-                    <li><a class="dropdown-item" href="/rate-limits"><i class="fas fa-tachometer-alt me-2"></i>Rate Limits</a></li>
                     <li><a class="dropdown-item" href="/system-settings"><i class="fas fa-server me-2"></i>System Settings</a></li>
                     <li><a class="dropdown-item" href="/backup-restore"><i class="fas fa-database me-2"></i>Backup & Restore</a></li>
                 </ul>
@@ -535,6 +534,9 @@
             {% endif %}
             <a href="/data-lists" class="nav-link {% if request.endpoint == 'data_lists' %}active{% endif %}">
                 <i class="fas fa-list"></i> Data Lists
+            </a>
+            <a href="/rate-limits" class="nav-link {% if request.endpoint == 'rate_limits' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> Rate Limits
             </a>
             <a href="/notifications" class="nav-link {% if request.endpoint == 'notifications' %}active{% endif %}">
                 <i class="fas fa-bell"></i> Notifications
@@ -607,7 +609,6 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Settings</h6></li>
                             <li><a class="dropdown-item" href="/smtp-config"><i class="fas fa-envelope me-2"></i>SMTP Configuration</a></li>
-                            <li><a class="dropdown-item" href="/rate-limits"><i class="fas fa-tachometer-alt me-2"></i>Rate Limits</a></li>
                             <li><a class="dropdown-item" href="/system-settings"><i class="fas fa-server me-2"></i>System Settings</a></li>
                             <li><a class="dropdown-item" href="/backup-restore"><i class="fas fa-database me-2"></i>Backup & Restore</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -732,6 +733,12 @@
             setTimeout(() => {
                 body.classList.remove('loading');
             }, 300);
+        }
+
+        // Email validation function
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
         }
 
         // Load saved theme
