@@ -1,180 +1,5 @@
 [
   {
-    "id": 7,
-    "name": "inconnu",
-    "org_id": "894168605",
-    "cookies": {
-      "templateHintShown": "true",
-      "delugeBuilder": "false",
-      "ZohoMarkRef": "\"https://www.zoho.com/crm/login.html\"",
-      "ZohoMarkSrc": "\"google:crm^|google:crm^|google:crm\"",
-      "zsca63a3daff87f4d33b6cffbe7a949ff5f": "1753799540852zsc0.41593969193639346",
-      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dgoogle",
-      "zps-tgr-dts": "sc%3D1-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1753799540857",
-      "zohocrmmarketing-_zldp": "YfEOFpfOAG%2BAAnTb4LCpFbAHTQnxom4DMrkGtpcDIbSw%2FMmunmNRpVDOR6aeHqkpE1S2x1pVyE8%3D",
-      "zohocrmmarketing-_zldt": "b032d562-753a-4e70-971a-6023637d475e-0",
-      "_iamadt": "c89902deaf104c8a563f08aec3fed838bc218c0b4024a557a9148977c578c0c427e5041707e35bdddc8acb1c4af2c566",
-      "_iambdt": "b2bfa72d05a19259b487eeb1ed809b2e6f9ce203344ac1aacc784cffbdcf416483dff7ef063e47b100a03e75e0419c6fd7db3b02f1ff9193f9661e0e139e684a",
-      "zalb_6e4b8efee4": "fee878ba69a72a4ef2f5f53c836d68f7",
-      "crmcsr": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
-      "_zcsr_tmp": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
-      "CROSSCDNID": "b5aa3fcc19e9d5112c163678054f0a3582b220d2f69293fb333f7666ad0fb5c7e37022c382d8ecef5838dd7ef3b25aad",
-      "CROSSCDNCOUNTRY": "MA",
-      "JSESSIONID": "D2E50DFE6C6E6984597C97B5C1C6A950",
-      "zalb_8b7213828d": "5ab2d5349e7ae573756d0e16381747f9",
-      "CSRF_TOKEN": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
-      "zalb_3309580ed5": "b1a80d02702c1bbb10e1bdc6c6bb8677",
-      "CT_CSRF_TOKEN": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
-      "wms-tkp-token": "894168234-0f7f7d9b-15706e8a46b0fd59a804d4e2a9b09267",
-      "com_chat_owner": "1753799591798",
-      "com_avcliq_owner": "1753799591799",
-      "drecn": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
-      "showEditorLeftPane": "undefined"
-    },
-    "headers": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
-      "Accept": "application/json",
-      "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
-      "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Referer": "https://crm.zoho.com/",
-      "X-ZCSRF-TOKEN": "crmcsrfparam=64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
-      "Content-type": "application/json; charset=utf-8",
-      "X-CRM-ORG": "894168605",
-      "X-Requested-With": "XMLHttpRequest",
-      "X-Client-SubVersion": "3a0d3e15b9286610fce2ead2fab6bc2b",
-      "X-Static-Version": "11139775",
-      "x-my-normurl": "crm.settings.section.workflow-rules.create-workflow-rule",
-      "Origin": "https://crm.zoho.com",
-      "Sec-GPC": "1",
-      "Connection": "keep-alive",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-origin",
-      "Priority": "u=0",
-      "TE": "trailers"
-    },
-    "templates": [
-      {
-        "name": "te",
-        "id": "6907434000000610004"
-      }
-    ],
-    "created_at": "2025-07-29T17:57:15.954606",
-    "created_by": 1,
-    "template_info": [
-      {
-        "number": 2,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template2/actions/test",
-        "function_name": "Send_Email_Template2",
-        "status": "available",
-        "zoho_templates": [],
-        "template_mapping": {}
-      },
-      {
-        "number": 3,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
-        "function_name": "Send_Email_Template3",
-        "status": "available",
-        "zoho_templates": [],
-        "template_mapping": {}
-      },
-      {
-        "number": 4,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template4/actions/test",
-        "function_name": "Send_Email_Template4",
-        "status": "available",
-        "zoho_templates": [],
-        "template_mapping": {}
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "name": "jaylan",
-    "org_id": "893358824",
-    "cookies": {
-      "delugeBuilder": "false",
-      "ZohoMarkRef": "\"https://www.zoho.com/fr/crm/\"",
-      "ZohoMarkSrc": "\"google:crm^|google:crm^|google:crm\"",
-      "zalb_6e4b8efee4": "24a06329e53b64d41d924d83d2f8d7be",
-      "crmcsr": "2f1b1f8f7979cbca149db83d933cba2113c0de5182152b128b3e7ef097d1bd6c5d388e62aeaf8eeb01a774877fc2bdb1036e1dd10274c828d39fcdecb22bc925",
-      "_zcsr_tmp": "2f1b1f8f7979cbca149db83d933cba2113c0de5182152b128b3e7ef097d1bd6c5d388e62aeaf8eeb01a774877fc2bdb1036e1dd10274c828d39fcdecb22bc925",
-      "CROSSCDNID": "6192b4c1871ce2556fd59fe768eb92f7054d06a18e8dd0c57fc22768c2a1a52baf420cd01b054260c11166d30260c2e9",
-      "CROSSCDNCOUNTRY": "MA",
-      "JSESSIONID": "6DD3BC2982A5A4BEE4EAB1A3AB78E5E7",
-      "zalb_8b7213828d": "86e1df9d631368310b26f28cbc66a048",
-      "CSRF_TOKEN": "2f1b1f8f7979cbca149db83d933cba2113c0de5182152b128b3e7ef097d1bd6c5d388e62aeaf8eeb01a774877fc2bdb1036e1dd10274c828d39fcdecb22bc925",
-      "zalb_3309580ed5": "5395b7af7665f175397e214afd2f5def",
-      "CT_CSRF_TOKEN": "2f1b1f8f7979cbca149db83d933cba2113c0de5182152b128b3e7ef097d1bd6c5d388e62aeaf8eeb01a774877fc2bdb1036e1dd10274c828d39fcdecb22bc925",
-      "drecn": "2f1b1f8f7979cbca149db83d933cba2113c0de5182152b128b3e7ef097d1bd6c5d388e62aeaf8eeb01a774877fc2bdb1036e1dd10274c828d39fcdecb22bc925",
-      "showEditorLeftPane": "undefined",
-      "zsca63a3daff87f4d33b6cffbe7a949ff5f": "1753808319623zsc0.29303357001339203",
-      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dcrm.zoho.com",
-      "zps-tgr-dts": "sc%3D3-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1753808319640",
-      "_iamadt": "a8b5309d670ba34771bec0f331092a07c561d8fea42529a13ed6303c5634d368166c381bf01082e78bd55a0e681f3395",
-      "_iambdt": "dcea8bb22219bc33bcd34992cc67f43827c0017f501e5e54375056584b96d49adb5149c34bc0c0062c45fb9570151bf6df3819eb03e84c30244dbcf9c5f1296a",
-      "wms-tkp-token": "893359620-279db27c-4fe4c4ed21c938583f1246a4a2d30b7f",
-      "com_chat_owner": "1753808362849",
-      "com_avcliq_owner": "1753808362849"
-    },
-    "headers": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
-      "Accept": "application/json",
-      "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
-      "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Referer": "https://crm.zoho.com/",
-      "X-ZCSRF-TOKEN": "crmcsrfparam=2f1b1f8f7979cbca149db83d933cba2113c0de5182152b128b3e7ef097d1bd6c5d388e62aeaf8eeb01a774877fc2bdb1036e1dd10274c828d39fcdecb22bc925",
-      "Content-type": "application/json; charset=utf-8",
-      "X-CRM-ORG": "893358824",
-      "X-Requested-With": "XMLHttpRequest",
-      "X-Client-SubVersion": "3a0d3e15b9286610fce2ead2fab6bc2b",
-      "X-Static-Version": "11139775",
-      "x-my-normurl": "crm.settings.section.workflow-rules.create-workflow-rule",
-      "Origin": "https://crm.zoho.com",
-      "Sec-GPC": "1",
-      "Connection": "keep-alive",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-origin",
-      "Priority": "u=0",
-      "TE": "trailers"
-    },
-    "templates": [
-      {
-        "name": "np",
-        "id": "6898521000000707006"
-      }
-    ],
-    "created_at": "2025-07-29T18:06:35.580776",
-    "created_by": 1,
-    "template_info": [
-      {
-        "number": 2,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template2/actions/test",
-        "function_name": "Send_Email_Template2",
-        "status": "available"
-      },
-      {
-        "number": 3,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
-        "function_name": "Send_Email_Template3",
-        "status": "available"
-      },
-      {
-        "number": 4,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template4/actions/test",
-        "function_name": "Send_Email_Template4",
-        "status": "available"
-      },
-      {
-        "number": 5,
-        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template5/actions/test",
-        "function_name": "Send_Email_Template5",
-        "status": "available"
-      }
-    ]
-  },
-  {
     "id": 10,
     "name": "phungvanhuonghie",
     "org_id": "893477875",
@@ -254,40 +79,33 @@
     "template_mapping": {}
   },
   {
-    "id": 11,
-    "name": "qq",
-    "org_id": "893477875",
+    "id": 12,
+    "name": "chahinezol@outlook.fr",
+    "org_id": "894706431",
     "cookies": {
       "delugeBuilder": "false",
-      "zalb_6e4b8efee4": "b4f5253598e0d627ceb36a4ea3d46cd1",
-      "crmcsr": "f44c015daebf3cf64b5dcc794ed0a038ad1380e137546724b921d402241880ca53de974c7e5365fcb180803e0337956fadee62b0eee2ea9cdf69b7a45172668a",
-      "_zcsr_tmp": "f44c015daebf3cf64b5dcc794ed0a038ad1380e137546724b921d402241880ca53de974c7e5365fcb180803e0337956fadee62b0eee2ea9cdf69b7a45172668a",
-      "dcl_pfx": "us",
-      "dcl_bd": "zoho.com",
-      "is_pfx": "false",
-      "JSESSIONID": "C3ED18CB9E6E55AE2A018A125C0D0678",
-      "zalb_8b7213828d": "540713a537d6cca885952c6c68c1dcd5",
-      "CSRF_TOKEN": "f44c015daebf3cf64b5dcc794ed0a038ad1380e137546724b921d402241880ca53de974c7e5365fcb180803e0337956fadee62b0eee2ea9cdf69b7a45172668a",
-      "zalb_3309580ed5": "b1a80d02702c1bbb10e1bdc6c6bb8677",
-      "CT_CSRF_TOKEN": "f44c015daebf3cf64b5dcc794ed0a038ad1380e137546724b921d402241880ca53de974c7e5365fcb180803e0337956fadee62b0eee2ea9cdf69b7a45172668a",
-      "zohocares-_zldp": "YfEOFpfOAG%2BCS70HRqGUQ6MADnIBE12gwRBmglV54sJ2mDlibCuspR%2FFaevF2zFVZ01i3mLB0Mw%3D",
-      "drecn": "f44c015daebf3cf64b5dcc794ed0a038ad1380e137546724b921d402241880ca53de974c7e5365fcb180803e0337956fadee62b0eee2ea9cdf69b7a45172668a",
-      "showEditorLeftPane": "undefined",
-      "CROSSCDNID": "ef4bb4dc3dbf5b95dc5e4e096c824a84905d291b591dcb9d8467c4eaf675495c2983cd12181955749d4df83104bbf8ef",
+      "ZohoMarkRef": "\"https://www.zoho.com/crm/\"",
+      "ZohoMarkSrc": "\"google:crm^|google:crm^|google:crm\"",
+      "zsca63a3daff87f4d33b6cffbe7a949ff5f": "1753800260141zsc0.32041286525204327",
+      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dgoogle",
+      "zps-tgr-dts": "sc%3D1-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1753800260142",
+      "_iamadt": "2a6c4a2373dcae469ab481f911def42613e3119a7b6673a687a614bf91bdc93ac7ce7c197b2c939128783a5d44a0ca7c",
+      "_iambdt": "25a9ffb71860b3fba39f600aa65de896ded526cfe09c6565498601946400490bc49b5857f8b7510caad0ea5c5d1a60a52828b40be640630334cf5e34375464d5",
+      "zalb_6e4b8efee4": "2d173b99ccfc99248ad8413718b270a2",
+      "crmcsr": "69b284ecc0253b1c6939aba638db053678d45d7a241bc58e6f591ec80e5e1afa508def23bbdaa07a169daf69ecf38dae803a8be18f3c7815a2eef4be0b341fe2",
+      "_zcsr_tmp": "69b284ecc0253b1c6939aba638db053678d45d7a241bc58e6f591ec80e5e1afa508def23bbdaa07a169daf69ecf38dae803a8be18f3c7815a2eef4be0b341fe2",
+      "CROSSCDNID": "d7645411b7ad0f078985ae2466edacdbe4391078cfb174cc7af28cce6d9d29e29681073ce95ac143a0c530d866c485ae",
       "CROSSCDNCOUNTRY": "MA",
-      "ZohoMarkRef": "\"https://www.zoho.com/crm/login.html\"",
-      "ZohoMarkSrc": "\"direct:zoho^|direct:crm^|google:crm\"",
-      "zohocares-_zldt": "e1e93a0b-5e28-408e-b5dd-4a74749eb40a-0",
-      "zohocares-_uuid": "f81bc71b-e244-4f3c-af6f-661d1239ed95_e531",
-      "zohocrmmarketing-_zldp": "YfEOFpfOAG%2Behn0QqDGIMApc1glsE6NHM5AUHXhu29tS4vFM8HMCQgaduSBlfVYArJGTzqSbE8c%3D",
-      "zohocrmmarketing-_zldt": "0fb7225e-2a7a-40c2-a42c-129d15c4a360-1",
-      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dcrm.zoho.com",
-      "zps-tgr-dts": "sc%3D5-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1753797209830",
-      "_iamadt": "f0697df44959ffd0024e7264a15c919dc31b3052222585a6f1b5595f84e866d5ac7d3ee77424c3fcea167c4ddb3c45ab",
-      "_iambdt": "5a49e0e8c5335c61bd9182d7cab96df87f7caeecf9fde482f3e948b3acd8e5e56d78cd76285c04d8293dc77898efbb3cb2cce73078ee430fc338dd17cf9c5c4b",
-      "wms-tkp-token": "893483379-fa850ce5-b69e5657edd2607d29f199f1fe71bd01",
-      "com_avcliq_owner": "1753798614366",
-      "com_chat_owner": "1753798614365"
+      "JSESSIONID": "7658047228B54887B409E8DDBEA52C54",
+      "zalb_8b7213828d": "76168fef6d2a0dbfb2bb0c7b8729f417",
+      "CSRF_TOKEN": "69b284ecc0253b1c6939aba638db053678d45d7a241bc58e6f591ec80e5e1afa508def23bbdaa07a169daf69ecf38dae803a8be18f3c7815a2eef4be0b341fe2",
+      "zalb_3309580ed5": "28deba1711e0f9c8ea8919a4fbd8ae65",
+      "CT_CSRF_TOKEN": "69b284ecc0253b1c6939aba638db053678d45d7a241bc58e6f591ec80e5e1afa508def23bbdaa07a169daf69ecf38dae803a8be18f3c7815a2eef4be0b341fe2",
+      "wms-tkp-token": "894708635-71f9f670-7085d07960510ca0445763d731b1f873",
+      "com_chat_owner": "1753800314325",
+      "com_avcliq_owner": "1753800314326",
+      "drecn": "69b284ecc0253b1c6939aba638db053678d45d7a241bc58e6f591ec80e5e1afa508def23bbdaa07a169daf69ecf38dae803a8be18f3c7815a2eef4be0b341fe2",
+      "showEditorLeftPane": "undefined"
     },
     "headers": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
@@ -295,9 +113,9 @@
       "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
       "Accept-Encoding": "gzip, deflate, br, zstd",
       "Referer": "https://crm.zoho.com/",
-      "X-ZCSRF-TOKEN": "crmcsrfparam=f44c015daebf3cf64b5dcc794ed0a038ad1380e137546724b921d402241880ca53de974c7e5365fcb180803e0337956fadee62b0eee2ea9cdf69b7a45172668a",
+      "X-ZCSRF-TOKEN": "crmcsrfparam=69b284ecc0253b1c6939aba638db053678d45d7a241bc58e6f591ec80e5e1afa508def23bbdaa07a169daf69ecf38dae803a8be18f3c7815a2eef4be0b341fe2",
       "Content-type": "application/json; charset=utf-8",
-      "X-CRM-ORG": "893477875",
+      "X-CRM-ORG": "894706431",
       "X-Requested-With": "XMLHttpRequest",
       "X-Client-SubVersion": "3a0d3e15b9286610fce2ead2fab6bc2b",
       "X-Static-Version": "11139775",
@@ -313,11 +131,242 @@
     },
     "templates": [
       {
-        "name": "qq",
+        "name": "x2",
+        "id": "6932955000000601006"
+      }
+    ],
+    "created_at": "2025-08-01T18:09:31.820226",
+    "created_by": 1,
+    "template_info": [
+      {
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template1/actions/test",
+        "function_name": "Send_Email_Template1",
+        "number": 1
+      }
+    ],
+    "zoho_templates": [],
+    "template_mapping": {}
+  },
+  {
+    "id": 13,
+    "name": "robachalabi@outlook.com",
+    "org_id": "894798836",
+    "cookies": {
+      "delugeBuilder": "false",
+      "ZohoMarkRef": "\"https://www.zoho.com/fr/crm/\"",
+      "ZohoMarkSrc": "\"google:crm^|google:crm^|google:crm\"",
+      "zsca63a3daff87f4d33b6cffbe7a949ff5f": "1753800893906zsc0.5738983422044427",
+      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dgoogle",
+      "zps-tgr-dts": "sc%3D1-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1753800893907",
+      "_iamadt": "c8fc68931dae9b941a95f299b09e3a7f792026bb64810e331bd3ad76eb6efb6c922c856256f1a91dc12603e6f33763e9",
+      "_iambdt": "d3a111408f1ff7d63c50594462498bc3006546245bf54f5fa176a106d2170cf0bb66426c91e78ba796f0ea0714c80726d7025f87fd91269a5d3c1224130d110f",
+      "wms-tkp-token": "894800862-04ddf81b-b808f1e5a4e6a040a6ce0e9dd841bd83",
+      "zalb_6e4b8efee4": "2d173b99ccfc99248ad8413718b270a2",
+      "crmcsr": "dcb89b2dc8bd8316a29e4d9ed75617fb8c9996e67717d78c8a000f1025c9a1ce163415c5103d2138ca68fc18a55010510c84a8144d8e25da8db0783306840130",
+      "_zcsr_tmp": "dcb89b2dc8bd8316a29e4d9ed75617fb8c9996e67717d78c8a000f1025c9a1ce163415c5103d2138ca68fc18a55010510c84a8144d8e25da8db0783306840130",
+      "CROSSCDNID": "12a774da9b4db3ddc82841d884ae46e8db4b61569c7cabe59f4cb01f667bf6e5f7975e8f30dfc40f35cdfc5113fc2fcc",
+      "CROSSCDNCOUNTRY": "MA",
+      "JSESSIONID": "4E73FDCF952BE4F10D703BFA23FE7DFF",
+      "zalb_8b7213828d": "4d8d54355dade8b74f0a45f9afb19b2a",
+      "CSRF_TOKEN": "dcb89b2dc8bd8316a29e4d9ed75617fb8c9996e67717d78c8a000f1025c9a1ce163415c5103d2138ca68fc18a55010510c84a8144d8e25da8db0783306840130",
+      "zalb_3309580ed5": "ece371f0d4c5c1270f9573557680cca3",
+      "CT_CSRF_TOKEN": "dcb89b2dc8bd8316a29e4d9ed75617fb8c9996e67717d78c8a000f1025c9a1ce163415c5103d2138ca68fc18a55010510c84a8144d8e25da8db0783306840130",
+      "com_chat_owner": "1753800927233",
+      "com_avcliq_owner": "1753800927233",
+      "drecn": "dcb89b2dc8bd8316a29e4d9ed75617fb8c9996e67717d78c8a000f1025c9a1ce163415c5103d2138ca68fc18a55010510c84a8144d8e25da8db0783306840130",
+      "showEditorLeftPane": "undefined"
+    },
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
+      "Accept": "application/json",
+      "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      "Referer": "https://crm.zoho.com/",
+      "X-ZCSRF-TOKEN": "crmcsrfparam=dcb89b2dc8bd8316a29e4d9ed75617fb8c9996e67717d78c8a000f1025c9a1ce163415c5103d2138ca68fc18a55010510c84a8144d8e25da8db0783306840130",
+      "Content-type": "application/json; charset=utf-8",
+      "X-CRM-ORG": "894798836",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-Client-SubVersion": "3a0d3e15b9286610fce2ead2fab6bc2b",
+      "X-Static-Version": "11139775",
+      "x-my-normurl": "crm.settings.section.workflow-rules.create-workflow-rule",
+      "Origin": "https://crm.zoho.com",
+      "Sec-GPC": "1",
+      "Connection": "keep-alive",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-origin",
+      "Priority": "u=0",
+      "TE": "trailers"
+    },
+    "templates": [
+      {
+        "name": "db",
+        "id": "6930040000000571267"
+      }
+    ],
+    "created_at": "2025-08-01T18:54:42.656070",
+    "created_by": 1,
+    "template_info": [
+      {
+        "number": 2,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template2/actions/test",
+        "function_name": "Send_Email_Template2",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      }
+    ],
+    "zoho_templates": [],
+    "template_mapping": {}
+  },
+  {
+    "id": 14,
+    "name": "lauraorg@outlook.fr",
+    "org_id": "894168605",
+    "cookies": {
+      "templateHintShown": "true",
+      "delugeBuilder": "false",
+      "ZohoMarkRef": "\"https://www.zoho.com/crm/login.html\"",
+      "ZohoMarkSrc": "\"google:crm^|google:crm^|google:crm\"",
+      "zsca63a3daff87f4d33b6cffbe7a949ff5f": "1753799540852zsc0.41593969193639346",
+      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dgoogle",
+      "zps-tgr-dts": "sc%3D1-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1753799540857",
+      "zohocrmmarketing-_zldp": "YfEOFpfOAG%2BAAnTb4LCpFbAHTQnxom4DMrkGtpcDIbSw%2FMmunmNRpVDOR6aeHqkpE1S2x1pVyE8%3D",
+      "zohocrmmarketing-_zldt": "b032d562-753a-4e70-971a-6023637d475e-0",
+      "_iamadt": "c89902deaf104c8a563f08aec3fed838bc218c0b4024a557a9148977c578c0c427e5041707e35bdddc8acb1c4af2c566",
+      "_iambdt": "b2bfa72d05a19259b487eeb1ed809b2e6f9ce203344ac1aacc784cffbdcf416483dff7ef063e47b100a03e75e0419c6fd7db3b02f1ff9193f9661e0e139e684a",
+      "zalb_6e4b8efee4": "fee878ba69a72a4ef2f5f53c836d68f7",
+      "crmcsr": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
+      "_zcsr_tmp": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
+      "CROSSCDNID": "b5aa3fcc19e9d5112c163678054f0a3582b220d2f69293fb333f7666ad0fb5c7e37022c382d8ecef5838dd7ef3b25aad",
+      "CROSSCDNCOUNTRY": "MA",
+      "JSESSIONID": "D2E50DFE6C6E6984597C97B5C1C6A950",
+      "zalb_8b7213828d": "5ab2d5349e7ae573756d0e16381747f9",
+      "CSRF_TOKEN": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
+      "zalb_3309580ed5": "b1a80d02702c1bbb10e1bdc6c6bb8677",
+      "CT_CSRF_TOKEN": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
+      "wms-tkp-token": "894168234-0f7f7d9b-15706e8a46b0fd59a804d4e2a9b09267",
+      "com_chat_owner": "1753799591798",
+      "com_avcliq_owner": "1753799591799",
+      "drecn": "64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
+      "showEditorLeftPane": "undefined"
+    },
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
+      "Accept": "application/json",
+      "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      "Referer": "https://crm.zoho.com/",
+      "X-ZCSRF-TOKEN": "crmcsrfparam=64e665d0604cd7041a9dbcfef4801fbaa837b95fd18aaafab4622670f72faab5b4fe98ee61361fede3ca99498f45d48d82ac24ad324a962be95765a4e5c15df5",
+      "Content-type": "application/json; charset=utf-8",
+      "X-CRM-ORG": "894168605",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-Client-SubVersion": "3a0d3e15b9286610fce2ead2fab6bc2b",
+      "X-Static-Version": "11139775",
+      "x-my-normurl": "crm.settings.section.workflow-rules.create-workflow-rule",
+      "Origin": "https://crm.zoho.com",
+      "Sec-GPC": "1",
+      "Connection": "keep-alive",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-origin",
+      "Priority": "u=0",
+      "TE": "trailers"
+    },
+    "templates": [
+      {
+        "name": "db",
         "id": "6907434000000610004"
       }
     ],
-    "created_at": "2025-07-30T14:13:46.666876",
+    "created_at": "2025-08-01T19:42:36.958980",
+    "created_by": 1,
+    "template_info": [
+      {
+        "number": 2,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template2/actions/test",
+        "function_name": "Send_Email_Template2",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      },
+      {
+        "number": 3,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
+        "function_name": "Send_Email_Template3",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      },
+      {
+        "number": 4,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template4/actions/test",
+        "function_name": "Send_Email_Template4",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      }
+    ],
+    "zoho_templates": [],
+    "template_mapping": {}
+  },
+  {
+    "id": 18,
+    "name": "robachalabi@outlook.com",
+    "org_id": "894798836",
+    "cookies": {
+      "delugeBuilder": "false",
+      "ZohoMarkRef": "\"https://www.zoho.com/fr/crm/\"",
+      "ZohoMarkSrc": "\"google:crm^|google:crm^|google:crm\"",
+      "zsca63a3daff87f4d33b6cffbe7a949ff5f": "1754063220792zsc0.3709414293619785",
+      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dgoogle",
+      "zps-tgr-dts": "sc%3D1-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1754063220793",
+      "_iamadt": "99b137389fd347718fbfea0ea8f683d7a132d0f8b7581cc6c6786d7f743352a8548892217ce388d258c97d80269c378b",
+      "_iambdt": "d181904ac0c7e21d07153776f8853cd96b8a467d16343d7479cbbdee5cfe9bc4dd7fdcef41e9ac000852614c9256345709ba11212d98a086d2a516812106ad02",
+      "zalb_6e4b8efee4": "ff9eda6508c205bf2a4ac4e2997bd26f",
+      "crmcsr": "e6f999800c6a83811cc7be79d023c61f6b982fce9b1a2a13a51c9314306ee4cf0d2d5c565387ad021060543755af2c9606a92bc9a5c9380107ef172bfc434a0f",
+      "_zcsr_tmp": "e6f999800c6a83811cc7be79d023c61f6b982fce9b1a2a13a51c9314306ee4cf0d2d5c565387ad021060543755af2c9606a92bc9a5c9380107ef172bfc434a0f",
+      "CROSSCDNID": "e9b3bcbd4a464a2b56dbb6bf3e0642f46dd8be38f969708fb8306df893ebdcfbf31d891b6db263b1cfef61386f246618",
+      "CROSSCDNCOUNTRY": "MA",
+      "JSESSIONID": "44592176113B6583A508F05026152080",
+      "zalb_8b7213828d": "21a88394949ce06e08ed4fa8ba1a30a1",
+      "CSRF_TOKEN": "e6f999800c6a83811cc7be79d023c61f6b982fce9b1a2a13a51c9314306ee4cf0d2d5c565387ad021060543755af2c9606a92bc9a5c9380107ef172bfc434a0f",
+      "zalb_3309580ed5": "5e41c4a69d62a20d11fee6ef8532db03",
+      "CT_CSRF_TOKEN": "e6f999800c6a83811cc7be79d023c61f6b982fce9b1a2a13a51c9314306ee4cf0d2d5c565387ad021060543755af2c9606a92bc9a5c9380107ef172bfc434a0f",
+      "wms-tkp-token": "894800862-e6a8a93f-23789dd143dc9e10d7652cbc15139c14",
+      "com_chat_owner": "1754063255268",
+      "com_avcliq_owner": "1754063255269",
+      "drecn": "e6f999800c6a83811cc7be79d023c61f6b982fce9b1a2a13a51c9314306ee4cf0d2d5c565387ad021060543755af2c9606a92bc9a5c9380107ef172bfc434a0f",
+      "showEditorLeftPane": "undefined"
+    },
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
+      "Accept": "application/json",
+      "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      "Referer": "https://crm.zoho.com/",
+      "X-ZCSRF-TOKEN": "crmcsrfparam=e6f999800c6a83811cc7be79d023c61f6b982fce9b1a2a13a51c9314306ee4cf0d2d5c565387ad021060543755af2c9606a92bc9a5c9380107ef172bfc434a0f",
+      "Content-type": "application/json; charset=utf-8",
+      "X-CRM-ORG": "894798836",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-Client-SubVersion": "6439d27cb390eaab5806e4baf1e3694f",
+      "X-Static-Version": "11172301",
+      "x-my-normurl": "crm.settings.section.workflow-rules.create-workflow-rule",
+      "Origin": "https://crm.zoho.com",
+      "Sec-GPC": "1",
+      "Connection": "keep-alive",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-origin",
+      "Priority": "u=0"
+    },
+    "templates": [
+      {
+        "name": "dd",
+        "id": "6930040000000604015"
+      }
+    ],
+    "created_at": "2025-08-01T20:27:53.442324",
     "created_by": 1,
     "template_info": [
       {

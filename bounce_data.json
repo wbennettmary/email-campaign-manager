@@ -71,5 +71,99 @@
       "timestamp": "2025-07-27T00:01:53.065455",
       "bounce_type": "soft"
     }
+  ],
+  "1": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 1,
+      "reason": "API Error 401",
+      "subject": "nfghn",
+      "sender": "gfhjghj <893358824@zoho.com>",
+      "timestamp": "2025-08-01T20:05:10.927863",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 1,
+      "reason": "API Error 401",
+      "subject": "nfghn",
+      "sender": "gfhjghj <893358824@zoho.com>",
+      "timestamp": "2025-08-01T20:05:12.583416",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 1,
+      "reason": "API Error 401",
+      "subject": "nfghn",
+      "sender": "gfhjghj <893358824@zoho.com>",
+      "timestamp": "2025-08-01T20:05:14.225553",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 1,
+      "reason": "API Error 401",
+      "subject": "nfghn",
+      "sender": "gfhjghj <893358824@zoho.com>",
+      "timestamp": "2025-08-01T20:05:15.894311",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 1,
+      "reason": "API Error 401",
+      "subject": "nfghn",
+      "sender": "gfhjghj <893358824@zoho.com>",
+      "timestamp": "2025-08-01T20:05:17.572668",
+      "bounce_type": "soft"
+    }
+  ],
+  "4": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 4,
+      "reason": "API Error 401",
+      "subject": "prediction time",
+      "sender": "Mark <894655436@zoho.com>",
+      "timestamp": "2025-08-01T20:25:21.209978",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 4,
+      "reason": "API Error 401",
+      "subject": "prediction time",
+      "sender": "Mark <894655436@zoho.com>",
+      "timestamp": "2025-08-01T20:25:22.854249",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 4,
+      "reason": "API Error 401",
+      "subject": "prediction time",
+      "sender": "Mark <894655436@zoho.com>",
+      "timestamp": "2025-08-01T20:25:24.503256",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 4,
+      "reason": "API Error 401",
+      "subject": "prediction time",
+      "sender": "Mark <894655436@zoho.com>",
+      "timestamp": "2025-08-01T20:25:26.180719",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 4,
+      "reason": "API Error 401",
+      "subject": "prediction time",
+      "sender": "Mark <894655436@zoho.com>",
+      "timestamp": "2025-08-01T20:25:27.797285",
+      "bounce_type": "soft"
+    }
   ]
 }

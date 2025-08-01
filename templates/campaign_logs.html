@@ -101,6 +101,9 @@
                 <i class="fas fa-arrow-right"></i> Live Email Logs
             </h5>
             <div class="btn-group">
+                <button class="btn btn-outline-success btn-sm" onclick="refreshLogs()" id="refresh-btn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
                 <button class="btn btn-outline-secondary btn-sm" onclick="clearLogs()">
                     <i class="fas fa-trash"></i> Clear Logs
                 </button>
@@ -210,6 +213,45 @@ socket.on('campaign_completed', function(data) {
             message: `🏁 Campaign completed! Total sent: ${data.total_sent}/${data.total_attempted}`,
             type: 'completion'
         });
+        
+        // Stop auto-refresh when campaign is completed
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+        }
+    }
+});
+
+// Auto-refresh functionality
+let autoRefreshInterval = null;
+
+function startAutoRefresh() {
+    // Only start auto-refresh if campaign is running
+    if ({{ 'true' if campaign.status == 'running' else 'false' }}) {
+        autoRefreshInterval = setInterval(() => {
+            refreshLogs();
+        }, 10000); // Refresh every 10 seconds
+    }
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Start auto-refresh when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    startAutoRefresh();
+});
+
+// Stop auto-refresh when page is hidden
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        stopAutoRefresh();
+    } else {
+        startAutoRefresh();
     }
 });
 
@@ -295,6 +337,134 @@ function clearLogs() {
         `;
         logs = [];
     }
+}
+
+function refreshLogs() {
+    const refreshBtn = document.getElementById('refresh-btn');
+    const originalText = refreshBtn.innerHTML;
+    
+    // Show loading state
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Fetch latest logs and campaign data
+    fetch(`/api/campaigns/${campaignId}/logs/refresh`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update logs display
+                updateLogsDisplay(data.logs);
+                
+                // Update campaign stats if available
+                if (data.campaign) {
+                    updateCampaignStats(data.campaign);
+                }
+                
+                // Show success message
+                showNotification('Logs refreshed successfully!', 'success');
+            } else {
+                showNotification('Failed to refresh logs: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing logs:', error);
+            showNotification('Error refreshing logs: ' + error.message, 'error');
+        })
+        .finally(() => {
+            // Restore button state
+            refreshBtn.innerHTML = originalText;
+            refreshBtn.disabled = false;
+        });
+}
+
+function updateLogsDisplay(newLogs) {
+    const logsContainer = document.getElementById('logs-container');
+    
+    // Clear existing logs
+    logsContainer.innerHTML = '';
+    
+    if (newLogs && newLogs.length > 0) {
+        // Add new logs
+        newLogs.forEach(log => {
+            const logEntry = document.createElement('div');
+            const timestamp = new Date(log.timestamp).toLocaleString();
+            const statusIcon = getStatusIcon(log.status);
+            const statusClass = getStatusClass(log.status);
+            
+            logEntry.className = `log-entry ${statusClass} mb-2 p-2 rounded`;
+            logEntry.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <span class="badge ${statusClass} me-2">${statusIcon}</span>
+                        <span class="fw-bold">${timestamp}</span>
+                        <span class="ms-2">${log.message}</span>
+                        ${log.email ? `<br><small class="text-muted">To: ${log.email}</small>` : ''}
+                        ${log.subject ? `<br><small class="text-muted">Subject: ${log.subject}</small>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            logsContainer.appendChild(logEntry);
+        });
+        
+        // Update logs array
+        logs = newLogs;
+    } else {
+        // Show empty state
+        logsContainer.innerHTML = `
+            <div class="text-muted text-center">
+                <i class="fas fa-hourglass-half fa-2x mb-2"></i>
+                <br>No logs found...
+            </div>
+        `;
+        logs = [];
+    }
+    
+    // Scroll to bottom
+    logsContainer.scrollTop = logsContainer.scrollHeight;
+}
+
+function updateCampaignStats(campaign) {
+    // Update progress bar and counts
+    const total = campaign.total_attempted || 0;
+    const sent = campaign.total_sent || 0;
+    const progress = total > 0 ? Math.round((sent / total) * 100) : 0;
+    
+    // Update progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = `${sent}/${total}`;
+    }
+    
+    // Update counts
+    document.getElementById('sent-count').textContent = sent;
+    document.getElementById('remaining-count').textContent = total - sent;
+    
+    // Update total recipients if available
+    if (campaign.data_list_id) {
+        document.getElementById('total-recipients').textContent = total;
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Create a simple notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
 }
 
 function exportLogs() {

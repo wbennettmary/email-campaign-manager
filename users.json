@@ -33,13 +33,14 @@
   },
   {
     "id": 3,
-    "username": "rico",
-    "password": "scrypt:32768:8:1$uksiHwlJYu7uBifn$db0fc8ff7c46d8e0b1dc8a1ab58988a6c7a7954220729b8c2668485a06f1a31b17a8c35308439869f6683924e64b90a9eb5286a7a20ada42a41d0a8c0e5b391d",
-    "email": "salssapp@gmail.com",
+    "username": "MN",
+    "password": "scrypt:32768:8:1$uwaRrqU0XWYhvpDQ$1811baea50fa8b6ef101d6c364f8c4e3b0e730b8bfbea3416080e2f110649ed94cf8f2e066591e7b5a608f09679b49824a4c33c128622d88c2875033d0e49a14",
+    "email": "abdo.charhamane@gmail.com",
     "role": "user",
-    "created_at": "2025-07-29T18:21:24.479130",
+    "created_at": "2025-08-01T20:34:28.870884",
     "is_active": true,
     "permissions": [
+      "add_account",
       "view_reports"
     ]
   }

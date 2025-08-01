@@ -395,50 +395,68 @@ ALLOWED_EXTENSIONS = {'csv', 'txt'}
 MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
 
 def init_data_files():
-    """Initialize data files if they don't exist"""
-    if not os.path.exists(ACCOUNTS_FILE):
-        with open(ACCOUNTS_FILE, 'w') as f:
-            json.dump([], f)
+    """Initialize data files if they don't exist with server compatibility"""
+    print("🔧 Initializing data files for server compatibility...")
     
-    if not os.path.exists(CAMPAIGNS_FILE):
-        with open(CAMPAIGNS_FILE, 'w') as f:
-            json.dump([], f)
+    # Define files to initialize with their default content
+    files_config = {
+        ACCOUNTS_FILE: [],
+        CAMPAIGNS_FILE: [],
+        USERS_FILE: [{
+            'id': 1,
+            'username': 'admin',
+            'password': generate_password_hash('admin123'),
+            'role': 'admin',
+            'email': 'admin@example.com',
+            'created_at': datetime.now().isoformat(),
+            'is_active': True
+        }],
+        CAMPAIGN_LOGS_FILE: {},
+        NOTIFICATIONS_FILE: [],
+        BOUNCE_DATA_FILE: {},
+        DELIVERY_DATA_FILE: {},
+        DATA_LISTS_FILE: []
+    }
     
-    if not os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'w') as f:
-            json.dump([{
-                'id': 1,
-                'username': 'admin',
-                'password': generate_password_hash('admin123'),
-                'role': 'admin',
-                'email': 'admin@example.com',
-                'created_at': datetime.now().isoformat(),
-                'is_active': True
-            }], f)
-    
-    if not os.path.exists(CAMPAIGN_LOGS_FILE):
-        with open(CAMPAIGN_LOGS_FILE, 'w') as f:
-            json.dump({}, f)
-    
-    if not os.path.exists(NOTIFICATIONS_FILE):
-        with open(NOTIFICATIONS_FILE, 'w') as f:
-            json.dump([], f)
-    
-    if not os.path.exists(BOUNCE_DATA_FILE):
-        with open(BOUNCE_DATA_FILE, 'w') as f:
-            json.dump({}, f)
-    
-    if not os.path.exists(DELIVERY_DATA_FILE):
-        with open(DELIVERY_DATA_FILE, 'w') as f:
-            json.dump({}, f)
-    
-    if not os.path.exists(DATA_LISTS_FILE):
-        with open(DATA_LISTS_FILE, 'w') as f:
-            json.dump([], f)
+    # Initialize each file
+    for filename, default_content in files_config.items():
+        try:
+            if not os.path.exists(filename):
+                success = write_json_file_simple(filename, default_content)
+                if success:
+                    print(f"✅ Created {filename}")
+                else:
+                    print(f"❌ Failed to create {filename}")
+            else:
+                print(f"✅ {filename} already exists")
+        except Exception as e:
+            print(f"❌ Error initializing {filename}: {e}")
     
     # Create data_lists directory if it doesn't exist
-    if not os.path.exists(DATA_LISTS_DIR):
-        os.makedirs(DATA_LISTS_DIR)
+    try:
+        if not os.path.exists(DATA_LISTS_DIR):
+            os.makedirs(DATA_LISTS_DIR, exist_ok=True)
+            print(f"✅ Created directory {DATA_LISTS_DIR}")
+        else:
+            print(f"✅ Directory {DATA_LISTS_DIR} already exists")
+    except Exception as e:
+        print(f"❌ Error creating directory {DATA_LISTS_DIR}: {e}")
+    
+    # Check file permissions
+    print("🔍 Checking file permissions...")
+    for filename in files_config.keys():
+        if os.path.exists(filename):
+            try:
+                # Test if we can read and write
+                with open(filename, 'r') as f:
+                    f.read(1)
+                with open(filename, 'a') as f:
+                    f.write('')
+                print(f"✅ {filename} is readable and writable")
+            except Exception as e:
+                print(f"⚠️ {filename} has permission issues: {e}")
+    
+    print("🎯 Data file initialization completed")
 
 # Initialize data files
 init_data_files()
@@ -1061,88 +1079,100 @@ def delete_data_list(list_id):
 @login_required
 def dashboard():
     """Enhanced dashboard with real statistics"""
-    # Load data
-    with open(ACCOUNTS_FILE, 'r') as f:
-        accounts = json.load(f)
-    
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
-    
-    with open(NOTIFICATIONS_FILE, 'r') as f:
-        notifications = json.load(f)
-    
-    # Calculate real statistics
-    total_accounts = len(accounts)
-    active_campaigns = len([c for c in campaigns if c.get('status') == 'running'])
-    
-    # Calculate emails sent today
-    today = datetime.now().date()
-    emails_today = 0
-    total_sent = 0
-    total_attempted = 0
-    
-    for campaign in campaigns:
-        if campaign.get('total_sent'):
-            total_sent += campaign.get('total_sent', 0)
-            # Check if campaign was active today
-            if campaign.get('started_at'):
-                try:
-                    started_date = datetime.fromisoformat(campaign['started_at']).date()
-                    if started_date == today:
-                        emails_today += campaign.get('total_sent', 0)
-                except:
-                    pass
-    
-    # Calculate success rate
-    success_rate = 0
-    if total_sent > 0:
-        # Count total recipients across all campaigns
-        for campaign in campaigns:
-            if campaign.get('destinataires'):
-                total_attempted += len([email.strip() for email in campaign['destinataires'].split('\n') if email.strip()])
-        
-        if total_attempted > 0:
-            success_rate = round((total_sent / total_attempted) * 100, 1)
-    
-    # Get recent campaigns (last 5)
-    recent_campaigns = sorted(campaigns, key=lambda x: x.get('created_at', ''), reverse=True)[:5]
-    
-    # Get recent notifications (last 5)
-    recent_notifications = sorted(notifications, key=lambda x: x.get('timestamp', ''), reverse=True)[:5]
-    
-    # Get campaign status breakdown
-    status_counts = {}
-    for campaign in campaigns:
-        status = campaign.get('status', 'unknown')
-        status_counts[status] = status_counts.get(status, 0) + 1
-    
-    # Get bounce and delivery statistics
-    total_bounced = len(get_bounced_emails())
-    total_delivered = len(get_delivered_emails())
-    
-    # Get real Zoho bounce statistics if available
-    zoho_bounce_stats = {}
     try:
-        detector = get_zoho_bounce_detector()
-        if detector:
-            zoho_stats = get_bounce_statistics(days=30)
-            if 'error' not in zoho_stats:
-                zoho_bounce_stats = zoho_stats
+        # Load data using robust file reading
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        notifications = read_json_file_simple(NOTIFICATIONS_FILE)
+        
+        # Calculate real statistics
+        total_accounts = len(accounts)
+        active_campaigns = len([c for c in campaigns if c.get('status') == 'running'])
+        
+        # Calculate emails sent today
+        today = datetime.now().date()
+        emails_today = 0
+        total_sent = 0
+        total_attempted = 0
+        
+        for campaign in campaigns:
+            if campaign.get('total_sent'):
+                total_sent += campaign.get('total_sent', 0)
+                # Check if campaign was active today
+                if campaign.get('started_at'):
+                    try:
+                        started_date = datetime.fromisoformat(campaign['started_at']).date()
+                        if started_date == today:
+                            emails_today += campaign.get('total_sent', 0)
+                    except:
+                        pass
+        
+        # Calculate success rate
+        success_rate = 0
+        if total_sent > 0:
+            # Count total recipients across all campaigns
+            for campaign in campaigns:
+                if campaign.get('destinataires'):
+                    total_attempted += len([email.strip() for email in campaign['destinataires'].split('\n') if email.strip()])
+            
+            if total_attempted > 0:
+                success_rate = round((total_sent / total_attempted) * 100, 1)
+        
+        # Get recent campaigns (last 5)
+        recent_campaigns = sorted(campaigns, key=lambda x: x.get('created_at', ''), reverse=True)[:5]
+        
+        # Get recent notifications (last 5)
+        recent_notifications = sorted(notifications, key=lambda x: x.get('timestamp', ''), reverse=True)[:5]
+        
+        # Get campaign status breakdown
+        status_counts = {}
+        for campaign in campaigns:
+            status = campaign.get('status', 'unknown')
+            status_counts[status] = status_counts.get(status, 0) + 1
+        
+        # Get bounce and delivery statistics
+        total_bounced = len(get_bounced_emails())
+        total_delivered = len(get_delivered_emails())
+        
+        # Get real Zoho bounce statistics if available
+        zoho_bounce_stats = {}
+        try:
+            detector = get_zoho_bounce_detector()
+            if detector:
+                zoho_stats = get_bounce_statistics(days=30)
+                if 'error' not in zoho_stats:
+                    zoho_bounce_stats = zoho_stats
+        except Exception as e:
+            print(f"⚠️ Could not get Zoho bounce stats: {e}")
+        
+        return render_template('dashboard.html', 
+                             total_accounts=total_accounts,
+                             active_campaigns=active_campaigns,
+                             emails_today=emails_today,
+                             success_rate=success_rate,
+                             total_sent=total_sent,
+                             total_bounced=total_bounced,
+                             total_delivered=total_delivered,
+                             zoho_bounce_stats=zoho_bounce_stats,
+                             recent_campaigns=recent_campaigns,
+                             recent_notifications=recent_notifications,
+                             status_counts=status_counts)
     except Exception as e:
-        print(f"⚠️ Could not get Zoho bounce stats: {e}")
-    
-    return render_template('dashboard.html', 
-                         total_accounts=total_accounts,
-                         active_campaigns=active_campaigns,
-                         emails_today=emails_today,
-                         success_rate=success_rate,
-                         total_sent=total_sent,
-                         total_bounced=total_bounced,
-                         total_delivered=total_delivered,
-                         zoho_bounce_stats=zoho_bounce_stats,
-                         recent_campaigns=recent_campaigns,
-                         recent_notifications=recent_notifications,
-                         status_counts=status_counts)
+        print(f"❌ Error in dashboard: {str(e)}")
+        # Return a basic dashboard with error handling
+        return render_template('dashboard.html', 
+                             total_accounts=0,
+                             active_campaigns=0,
+                             emails_today=0,
+                             success_rate=0,
+                             total_sent=0,
+                             total_bounced=0,
+                             total_delivered=0,
+                             zoho_bounce_stats={},
+                             recent_campaigns=[],
+                             recent_notifications=[],
+                             status_counts={},
+                             error=str(e))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -1224,29 +1254,31 @@ def campaigns():
 @login_required
 def edit_campaign(campaign_id):
     """Edit campaign page"""
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
-    
-    campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-    if not campaign:
-        flash('Campaign not found')
+    try:
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        if not campaign:
+            flash('Campaign not found')
+            return redirect(url_for('campaigns'))
+        
+        return render_template('edit_campaign.html', campaign=campaign, accounts=accounts)
+    except Exception as e:
+        print(f"❌ Error in edit_campaign: {str(e)}")
+        flash('Error loading campaign data')
         return redirect(url_for('campaigns'))
-    
-    with open(ACCOUNTS_FILE, 'r') as f:
-        accounts = json.load(f)
-    
-    return render_template('edit_campaign.html', campaign=campaign, accounts=accounts)
 
 @app.route('/live-campaigns')
 @login_required
 def live_campaigns():
     """New page to monitor all running campaigns and recently completed ones"""
     try:
-        with open(CAMPAIGNS_FILE, 'r') as f:
-            all_campaigns = json.load(f)
+        all_campaigns = read_json_file_simple(CAMPAIGNS_FILE)
         if not isinstance(all_campaigns, list):
             all_campaigns = []
-    except (FileNotFoundError, json.JSONDecodeError):
+    except Exception as e:
+        print(f"❌ Error loading campaigns for live view: {str(e)}")
         all_campaigns = []
     
     # Filter campaigns based on user permissions
@@ -1291,25 +1323,28 @@ def live_campaigns():
 @app.route('/campaigns/<int:campaign_id>/logs')
 @login_required
 def campaign_logs(campaign_id):
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
-    
-    campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-    if not campaign:
-        flash('Campaign not found')
+    try:
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        if not campaign:
+            flash('Campaign not found')
+            return redirect(url_for('campaigns'))
+        
+        logs = get_campaign_logs(campaign_id)
+        return render_template('campaign_logs.html', campaign=campaign, logs=logs)
+    except Exception as e:
+        print(f"❌ Error in campaign_logs: {str(e)}")
+        flash('Error loading campaign logs')
         return redirect(url_for('campaigns'))
-    
-    logs = get_campaign_logs(campaign_id)
-    return render_template('campaign_logs.html', campaign=campaign, logs=logs)
 
 @app.route('/notifications')
 @login_required
 def notifications():
     """Notifications page"""
     try:
-        with open(NOTIFICATIONS_FILE, 'r') as f:
-            notifications = json.load(f)
-    except:
+        notifications = read_json_file_simple(NOTIFICATIONS_FILE)
+    except Exception as e:
         notifications = []
     
     return render_template('notifications.html', notifications=notifications)
@@ -1595,13 +1630,40 @@ def api_campaigns():
             
             data = request.json
             if not data:
+                print("❌ No JSON data received")
                 return jsonify({'error': 'No data provided'}), 400
             
-            # Validate required fields for new universal system
+            print(f"🔍 Received campaign data: {data}")
+            print(f"🔍 Data type: {type(data)}")
+            print(f"🔍 Data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+            
+            # Enhanced validation with detailed debugging
             required_fields = ['name', 'account_id', 'subject', 'message', 'data_list_id']
+            missing_fields = []
+            
             for field in required_fields:
-                if field not in data or not data[field]:
-                    return jsonify({'error': f'Missing required field: {field}'}), 400
+                print(f"🔍 Checking field: {field}")
+                if field not in data:
+                    missing_fields.append(f"{field} (not present)")
+                    print(f"❌ Field {field} not present in data")
+                elif data[field] is None:
+                    missing_fields.append(f"{field} (null)")
+                    print(f"❌ Field {field} is null")
+                elif isinstance(data[field], str) and not data[field].strip():
+                    missing_fields.append(f"{field} (empty string)")
+                    print(f"❌ Field {field} is empty string")
+                elif isinstance(data[field], (int, float)) and data[field] <= 0:
+                    missing_fields.append(f"{field} (invalid value: {data[field]})")
+                    print(f"❌ Field {field} has invalid value: {data[field]}")
+                else:
+                    print(f"✅ Field {field} is valid: {data[field]}")
+            
+            if missing_fields:
+                error_msg = f"Missing or invalid required fields: {', '.join(missing_fields)}"
+                print(f"❌ Validation failed: {error_msg}")
+                return jsonify({'error': error_msg, 'missing_fields': missing_fields}), 400
+            
+            print(f"✅ All required fields validated successfully")
             
             # Simple file reading
             campaigns = read_json_file_simple(CAMPAIGNS_FILE)
@@ -1637,8 +1699,11 @@ def api_campaigns():
             # Add to campaigns list
             campaigns.append(new_campaign)
             
-            # Simple file writing
-            if write_json_file_simple(CAMPAIGNS_FILE, campaigns):
+            # Robust file writing with detailed error handling
+            print(f"💾 Attempting to save campaign to {CAMPAIGNS_FILE}")
+            save_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+            
+            if save_success:
                 # Add notification
                 try:
                     add_notification(f"Campaign '{data['name']}' created successfully", 'success', new_id)
@@ -1651,7 +1716,26 @@ def api_campaigns():
                 print(f"✅ Campaign created successfully - Memory usage: {log_memory_usage():.1f} MB")
                 return jsonify(new_campaign)
             else:
-                return jsonify({'error': 'Failed to save campaign to file'}), 500
+                # Try to get more detailed error information
+                import os
+                current_dir = os.getcwd()
+                file_path = os.path.abspath(CAMPAIGNS_FILE)
+                file_exists = os.path.exists(CAMPAIGNS_FILE)
+                file_writable = os.access(os.path.dirname(file_path), os.W_OK) if os.path.dirname(file_path) else True
+                
+                error_details = {
+                    'error': 'Failed to save campaign to file',
+                    'details': {
+                        'current_directory': current_dir,
+                        'file_path': file_path,
+                        'file_exists': file_exists,
+                        'directory_writable': file_writable,
+                        'campaigns_count': len(campaigns)
+                    }
+                }
+                
+                print(f"❌ Campaign save failed: {error_details}")
+                return jsonify(error_details), 500
                 
         except Exception as e:
             print(f"❌ Error creating campaign: {str(e)}")
@@ -1708,7 +1792,7 @@ def api_campaign(campaign_id):
 @app.route('/api/campaigns/<int:campaign_id>/start', methods=['POST'])
 @login_required
 def start_campaign(campaign_id):
-    with open(CAMPAIGNS_FILE, 'r') as f:
+    with open(CAMPAIGNS_FILE, 'r', encoding='utf-8') as f:
         campaigns = json.load(f)
     
     campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
@@ -1722,7 +1806,7 @@ def start_campaign(campaign_id):
         return jsonify({'error': 'Campaign cannot be started from current status'}), 400
     
     # Get account
-    with open(ACCOUNTS_FILE, 'r') as f:
+    with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
         accounts = json.load(f)
     
     account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
@@ -1740,7 +1824,7 @@ def start_campaign(campaign_id):
         campaign['total_sent'] = 0
         campaign['total_attempted'] = 0
         
-        with open(CAMPAIGNS_FILE, 'w') as f:
+        with open(CAMPAIGNS_FILE, 'w', encoding='utf-8') as f:
             json.dump(campaigns, f)
         
         # Clear previous logs
@@ -1766,7 +1850,7 @@ def start_campaign(campaign_id):
         campaign['total_sent'] = 0
         campaign['total_attempted'] = 0
         
-        with open(CAMPAIGNS_FILE, 'w') as f:
+        with open(CAMPAIGNS_FILE, 'w', encoding='utf-8') as f:
             json.dump(campaigns, f)
         
         # Clear previous logs
@@ -1786,7 +1870,7 @@ def start_campaign(campaign_id):
 @app.route('/api/campaigns/<int:campaign_id>/stop', methods=['POST'])
 @login_required
 def stop_campaign(campaign_id):
-    with open(CAMPAIGNS_FILE, 'r') as f:
+    with open(CAMPAIGNS_FILE, 'r', encoding='utf-8') as f:
         campaigns = json.load(f)
     
     campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
@@ -1800,7 +1884,7 @@ def stop_campaign(campaign_id):
     campaign['status'] = 'stopped'
     campaign['stopped_at'] = datetime.now().isoformat()
     
-    with open(CAMPAIGNS_FILE, 'w') as f:
+    with open(CAMPAIGNS_FILE, 'w', encoding='utf-8') as f:
         json.dump(campaigns, f)
     
     # Remove from running campaigns
@@ -1814,7 +1898,7 @@ def stop_campaign(campaign_id):
 @login_required
 def relaunch_campaign(campaign_id):
     """Relaunch a completed or stopped campaign"""
-    with open(CAMPAIGNS_FILE, 'r') as f:
+    with open(CAMPAIGNS_FILE, 'r', encoding='utf-8') as f:
         campaigns = json.load(f)
     
     campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
@@ -1945,78 +2029,92 @@ def clear_all_notifications():
 @login_required
 def api_stats():
     """Get enhanced dashboard statistics with delivery tracking"""
-    with open(ACCOUNTS_FILE, 'r') as f:
-        accounts = json.load(f)
-    
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
-    
-    # Calculate real statistics
-    total_accounts = len(accounts)
-    active_campaigns = len([c for c in campaigns if c.get('status') == 'running'])
-    
-    # Calculate emails sent today with delivery tracking
-    today = datetime.now().date()
-    emails_today = 0
-    total_sent = 0
-    total_delivered = 0
-    total_bounced = 0
-    total_attempted = 0
-    
-    for campaign in campaigns:
-        if campaign.get('total_sent'):
-            total_sent += campaign.get('total_sent', 0)
-            total_delivered += campaign.get('delivered_count', 0)
-            total_bounced += campaign.get('bounced_count', 0)
-            
-            # Check if campaign was active today
-            if campaign.get('started_at'):
-                try:
-                    started_date = datetime.fromisoformat(campaign['started_at']).date()
-                    if started_date == today:
-                        emails_today += campaign.get('total_sent', 0)
-                except:
-                    pass
-    
-    # Calculate delivery rates
-    delivery_rate = 0
-    bounce_rate = 0
-    if total_sent > 0:
-        delivery_rate = round((total_delivered / total_sent) * 100, 1)
-        bounce_rate = round((total_bounced / total_sent) * 100, 1)
+    try:
+        # Use robust file reading functions
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
         
-        # Count total recipients across all campaigns
+        # Calculate real statistics
+        total_accounts = len(accounts)
+        active_campaigns = len([c for c in campaigns if c.get('status') == 'running'])
+        
+        # Calculate emails sent today with delivery tracking
+        today = datetime.now().date()
+        emails_today = 0
+        total_sent = 0
+        total_delivered = 0
+        total_bounced = 0
+        total_attempted = 0
+        
         for campaign in campaigns:
-            if campaign.get('destinataires'):
-                total_attempted += len([email.strip() for email in campaign['destinataires'].split('\n') if email.strip()])
-    
-    # Get campaign status breakdown
-    status_counts = {}
-    for campaign in campaigns:
-        status = campaign.get('status', 'unknown')
-        status_counts[status] = status_counts.get(status, 0) + 1
-    
-    return jsonify({
-        'total_accounts': total_accounts,
-        'active_campaigns': active_campaigns,
-        'emails_today': emails_today,
-        'delivery_rate': delivery_rate,
-        'bounce_rate': bounce_rate,
-        'total_sent': total_sent,
-        'total_delivered': total_delivered,
-        'total_bounced': total_bounced,
-        'total_campaigns': len(campaigns),
-        'status_counts': status_counts
-    })
+            if campaign.get('total_sent'):
+                total_sent += campaign.get('total_sent', 0)
+                total_delivered += campaign.get('delivered_count', 0)
+                total_bounced += campaign.get('bounced_count', 0)
+                
+                # Check if campaign was active today
+                if campaign.get('started_at'):
+                    try:
+                        started_date = datetime.fromisoformat(campaign['started_at']).date()
+                        if started_date == today:
+                            emails_today += campaign.get('total_sent', 0)
+                    except:
+                        pass
+        
+        # Calculate delivery rates
+        delivery_rate = 0
+        bounce_rate = 0
+        if total_sent > 0:
+            delivery_rate = round((total_delivered / total_sent) * 100, 1)
+            bounce_rate = round((total_bounced / total_sent) * 100, 1)
+            
+            # Count total recipients across all campaigns
+            for campaign in campaigns:
+                if campaign.get('destinataires'):
+                    total_attempted += len([email.strip() for email in campaign['destinataires'].split('\n') if email.strip()])
+        
+        # Get campaign status breakdown
+        status_counts = {}
+        for campaign in campaigns:
+            status = campaign.get('status', 'unknown')
+            status_counts[status] = status_counts.get(status, 0) + 1
+        
+        return jsonify({
+            'total_accounts': total_accounts,
+            'active_campaigns': active_campaigns,
+            'emails_today': emails_today,
+            'delivery_rate': delivery_rate,
+            'bounce_rate': bounce_rate,
+            'total_sent': total_sent,
+            'total_delivered': total_delivered,
+            'total_bounced': total_bounced,
+            'total_campaigns': len(campaigns),
+            'status_counts': status_counts
+        })
+        
+    except Exception as e:
+        print(f"❌ Error in api_stats: {str(e)}")
+        return jsonify({
+            'total_accounts': 0,
+            'active_campaigns': 0,
+            'emails_today': 0,
+            'delivery_rate': 0,
+            'bounce_rate': 0,
+            'total_sent': 0,
+            'total_delivered': 0,
+            'total_bounced': 0,
+            'total_campaigns': 0,
+            'status_counts': {},
+            'error': str(e)
+        }), 500
 
 @app.route('/api/campaigns/<int:campaign_id>/delivery-stats')
 @login_required
 def get_campaign_delivery_stats(campaign_id):
     """Get detailed delivery statistics for a specific campaign"""
     try:
-        # Get campaign
-        with open(CAMPAIGNS_FILE, 'r') as f:
-            campaigns = json.load(f)
+        # Get campaign using robust file reading
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
         
         campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
         if not campaign:
@@ -2034,6 +2132,7 @@ def get_campaign_delivery_stats(campaign_id):
         })
         
     except Exception as e:
+        print(f"❌ Error in get_campaign_delivery_stats: {str(e)}")
         return jsonify({'error': f'Error getting delivery stats: {str(e)}'}), 500
 
 @app.route('/api/debug/logs')
@@ -2067,6 +2166,33 @@ def get_campaign_logs_api(campaign_id):
     except Exception as e:
         print(f"❌ API Error getting logs for campaign {campaign_id}: {str(e)}")
         return jsonify([])
+
+@app.route('/api/campaigns/<int:campaign_id>/logs/refresh', methods=['GET'])
+@login_required
+def refresh_campaign_logs_api(campaign_id):
+    """Refresh campaign logs and return latest data"""
+    try:
+        logs = get_campaign_logs(campaign_id)
+        
+        # Also get updated campaign stats
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
+        
+        return jsonify({
+            'success': True,
+            'logs': logs,
+            'campaign': campaign,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        print(f"❌ API Error refreshing logs for campaign {campaign_id}: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'logs': [],
+            'campaign': None,
+            'timestamp': datetime.now().isoformat()
+        })
 
 @app.route('/api/campaigns/<int:campaign_id>/delete', methods=['DELETE'])
 @login_required
@@ -3680,11 +3806,11 @@ def get_user_accounts(user):
 def get_user_campaigns(user):
     """Get campaigns that user can access"""
     try:
-        with open(CAMPAIGNS_FILE, 'r') as f:
-            campaigns = json.load(f)
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
         if not isinstance(campaigns, list):
             campaigns = []
-    except (FileNotFoundError, json.JSONDecodeError):
+    except Exception as e:
+        print(f"❌ Error loading campaigns: {str(e)}")
         campaigns = []
     
     # Admin can see all campaigns
@@ -4219,24 +4345,121 @@ def cleanup_memory():
         pass
 
 def read_json_file_simple(filename):
-    """Read JSON file with simple error handling"""
+    """Read JSON file with robust error handling for server environments"""
     try:
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
+    except FileNotFoundError:
+        print(f"⚠️ File not found: {filename} - creating empty file")
+        # Create empty file with appropriate default
+        if 'campaigns' in filename:
+            default_data = []
+        elif 'accounts' in filename:
+            default_data = []
+        elif 'users' in filename:
+            default_data = []
+        elif 'notifications' in filename:
+            default_data = []
+        elif 'data_lists' in filename:
+            default_data = []
+        else:
+            default_data = {}
+        
+        # Try to create the file
+        try:
+            write_json_file_simple(filename, default_data)
+            return default_data
+        except Exception as e:
+            print(f"❌ Could not create {filename}: {e}")
+            return default_data
+            
+    except json.JSONDecodeError as e:
+        print(f"⚠️ JSON decode error in {filename}: {e}")
+        # Try to backup corrupted file and create new one
+        try:
+            import shutil
+            backup_name = filename + '.backup.' + str(int(time.time()))
+            shutil.copy2(filename, backup_name)
+            print(f"📁 Backed up corrupted file to {backup_name}")
+        except:
+            pass
+        
+        # Return appropriate default
+        if 'campaigns' in filename:
+            return []
+        elif 'accounts' in filename:
+            return []
+        elif 'users' in filename:
+            return []
+        elif 'notifications' in filename:
+            return []
+        elif 'data_lists' in filename:
+            return []
+        else:
+            return {}
+            
+    except Exception as e:
         print(f"⚠️ Error reading {filename}: {e}")
-        return [] if 'campaigns' in filename or 'accounts' in filename else {}
+        # Return appropriate default
+        if 'campaigns' in filename:
+            return []
+        elif 'accounts' in filename:
+            return []
+        elif 'users' in filename:
+            return []
+        elif 'notifications' in filename:
+            return []
+        elif 'data_lists' in filename:
+            return []
+        else:
+            return {}
 
 def write_json_file_simple(filename, data):
-    """Write JSON file with simple error handling"""
+    """Write JSON file with robust error handling for server environments"""
     try:
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=2)
+        # Ensure the directory exists
+        import os
+        directory = os.path.dirname(filename)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+        
+        # Create a temporary file first
+        temp_filename = filename + '.tmp'
+        
+        # Write to temporary file
+        with open(temp_filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        # Atomic move (works on both Windows and Unix)
+        import shutil
+        shutil.move(temp_filename, filename)
+        
         print(f"✅ Successfully wrote {filename}")
         return True
+        
+    except PermissionError as e:
+        print(f"❌ Permission error writing {filename}: {e}")
+        # Try to create with different permissions
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            print(f"✅ Successfully wrote {filename} with fallback method")
+            return True
+        except Exception as e2:
+            print(f"❌ Fallback also failed for {filename}: {e2}")
+            return False
+            
     except Exception as e:
         print(f"❌ Error writing {filename}: {e}")
-        return False
+        # Try one more time with basic method
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            print(f"✅ Successfully wrote {filename} with basic method")
+            return True
+        except Exception as e2:
+            print(f"❌ All methods failed for {filename}: {e2}")
+            return False
 
 # Template detection and management functions
 def detect_available_templates(account):
@@ -4427,21 +4650,90 @@ def get_template_url_and_function(account, template_id=None):
                 'template_number': template_info['number']
             }
         else:
-            # Fallback to template3 if no template info available
-            print(f"⚠️ No template info found for account {account['name']}, using fallback template3")
-            return {
-                'url': "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
-                'function_name': 'Send_Email_Template3',
-                'template_number': 3
-            }
+            # Test which templates are actually available for this account
+            print(f"🔍 Testing available templates for account: {account['name']}")
+            available_templates = []
+            
+            # Test templates 1-10 to see which ones exist
+            for template_num in range(1, 11):
+                test_url = f"https://crm.zoho.com/crm/v7/settings/functions/send_email_template{template_num}/actions/test"
+                
+                try:
+                    # Create a simple test script
+                    test_script = f'''void automation.Send_Email_Template{template_num}()
+{{
+    info "Testing template {template_num}";
+}}'''
+                    
+                    test_data = {'functions': [{'script': test_script, 'arguments': {}}]}
+                    
+                    # Use account headers
+                    headers = account['headers'].copy()
+                    headers.update({
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0',
+                        'Accept': 'application/json',
+                        'Accept-Language': 'en-US,en;q=0.5',
+                        'Accept-Encoding': 'gzip, deflate, br, zstd',
+                        'Referer': 'https://crm.zoho.com/',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Origin': 'https://crm.zoho.com',
+                        'Connection': 'keep-alive',
+                        'Sec-Fetch-Dest': 'empty',
+                        'Sec-Fetch-Mode': 'cors',
+                        'Sec-Fetch-Site': 'same-origin',
+                        'Priority': 'u=0',
+                        'TE': 'trailers'
+                    })
+                    
+                    response = requests.post(test_url, json=test_data, cookies=account['cookies'], headers=headers, timeout=10)
+                    
+                    if response.status_code == 200:
+                        print(f"✅ Template {template_num} is available")
+                        available_templates.append({
+                            'url': test_url,
+                            'function_name': f'Send_Email_Template{template_num}',
+                            'number': template_num
+                        })
+                    else:
+                        print(f"❌ Template {template_num} not available (Status: {response.status_code})")
+                        
+                except Exception as e:
+                    print(f"❌ Error testing template {template_num}: {e}")
+                    continue
+            
+            if available_templates:
+                # Use the first available template
+                selected_template = available_templates[0]
+                print(f"🎯 Using template {selected_template['number']} for account {account['name']}")
+                
+                # Save this info to the account for future use
+                try:
+                    accounts = read_json_file_simple(ACCOUNTS_FILE)
+                    for i, acc in enumerate(accounts):
+                        if acc['id'] == account['id']:
+                            accounts[i]['template_info'] = available_templates
+                            write_json_file_simple(ACCOUNTS_FILE, accounts)
+                            break
+                except Exception as e:
+                    print(f"⚠️ Could not save template info: {e}")
+                
+                return selected_template
+            else:
+                # No templates found, use template1 as last resort
+                print(f"⚠️ No templates found for account {account['name']}, using template1 as fallback")
+                return {
+                    'url': "https://crm.zoho.com/crm/v7/settings/functions/send_email_template1/actions/test",
+                    'function_name': 'Send_Email_Template1',
+                    'template_number': 1
+                }
             
     except Exception as e:
         print(f"❌ Error getting template URL: {str(e)}")
-        # Fallback
+        # Fallback to template1 instead of template3
         return {
-            'url': "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
-            'function_name': 'Send_Email_Template3',
-            'template_number': 3
+            'url': "https://crm.zoho.com/crm/v7/settings/functions/send_email_template1/actions/test",
+            'function_name': 'Send_Email_Template1',
+            'template_number': 1
         }
 
 def send_universal_email(account, recipients, subject, message, from_name=None, template_id=None, campaign_id=None):
@@ -4769,6 +5061,21 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
         emails_failed = 0
         burst_count = 0
         
+        # Emit campaign start event
+        if campaign_id:
+            try:
+                socketio.emit('email_progress', {
+                    'campaign_id': campaign_id,
+                    'timestamp': datetime.now().isoformat(),
+                    'status': 'info',
+                    'message': f'🚀 Starting sequential email campaign to {len(recipients)} recipients',
+                    'email': None,
+                    'subject': subject,
+                    'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
+                })
+            except Exception as e:
+                print(f"⚠️ Socket.IO start emission failed: {e}")
+        
         # Send emails one by one
         for i, recipient in enumerate(recipients):
             try:
@@ -4848,14 +5155,29 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                     
                     # Add campaign log
                     if campaign_id:
-                        add_campaign_log(campaign_id, {
+                        log_entry = {
                             'timestamp': datetime.now().isoformat(),
                             'status': 'success',
                             'message': f'Email {i+1}/{len(recipients)} sent successfully to {recipient}',
                             'email': recipient,
                             'subject': subject,
                             'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
-                        })
+                        }
+                        add_campaign_log(campaign_id, log_entry)
+                        
+                        # Emit real-time update via Socket.IO
+                        try:
+                            socketio.emit('email_progress', {
+                                'campaign_id': campaign_id,
+                                'timestamp': log_entry['timestamp'],
+                                'status': 'success',
+                                'message': log_entry['message'],
+                                'email': recipient,
+                                'subject': subject,
+                                'sender': log_entry['sender']
+                            })
+                        except Exception as e:
+                            print(f"⚠️ Socket.IO emission failed: {e}")
                     
                 else:
                     print(f"❌ Email {i+1} failed to {recipient} (Status: {response.status_code})")
@@ -4867,14 +5189,29 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                     
                     # Add campaign log
                     if campaign_id:
-                        add_campaign_log(campaign_id, {
+                        log_entry = {
                             'timestamp': datetime.now().isoformat(),
                             'status': 'error',
                             'message': f'Email {i+1}/{len(recipients)} failed to {recipient}: HTTP {response.status_code}',
                             'email': recipient,
                             'subject': subject,
                             'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
-                        })
+                        }
+                        add_campaign_log(campaign_id, log_entry)
+                        
+                        # Emit real-time update via Socket.IO
+                        try:
+                            socketio.emit('email_progress', {
+                                'campaign_id': campaign_id,
+                                'timestamp': log_entry['timestamp'],
+                                'status': 'error',
+                                'message': log_entry['message'],
+                                'email': recipient,
+                                'subject': subject,
+                                'sender': log_entry['sender']
+                            })
+                        except Exception as e:
+                            print(f"⚠️ Socket.IO emission failed: {e}")
                 
                 # Wait between emails (1 second)
                 if i < len(recipients) - 1:  # Don't wait after the last email
@@ -4896,19 +5233,47 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                 
                 # Add campaign log
                 if campaign_id:
-                    add_campaign_log(campaign_id, {
+                    log_entry = {
                         'timestamp': datetime.now().isoformat(),
                         'status': 'error',
                         'message': f'Email {i+1}/{len(recipients)} error to {recipient}: {str(e)}',
                         'email': recipient,
                         'subject': subject,
                         'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
-                    })
+                    }
+                    add_campaign_log(campaign_id, log_entry)
+                    
+                    # Emit real-time update via Socket.IO
+                    try:
+                        socketio.emit('email_progress', {
+                            'campaign_id': campaign_id,
+                            'timestamp': log_entry['timestamp'],
+                            'status': 'error',
+                            'message': log_entry['message'],
+                            'email': recipient,
+                            'subject': subject,
+                            'sender': log_entry['sender']
+                        })
+                    except Exception as e:
+                        print(f"⚠️ Socket.IO emission failed: {e}")
         
         print(f"🏁 Sequential email sending completed!")
         print(f"✅ Successfully sent: {emails_sent}")
         print(f"❌ Failed: {emails_failed}")
         print(f"📊 Total attempted: {len(recipients)}")
+        
+        # Emit campaign completion event
+        if campaign_id:
+            try:
+                socketio.emit('campaign_completed', {
+                    'campaign_id': campaign_id,
+                    'total_sent': emails_sent,
+                    'total_attempted': len(recipients),
+                    'emails_failed': emails_failed,
+                    'timestamp': datetime.now().isoformat()
+                })
+            except Exception as e:
+                print(f"⚠️ Socket.IO completion emission failed: {e}")
         
         return {
             'success': True,

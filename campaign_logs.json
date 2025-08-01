@@ -242,5 +242,300 @@
         "account_name": "phungvanhuonghie"
       }
     }
+  ],
+  "14": [
+    {
+      "timestamp": "2025-07-30T18:34:09.096412",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "we are here sir dear",
+      "sender": "Albanc <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:34:10.825723",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are here sir dear",
+      "sender": "Albanc <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:34:12.615161",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are here sir dear",
+      "sender": "Albanc <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:34:14.406129",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "we are here sir dear",
+      "sender": "Albanc <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:34:16.136240",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "we are here sir dear",
+      "sender": "Albanc <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-07-30T18:34:16.149782",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "we are here sir dear",
+        "from_used": "Albanc <894168605@zoho.com>",
+        "account_name": "inconnu"
+      }
+    }
+  ],
+  "16": [
+    {
+      "timestamp": "2025-08-01T16:02:19.617427",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "v13 is bad app",
+      "sender": "Patrick <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T16:02:21.630331",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "v13 is bad app",
+      "sender": "Patrick <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T16:02:23.594367",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "v13 is bad app",
+      "sender": "Patrick <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T16:02:25.480452",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "v13 is bad app",
+      "sender": "Patrick <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T16:02:27.396213",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "v13 is bad app",
+      "sender": "Patrick <893477875@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T16:02:27.407698",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "v13 is bad app",
+        "from_used": "Patrick <893477875@zoho.com>",
+        "account_name": "phungvanhuonghie"
+      }
+    }
+  ],
+  "1": [
+    {
+      "timestamp": "2025-08-01T20:13:48.706894",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "we are here sir dear and madeame to help",
+      "sender": "Larson <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:13:50.499379",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are here sir dear and madeame to help",
+      "sender": "Larson <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:13:52.245551",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are here sir dear and madeame to help",
+      "sender": "Larson <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:13:54.051709",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "we are here sir dear and madeame to help",
+      "sender": "Larson <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:13:55.858058",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "we are here sir dear and madeame to help",
+      "sender": "Larson <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:13:55.870550",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "we are here sir dear and madeame to help",
+        "from_used": "Larson <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
+  ],
+  "2": [
+    {
+      "timestamp": "2025-08-01T20:32:35.666059",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "Lavida sin carnaval",
+      "sender": "muno <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:32:37.479561",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "Lavida sin carnaval",
+      "sender": "muno <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:32:39.430674",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "Lavida sin carnaval",
+      "sender": "muno <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:32:41.338141",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "Lavida sin carnaval",
+      "sender": "muno <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:32:43.371818",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "Lavida sin carnaval",
+      "sender": "muno <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:32:43.606245",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "Lavida sin carnaval",
+        "from_used": "muno <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
+  ],
+  "3": [
+    {
+      "timestamp": "2025-08-01T20:46:03.417650",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "dfvdsg",
+      "sender": "dsfgvdsfvg <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:46:05.192899",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "dfvdsg",
+      "sender": "dsfgvdsfvg <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:46:06.911029",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "dfvdsg",
+      "sender": "dsfgvdsfvg <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:46:08.651646",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "dfvdsg",
+      "sender": "dsfgvdsfvg <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:46:10.404380",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "dfvdsg",
+      "sender": "dsfgvdsfvg <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-01T20:46:10.422301",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "dfvdsg",
+        "from_used": "dsfgvdsfvg <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
   ]
 }
