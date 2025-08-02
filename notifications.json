@@ -1,5 +1,101 @@
 [
   {
+    "id": "5213b415-74a4-44bf-abb4-eb7221c4beb4",
+    "message": "Campaign 'tyhjuvf,f' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:35:10.021440",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
+    "id": "f0edaef9-1b0e-4b83-b96b-63dbb2a05d2e",
+    "message": "Campaign 'tyhjuvf,f' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:35:02.114936",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
+    "id": "d7329e93-8827-49f2-b17b-bfdb463739e0",
+    "message": "Campaign 'tyhjuvf,f' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:34:57.476288",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
+    "id": "23fb2129-49e5-4a64-8bee-7f0a774c6b02",
+    "message": "Campaign 'puttt' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:34:20.693499",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "e3363e5b-0823-43e1-9295-7101a56f08ea",
+    "message": "Campaign 'puttt' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:34:12.970502",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "fdc86042-1908-4c40-b8ea-aa62beb8bc8c",
+    "message": "Campaign 'puttt' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:34:08.698409",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "175aea96-54bb-4724-a912-fca5bdcef9de",
+    "message": "Campaign 'wwww' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:22:40.082690",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "894c2bf7-2ce0-47bd-ac7d-abc0c56f6349",
+    "message": "Campaign 'wwww' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:22:32.343990",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "d4efb4e2-b74f-43d1-8e30-b17821d72cb2",
+    "message": "Campaign 'wwww' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:22:02.298756",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "5537dee3-c510-48bf-9eba-d01f9c6cfa58",
+    "message": "Campaign 'albertoos' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:15:02.543285",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "c7ee879d-62ee-4813-9005-8352ad4ceef3",
+    "message": "Campaign 'albertoos' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:14:54.380036",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "29d649c4-c2f3-45a0-9c35-3ec16fc28ac0",
+    "message": "Campaign 'albertoos' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:14:24.444236",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
     "id": "4a8eb655-5af7-40e9-b662-efdb3ba579e7",
     "message": "Campaign 'ric' completed successfully",
     "type": "success",

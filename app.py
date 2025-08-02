@@ -4780,10 +4780,10 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
             """Escape text for Deluge script while preserving HTML formatting"""
             # First, normalize line endings
             text = text.replace('\r\n', '\n').replace('\r', '\n')
+            # Remove all line breaks and extra spaces to create single-line HTML
+            text = ' '.join(text.split())
             # Escape quotes
             text = text.replace('"', '\\"')
-            # Escape newlines for Deluge script (this is required for proper script syntax)
-            text = text.replace('\n', '\\n')
             return text
         
         escaped_message = escape_for_deluge(message)
@@ -4807,7 +4807,7 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
         from: "{from_display} <" + zoho.loginuserid + ">"
         to: destinataires
         subject: emailSubject
-        message: emailMessage
+        html: emailMessage
     ];
     
     info "Universal email sent successfully to " + destinataires.size() + " recipients";
@@ -5065,10 +5065,10 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
             """Escape text for Deluge script while preserving HTML formatting"""
             # First, normalize line endings
             text = text.replace('\r\n', '\n').replace('\r', '\n')
+            # Remove all line breaks and extra spaces to create single-line HTML
+            text = ' '.join(text.split())
             # Escape quotes
             text = text.replace('"', '\\"')
-            # Escape newlines for Deluge script (this is required for proper script syntax)
-            text = text.replace('\n', '\\n')
             return text
         
         escaped_message = escape_for_deluge(message)
@@ -5125,7 +5125,7 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
         from: "{from_display} <" + zoho.loginuserid + ">"
         to: destinataires
         subject: emailSubject
-        message: emailMessage
+        html: emailMessage
     ];
     
     info "Sequential email sent successfully to " + destinataires.size() + " recipient";
