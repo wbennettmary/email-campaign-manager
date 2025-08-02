@@ -4775,10 +4775,18 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
         else:
             from_display = "Campaign Sender"
         
-        # Properly escape the message content for Deluge script
-        # Replace quotes and escape special characters
-        escaped_message = message.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-        escaped_subject = subject.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
+        # Properly escape the message content for Deluge script while preserving HTML formatting
+        def escape_for_deluge(text):
+            """Escape text for Deluge script while preserving HTML formatting"""
+            # First, normalize line endings
+            text = text.replace('\r\n', '\n').replace('\r', '\n')
+            # Escape quotes but preserve newlines for HTML formatting
+            text = text.replace('"', '\\"')
+            # Don't escape newlines - let them remain as actual newlines
+            return text
+        
+        escaped_message = escape_for_deluge(message)
+        escaped_subject = escape_for_deluge(subject)
         
         # Create the Deluge script for sending emails
         # Convert recipients list to Deluge list format
@@ -5051,9 +5059,18 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
         else:
             from_display = "Campaign Sender"
         
-        # Properly escape the message content for Deluge script
-        escaped_message = message.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
-        escaped_subject = subject.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
+        # Properly escape the message content for Deluge script while preserving HTML formatting
+        def escape_for_deluge(text):
+            """Escape text for Deluge script while preserving HTML formatting"""
+            # First, normalize line endings
+            text = text.replace('\r\n', '\n').replace('\r', '\n')
+            # Escape quotes but preserve newlines for HTML formatting
+            text = text.replace('"', '\\"')
+            # Don't escape newlines - let them remain as actual newlines
+            return text
+        
+        escaped_message = escape_for_deluge(message)
+        escaped_subject = escape_for_deluge(subject)
         
         # Rate limiting variables
         user_id = current_user.id if current_user else 1

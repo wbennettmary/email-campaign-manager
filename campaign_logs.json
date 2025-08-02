@@ -537,5 +537,241 @@
         "account_name": "robachalabi@outlook.com"
       }
     }
+  ],
+  "4": [
+    {
+      "timestamp": "2025-08-02T11:56:27.834871",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "joan is a leader in the marines and",
+      "sender": "Nicolays <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:56:29.808619",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "joan is a leader in the marines and",
+      "sender": "Nicolays <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:56:31.736979",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "joan is a leader in the marines and",
+      "sender": "Nicolays <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:56:33.490838",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "joan is a leader in the marines and",
+      "sender": "Nicolays <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:56:35.274919",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "joan is a leader in the marines and",
+      "sender": "Nicolays <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:56:35.283505",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "joan is a leader in the marines and",
+        "from_used": "Nicolays <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
+  ],
+  "5": [
+    {
+      "timestamp": "2025-08-02T11:57:57.964243",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "Lavida sin carnavall",
+      "sender": "Nicolayr <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:57:59.779782",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "Lavida sin carnavall",
+      "sender": "Nicolayr <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:58:01.612854",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "Lavida sin carnavall",
+      "sender": "Nicolayr <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:58:03.402730",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "Lavida sin carnavall",
+      "sender": "Nicolayr <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:58:05.205293",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "Lavida sin carnavall",
+      "sender": "Nicolayr <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:58:05.221389",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "Lavida sin carnavall",
+        "from_used": "Nicolayr <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
+  ],
+  "6": [
+    {
+      "timestamp": "2025-08-02T11:48:18.933896",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "fgdhndyfhn",
+      "sender": "dfghndfgh <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:48:20.630830",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "fgdhndyfhn",
+      "sender": "dfghndfgh <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:48:22.408419",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "fgdhndyfhn",
+      "sender": "dfghndfgh <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:48:24.122775",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "fgdhndyfhn",
+      "sender": "dfghndfgh <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:48:25.892694",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "fgdhndyfhn",
+      "sender": "dfghndfgh <894168605@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:48:25.902191",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "fgdhndyfhn",
+        "from_used": "dfghndfgh <894168605@zoho.com>",
+        "account_name": "lauraorg@outlook.fr"
+      }
+    }
+  ],
+  "7": [
+    {
+      "timestamp": "2025-08-02T11:50:30.384802",
+      "status": "success",
+      "message": "Email 1/5 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "dfbvxdg",
+      "sender": "bfgbtgdstgb <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:50:32.105803",
+      "status": "success",
+      "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "dfbvxdg",
+      "sender": "bfgbtgdstgb <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:50:33.815669",
+      "status": "success",
+      "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "dfbvxdg",
+      "sender": "bfgbtgdstgb <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:50:35.523863",
+      "status": "success",
+      "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "dfbvxdg",
+      "sender": "bfgbtgdstgb <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:50:37.277357",
+      "status": "success",
+      "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "dfbvxdg",
+      "sender": "bfgbtgdstgb <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-02T11:50:37.286307",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 5 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 5, Failed: 0",
+        "emails_sent": 5,
+        "emails_failed": 0,
+        "total_attempted": 5,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "dfbvxdg",
+        "from_used": "bfgbtgdstgb <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
   ]
 }
