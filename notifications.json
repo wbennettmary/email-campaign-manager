@@ -1,5 +1,29 @@
 [
   {
+    "id": "4a8eb655-5af7-40e9-b662-efdb3ba579e7",
+    "message": "Campaign 'ric' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:03:32.101838",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "eaa8fd0a-5181-483c-8c62-c388c8737234",
+    "message": "Campaign 'ric' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:03:24.473803",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "cc361b1d-1924-4051-95c8-5514e8c1237e",
+    "message": "Campaign 'ric' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-02T12:03:08.714148",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
     "id": "af8a40bd-cc93-49d3-9137-60147e18c6a7",
     "message": "Campaign 'mlm\u00f9ml' completed successfully",
     "type": "success",

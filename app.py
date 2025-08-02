@@ -4775,14 +4775,15 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
         else:
             from_display = "Campaign Sender"
         
-        # Properly escape the message content for Deluge script while preserving HTML formatting
+        # Properly escape the message content for Deluge script
         def escape_for_deluge(text):
             """Escape text for Deluge script while preserving HTML formatting"""
             # First, normalize line endings
             text = text.replace('\r\n', '\n').replace('\r', '\n')
-            # Escape quotes but preserve newlines for HTML formatting
+            # Escape quotes
             text = text.replace('"', '\\"')
-            # Don't escape newlines - let them remain as actual newlines
+            # Escape newlines for Deluge script (this is required for proper script syntax)
+            text = text.replace('\n', '\\n')
             return text
         
         escaped_message = escape_for_deluge(message)
@@ -5059,14 +5060,15 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
         else:
             from_display = "Campaign Sender"
         
-        # Properly escape the message content for Deluge script while preserving HTML formatting
+        # Properly escape the message content for Deluge script
         def escape_for_deluge(text):
             """Escape text for Deluge script while preserving HTML formatting"""
             # First, normalize line endings
             text = text.replace('\r\n', '\n').replace('\r', '\n')
-            # Escape quotes but preserve newlines for HTML formatting
+            # Escape quotes
             text = text.replace('"', '\\"')
-            # Don't escape newlines - let them remain as actual newlines
+            # Escape newlines for Deluge script (this is required for proper script syntax)
+            text = text.replace('\n', '\\n')
             return text
         
         escaped_message = escape_for_deluge(message)

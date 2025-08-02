@@ -658,47 +658,47 @@
   ],
   "6": [
     {
-      "timestamp": "2025-08-02T11:48:18.933896",
+      "timestamp": "2025-08-02T12:03:25.193731",
       "status": "success",
       "message": "Email 1/5 sent successfully to salssapp@gmail.com",
       "email": "salssapp@gmail.com",
-      "subject": "fgdhndyfhn",
-      "sender": "dfghndfgh <894168605@zoho.com>"
+      "subject": "we are here sir dear and",
+      "sender": "Canrnins <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-02T11:48:20.630830",
+      "timestamp": "2025-08-02T12:03:26.885184",
       "status": "success",
       "message": "Email 2/5 sent successfully to jetalpha@outlook.fr",
       "email": "jetalpha@outlook.fr",
-      "subject": "fgdhndyfhn",
-      "sender": "dfghndfgh <894168605@zoho.com>"
+      "subject": "we are here sir dear and",
+      "sender": "Canrnins <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-02T11:48:22.408419",
+      "timestamp": "2025-08-02T12:03:28.611600",
       "status": "success",
       "message": "Email 3/5 sent successfully to lesgavasimind@gmx.com",
       "email": "lesgavasimind@gmx.com",
-      "subject": "fgdhndyfhn",
-      "sender": "dfghndfgh <894168605@zoho.com>"
+      "subject": "we are here sir dear and",
+      "sender": "Canrnins <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-02T11:48:24.122775",
+      "timestamp": "2025-08-02T12:03:30.348921",
       "status": "success",
       "message": "Email 4/5 sent successfully to abdo.charhamane@gmail.com",
       "email": "abdo.charhamane@gmail.com",
-      "subject": "fgdhndyfhn",
-      "sender": "dfghndfgh <894168605@zoho.com>"
+      "subject": "we are here sir dear and",
+      "sender": "Canrnins <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-02T11:48:25.892694",
+      "timestamp": "2025-08-02T12:03:32.068983",
       "status": "success",
       "message": "Email 5/5 sent successfully to wbennettmary@gmail.com",
       "email": "wbennettmary@gmail.com",
-      "subject": "fgdhndyfhn",
-      "sender": "dfghndfgh <894168605@zoho.com>"
+      "subject": "we are here sir dear and",
+      "sender": "Canrnins <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-02T11:48:25.902191",
+      "timestamp": "2025-08-02T12:03:32.084620",
       "type": "success",
       "message": "Campaign completed successfully. Sent to 5 recipients.",
       "details": {
@@ -709,9 +709,9 @@
         "total_attempted": 5,
         "template_used": 2,
         "function_used": "Send_Email_Template2",
-        "subject_used": "fgdhndyfhn",
-        "from_used": "dfghndfgh <894168605@zoho.com>",
-        "account_name": "lauraorg@outlook.fr"
+        "subject_used": "we are here sir dear and",
+        "from_used": "Canrnins <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
       }
     }
   ],
