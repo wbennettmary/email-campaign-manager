@@ -636,6 +636,19 @@
       "sender": "campaign",
       "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
       "timestamp": "2025-07-29T14:01:53.231429"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 4,
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discounts <895363434@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "beyondtheclassroom.shop",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-03T16:18:35.271458"
     }
   ],
   "7": [
@@ -678,6 +691,19 @@
       "sender": "kjyujh,",
       "details": "Email appears valid (Zoho APIs not accessible, using fallback detection)",
       "timestamp": "2025-07-29T17:08:34.401971"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 7,
+      "subject": "SADFGASDG",
+      "sender": "SDFSD <895363434@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "beyondtheclassroom.shop",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-03T16:55:49.105383"
     }
   ],
   "8": [
@@ -786,6 +812,19 @@
         "account_name": "phungvanhuonghie"
       },
       "timestamp": "2025-07-30T16:24:15.562743"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 5,
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discounts <895363434@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "beyondtheclassroom.shop",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-03T16:44:40.077368"
     }
   ],
   "6": [
@@ -848,6 +887,19 @@
         "account_name": "jaylan"
       },
       "timestamp": "2025-07-30T16:58:35.482987"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 6,
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discount <895363434@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "beyondtheclassroom.shop",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-03T16:52:49.861068"
     }
   ],
   "9": [

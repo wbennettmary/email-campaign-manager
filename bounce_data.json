@@ -165,5 +165,128 @@
       "timestamp": "2025-08-01T20:25:27.797285",
       "bounce_type": "soft"
     }
+  ],
+  "5": [
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 5,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discounts <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:44:46.108310",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 5,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discounts <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:44:47.715707",
+      "bounce_type": "soft"
+    }
+  ],
+  "6": [
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 6,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discount <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:52:51.100727",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 6,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discount <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:52:51.190123",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 6,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discount <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:52:51.626812",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 6,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discount <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:52:51.942020",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 6,
+      "reason": "API Error 429",
+      "subject": "Exclusive Discounts on Insurance, Banking and More as a Veteran",
+      "sender": "Military Discount <895363434@zoho.com>",
+      "timestamp": "2025-08-03T16:52:53.224593",
+      "bounce_type": "soft"
+    }
+  ],
+  "8": [
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 8,
+      "reason": "API Error 429",
+      "subject": "FSHNSFG",
+      "sender": "BNXFGCH <895363434@zoho.com>",
+      "timestamp": "2025-08-03T17:29:32.719586",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 8,
+      "reason": "API Error 429",
+      "subject": "FSHNSFG",
+      "sender": "BNXFGCH <895363434@zoho.com>",
+      "timestamp": "2025-08-03T17:29:32.772319",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 8,
+      "reason": "API Error 429",
+      "subject": "FSHNSFG",
+      "sender": "BNXFGCH <895363434@zoho.com>",
+      "timestamp": "2025-08-03T17:29:33.200464",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 8,
+      "reason": "API Error 429",
+      "subject": "FSHNSFG",
+      "sender": "BNXFGCH <895363434@zoho.com>",
+      "timestamp": "2025-08-03T17:29:34.361725",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 8,
+      "reason": "API Error 429",
+      "subject": "FSHNSFG",
+      "sender": "BNXFGCH <895363434@zoho.com>",
+      "timestamp": "2025-08-03T17:29:34.792273",
+      "bounce_type": "soft"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 8,
+      "reason": "API Error 429",
+      "subject": "FSHNSFG",
+      "sender": "BNXFGCH <895363434@zoho.com>",
+      "timestamp": "2025-08-03T17:29:36.378903",
+      "bounce_type": "soft"
+    }
   ]
 }

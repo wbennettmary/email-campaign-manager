@@ -1,298 +1,34 @@
 [
   {
-    "id": "5213b415-74a4-44bf-abb4-eb7221c4beb4",
-    "message": "Campaign 'tyhjuvf,f' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:35:10.021440",
-    "read": false,
-    "campaign_id": 10
-  },
-  {
-    "id": "f0edaef9-1b0e-4b83-b96b-63dbb2a05d2e",
-    "message": "Campaign 'tyhjuvf,f' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:35:02.114936",
-    "read": false,
-    "campaign_id": 10
-  },
-  {
-    "id": "d7329e93-8827-49f2-b17b-bfdb463739e0",
-    "message": "Campaign 'tyhjuvf,f' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:34:57.476288",
-    "read": false,
-    "campaign_id": 10
-  },
-  {
-    "id": "23fb2129-49e5-4a64-8bee-7f0a774c6b02",
-    "message": "Campaign 'puttt' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:34:20.693499",
-    "read": false,
-    "campaign_id": 9
-  },
-  {
-    "id": "e3363e5b-0823-43e1-9295-7101a56f08ea",
-    "message": "Campaign 'puttt' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:34:12.970502",
-    "read": false,
-    "campaign_id": 9
-  },
-  {
-    "id": "fdc86042-1908-4c40-b8ea-aa62beb8bc8c",
-    "message": "Campaign 'puttt' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:34:08.698409",
-    "read": false,
-    "campaign_id": 9
-  },
-  {
-    "id": "175aea96-54bb-4724-a912-fca5bdcef9de",
-    "message": "Campaign 'wwww' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:22:40.082690",
+    "id": "cbf748f0-3865-448d-b680-3c7ab568181d",
+    "message": "Scheduled campaign 'VBNFGN' failed: No result returned",
+    "type": "error",
+    "timestamp": "2025-08-03T17:29:40.990104",
     "read": false,
     "campaign_id": 8
   },
   {
-    "id": "894c2bf7-2ce0-47bd-ac7d-abc0c56f6349",
-    "message": "Campaign 'wwww' started successfully",
+    "id": "b066f7e7-41bf-4280-8c69-61b6c5548d31",
+    "message": "Campaign 'VBNFGN' completed successfully",
     "type": "success",
-    "timestamp": "2025-08-02T12:22:32.343990",
+    "timestamp": "2025-08-03T17:29:40.910294",
     "read": false,
     "campaign_id": 8
   },
   {
-    "id": "d4efb4e2-b74f-43d1-8e30-b17821d72cb2",
-    "message": "Campaign 'wwww' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:22:02.298756",
+    "id": "55bc5070-34cc-4b82-9282-51e45dc7c1d9",
+    "message": "Scheduled campaign 'VBNFGN' failed: No result returned",
+    "type": "error",
+    "timestamp": "2025-08-03T17:29:37.811299",
     "read": false,
     "campaign_id": 8
   },
   {
-    "id": "5537dee3-c510-48bf-9eba-d01f9c6cfa58",
-    "message": "Campaign 'albertoos' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:15:02.543285",
-    "read": false,
-    "campaign_id": 7
-  },
-  {
-    "id": "c7ee879d-62ee-4813-9005-8352ad4ceef3",
-    "message": "Campaign 'albertoos' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:14:54.380036",
-    "read": false,
-    "campaign_id": 7
-  },
-  {
-    "id": "29d649c4-c2f3-45a0-9c35-3ec16fc28ac0",
-    "message": "Campaign 'albertoos' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:14:24.444236",
-    "read": false,
-    "campaign_id": 7
-  },
-  {
-    "id": "4a8eb655-5af7-40e9-b662-efdb3ba579e7",
-    "message": "Campaign 'ric' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:03:32.101838",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "eaa8fd0a-5181-483c-8c62-c388c8737234",
-    "message": "Campaign 'ric' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:03:24.473803",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "cc361b1d-1924-4051-95c8-5514e8c1237e",
-    "message": "Campaign 'ric' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T12:03:08.714148",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "af8a40bd-cc93-49d3-9137-60147e18c6a7",
-    "message": "Campaign 'mlm\u00f9ml' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:58:05.235288",
-    "read": false,
-    "campaign_id": 5
-  },
-  {
-    "id": "dc0db2bf-4fd4-4dc4-a539-4abfb4377fc6",
-    "message": "Campaign 'mlm\u00f9ml' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:57:57.186674",
-    "read": false,
-    "campaign_id": 5
-  },
-  {
-    "id": "e2eb13e8-8164-4577-9bac-a62e3d7070cc",
-    "message": "Campaign 'mlm\u00f9ml' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:57:35.977023",
-    "read": false,
-    "campaign_id": 5
-  },
-  {
-    "id": "0d46f1a7-88df-41b8-a6f8-e9cb5f36720a",
-    "message": "Campaign 'plman' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:56:35.297800",
-    "read": false,
-    "campaign_id": 4
-  },
-  {
-    "id": "24a4bd7a-3c28-4a8f-9b43-ba990c01f792",
-    "message": "Campaign 'plman' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:56:27.032583",
-    "read": false,
-    "campaign_id": 4
-  },
-  {
-    "id": "40fe44f4-ce11-4020-b23b-fabe3093f3f6",
-    "message": "Campaign 'plman' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:56:21.705904",
-    "read": false,
-    "campaign_id": 4
-  },
-  {
-    "id": "1992e2c8-6e79-45e7-8c8e-ec16ea824653",
-    "message": "Campaign 'wwxsz' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:55:04.162556",
+    "id": "7edbba20-6199-4abe-b535-b8cf8bfc51a7",
+    "message": "Scheduled campaign 'VBNFGN' failed: No result returned",
+    "type": "error",
+    "timestamp": "2025-08-03T17:29:37.748956",
     "read": false,
     "campaign_id": 8
-  },
-  {
-    "id": "968c04a3-1c85-4cf0-87af-03afe7dacfb6",
-    "message": "Campaign 'bdfgbdfx' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:50:37.300313",
-    "read": false,
-    "campaign_id": 7
-  },
-  {
-    "id": "b0d1d1ff-0d2f-4f9c-8d8c-df74bd7d1b7b",
-    "message": "Campaign 'bdfgbdfx' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:50:29.646031",
-    "read": false,
-    "campaign_id": 7
-  },
-  {
-    "id": "3f5891c9-fa8d-4a6b-b8e7-2afb64c6abce",
-    "message": "Campaign 'bdfgbdfx' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:50:15.026656",
-    "read": false,
-    "campaign_id": 7
-  },
-  {
-    "id": "c24be1fb-5288-4757-aed5-53fa690fb906",
-    "message": "Campaign 'wwu' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:48:25.916700",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "36117617-1e32-4bbf-be1f-db51926527ca",
-    "message": "Campaign 'wwu' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:48:13.205029",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "427b3caa-a869-4b04-ad09-d51885aa2c07",
-    "message": "Campaign 'wwu' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:48:06.854722",
-    "read": false,
-    "campaign_id": 6
-  },
-  {
-    "id": "4193d54a-d26d-4baf-8fc0-71d6df3cf68b",
-    "message": "Campaign 'dfhjdfg' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:47:49.107069",
-    "read": false,
-    "campaign_id": 5
-  },
-  {
-    "id": "ff035045-47cd-49ba-af13-e7be41acb2e4",
-    "message": "Campaign 'dfhjdfg' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:47:41.098547",
-    "read": false,
-    "campaign_id": 5
-  },
-  {
-    "id": "4d67a304-b760-4911-89ec-37a6c8358d15",
-    "message": "Campaign 'dfhjdfg' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:47:31.404614",
-    "read": false,
-    "campaign_id": 5
-  },
-  {
-    "id": "f0a1d849-2bbb-4c62-88af-bf232b2556c9",
-    "message": "Campaign 'dqsc' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:46:24.145451",
-    "read": false,
-    "campaign_id": 4
-  },
-  {
-    "id": "6351007c-a077-4bef-80eb-0ae2316f4402",
-    "message": "Campaign 'dqsc' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:46:16.488493",
-    "read": false,
-    "campaign_id": 4
-  },
-  {
-    "id": "d5e42849-a442-42ae-b624-6922d98399c9",
-    "message": "Campaign 'dqsc' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-02T11:46:12.791390",
-    "read": false,
-    "campaign_id": 4
-  },
-  {
-    "id": "d594d6cc-b712-4e99-9e67-3ea897677cfb",
-    "message": "Campaign 'dsfvsdfg' completed successfully",
-    "type": "success",
-    "timestamp": "2025-08-01T20:46:10.436265",
-    "read": false,
-    "campaign_id": 3
-  },
-  {
-    "id": "d3bd94d0-3aaf-4341-9af5-7a02439d3868",
-    "message": "Campaign 'dsfvsdfg' started successfully",
-    "type": "success",
-    "timestamp": "2025-08-01T20:46:02.535796",
-    "read": false,
-    "campaign_id": 3
-  },
-  {
-    "id": "6bffdaae-0f73-4a9d-b157-5017f6aac79c",
-    "message": "Campaign 'dsfvsdfg' created successfully",
-    "type": "success",
-    "timestamp": "2025-08-01T20:45:58.439261",
-    "read": false,
-    "campaign_id": 3
   }
 ]

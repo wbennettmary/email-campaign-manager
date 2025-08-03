@@ -1,0 +1,640 @@
+{% extends "base.html" %}
+
+{% block title %}Automation - Campaign Scheduler{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-clock text-primary"></i>
+                    Campaign Automation
+                </h1>
+                <div class="btn-group">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                        <i class="fas fa-plus"></i> Schedule Campaign
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="refreshCampaigns()">
+                        <i class="fas fa-sync-alt"></i> Refresh Campaigns
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Total Schedules</h4>
+                            <h2 id="total-schedules">0</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Active Schedules</h4>
+                            <h2 id="active-schedules">0</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-play fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Completed Today</h4>
+                            <h2 id="completed-today">0</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Next Execution</h4>
+                            <h6 id="next-execution">No schedules</h6>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedules Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list"></i> Scheduled Campaigns
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="schedulesTable">
+                            <thead>
+                                <tr>
+                                    <th>Campaign</th>
+                                    <th>Schedule Type</th>
+                                    <th>Next Run</th>
+                                    <th>Last Run</th>
+                                    <th>Total Runs</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedulesTableBody">
+                                <!-- Schedules will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Schedule Campaign</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="campaignSelect" class="form-label">Campaign</label>
+                                <select class="form-select" id="campaignSelect" required>
+                                    <option value="">Select a campaign...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="scheduleType" class="form-label">Schedule Type</label>
+                                <select class="form-select" id="scheduleType" required>
+                                    <option value="once">Once</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="custom">Custom Interval</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="scheduleDateTime" class="form-label">Schedule Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="scheduleDateTime" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3" id="customIntervalGroup" style="display: none;">
+                                <label for="repeatInterval" class="form-label">Repeat Interval (minutes)</label>
+                                <input type="number" class="form-control" id="repeatInterval" min="1" value="60">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enabled" checked>
+                            <label class="form-check-label" for="enabled">
+                                Enable schedule immediately
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createSchedule()">Schedule Campaign</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Schedule Modal -->
+<div class="modal fade" id="editScheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Schedule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editScheduleForm">
+                    <input type="hidden" id="editScheduleId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editScheduleDateTime" class="form-label">Next Run Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="editScheduleDateTime" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editScheduleType" class="form-label">Schedule Type</label>
+                                <select class="form-select" id="editScheduleType" required>
+                                    <option value="once">Once</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="editEnabled">
+                            <label class="form-check-label" for="editEnabled">
+                                Enable schedule
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateSchedule()">Update Schedule</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let schedules = [];
+let campaigns = [];
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadCampaigns();
+    loadSchedules();
+    
+    // Set default datetime to current time + 1 hour
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    document.getElementById('scheduleDateTime').value = now.toISOString().slice(0, 16);
+    
+    // Handle schedule type change
+    document.getElementById('scheduleType').addEventListener('change', function() {
+        const customGroup = document.getElementById('customIntervalGroup');
+        if (this.value === 'custom') {
+            customGroup.style.display = 'block';
+        } else {
+            customGroup.style.display = 'none';
+        }
+    });
+});
+
+function loadCampaigns() {
+    console.log('🔄 Loading campaigns...');
+    fetch('/api/campaigns')
+        .then(response => response.json())
+        .then(data => {
+            console.log('📊 Campaigns data received:', data);
+            if (data.success) {
+                campaigns = data.campaigns;
+                console.log(`✅ Loaded ${campaigns.length} campaigns:`, campaigns.map(c => `${c.name} (${c.status})`));
+                updateCampaignSelect();
+            } else {
+                console.error('❌ Failed to load campaigns:', data.error);
+                showNotification('Error loading campaigns: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error loading campaigns:', error);
+            showNotification('Error loading campaigns', 'error');
+        });
+}
+
+function updateCampaignSelect() {
+    const select = document.getElementById('campaignSelect');
+    select.innerHTML = '<option value="">Select a campaign...</option>';
+    
+    let availableCount = 0;
+    
+    console.log('🔄 Updating campaign select with campaigns:', campaigns);
+    
+    campaigns.forEach(campaign => {
+        // Show ALL campaigns regardless of status
+        const option = document.createElement('option');
+        option.value = campaign.id;
+        option.textContent = `${campaign.name} (${campaign.subject}) - ${campaign.status}`;
+        select.appendChild(option);
+        availableCount++;
+        console.log(`✅ Added campaign option: ${campaign.name} (${campaign.status})`);
+    });
+    
+    console.log(`📊 Total campaigns added to dropdown: ${availableCount}`);
+    
+    // If no campaigns available, show a message
+    if (availableCount === 0) {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No campaigns available for scheduling";
+        option.disabled = true;
+        select.appendChild(option);
+        console.log('⚠️ No campaigns available for scheduling');
+    }
+    
+    // Update statistics
+    updateCampaignStatistics();
+}
+
+function updateCampaignStatistics() {
+    const total = campaigns.length;
+    const ready = campaigns.filter(c => c.status === 'ready').length;
+    const completed = campaigns.filter(c => c.status === 'completed').length;
+    const running = campaigns.filter(c => c.status === 'running').length;
+    
+    // You can add these to the statistics cards if needed
+    console.log(`Campaign Stats: Total=${total}, Ready=${ready}, Completed=${completed}, Running=${running}`);
+}
+
+function refreshCampaigns() {
+    showNotification('Refreshing campaigns...', 'info');
+    loadCampaigns();
+}
+
+function loadSchedules() {
+    fetch('/api/automation/schedules')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                schedules = data.schedules;
+                updateSchedulesTable();
+                updateStatistics();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading schedules:', error);
+            showNotification('Error loading schedules', 'error');
+        });
+}
+
+function updateSchedulesTable() {
+    const tbody = document.getElementById('schedulesTableBody');
+    tbody.innerHTML = '';
+    
+    if (schedules.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <br>No scheduled campaigns found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    schedules.forEach(schedule => {
+        const row = document.createElement('tr');
+        const campaign = schedule.campaign || {};
+        
+        row.innerHTML = `
+            <td>
+                <strong>${campaign.name || 'Unknown Campaign'}</strong>
+                <br><small class="text-muted">${campaign.subject || ''}</small>
+            </td>
+            <td>
+                <span class="badge bg-info">${schedule.schedule_type}</span>
+                ${schedule.repeat_interval ? `<br><small>Every ${schedule.repeat_interval} min</small>` : ''}
+            </td>
+            <td>
+                ${formatDateTime(schedule.next_run)}
+                <br><small class="text-muted">${getTimeUntil(schedule.next_run)}</small>
+            </td>
+            <td>
+                ${schedule.last_run ? formatDateTime(schedule.last_run) : 'Never'}
+            </td>
+            <td>
+                <span class="badge bg-secondary">${schedule.total_runs}</span>
+            </td>
+            <td>
+                ${getStatusBadge(schedule.status, schedule.enabled)}
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="editSchedule(${schedule.id})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-success" onclick="toggleSchedule(${schedule.id})" title="${schedule.enabled ? 'Disable' : 'Enable'}">
+                        <i class="fas fa-${schedule.enabled ? 'pause' : 'play'}"></i>
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="executeSchedule(${schedule.id})" title="Execute Now">
+                        <i class="fas fa-bolt"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="deleteSchedule(${schedule.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function updateStatistics() {
+    const total = schedules.length;
+    const active = schedules.filter(s => s.enabled).length;
+    const completedToday = schedules.filter(s => {
+        if (!s.last_run) return false;
+        const lastRun = new Date(s.last_run);
+        const today = new Date();
+        return lastRun.toDateString() === today.toDateString();
+    }).length;
+    
+    const nextExecution = schedules
+        .filter(s => s.enabled)
+        .sort((a, b) => new Date(a.next_run) - new Date(b.next_run))[0];
+    
+    document.getElementById('total-schedules').textContent = total;
+    document.getElementById('active-schedules').textContent = active;
+    document.getElementById('completed-today').textContent = completedToday;
+    document.getElementById('next-execution').textContent = nextExecution ? 
+        getTimeUntil(nextExecution.next_run) : 'No schedules';
+}
+
+function createSchedule() {
+    const formData = {
+        campaign_id: parseInt(document.getElementById('campaignSelect').value),
+        schedule_time: document.getElementById('scheduleDateTime').value,
+        schedule_type: document.getElementById('scheduleType').value,
+        repeat_interval: document.getElementById('scheduleType').value === 'custom' ? 
+            parseInt(document.getElementById('repeatInterval').value) : null,
+        enabled: document.getElementById('enabled').checked
+    };
+    
+    if (!formData.campaign_id || !formData.schedule_time) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    fetch('/api/automation/schedules', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('scheduleModal')).hide();
+            loadSchedules();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating schedule:', error);
+        showNotification('Error creating schedule', 'error');
+    });
+}
+
+function editSchedule(scheduleId) {
+    const schedule = schedules.find(s => s.id === scheduleId);
+    if (!schedule) return;
+    
+    document.getElementById('editScheduleId').value = scheduleId;
+    document.getElementById('editScheduleDateTime').value = schedule.next_run.slice(0, 16);
+    document.getElementById('editScheduleType').value = schedule.schedule_type;
+    document.getElementById('editEnabled').checked = schedule.enabled;
+    
+    new bootstrap.Modal(document.getElementById('editScheduleModal')).show();
+}
+
+function updateSchedule() {
+    const scheduleId = parseInt(document.getElementById('editScheduleId').value);
+    const formData = {
+        next_run: document.getElementById('editScheduleDateTime').value,
+        schedule_type: document.getElementById('editScheduleType').value,
+        enabled: document.getElementById('editEnabled').checked
+    };
+    
+    fetch(`/api/automation/schedules/${scheduleId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editScheduleModal')).hide();
+            loadSchedules();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating schedule:', error);
+        showNotification('Error updating schedule', 'error');
+    });
+}
+
+function toggleSchedule(scheduleId) {
+    fetch(`/api/automation/schedules/${scheduleId}/toggle`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadSchedules();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error toggling schedule:', error);
+        showNotification('Error toggling schedule', 'error');
+    });
+}
+
+function executeSchedule(scheduleId) {
+    if (!confirm('Execute this campaign now?')) return;
+    
+    fetch(`/api/automation/schedules/${scheduleId}/execute`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadSchedules();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error executing schedule:', error);
+        showNotification('Error executing schedule', 'error');
+    });
+}
+
+function deleteSchedule(scheduleId) {
+    if (!confirm('Are you sure you want to delete this schedule?')) return;
+    
+    fetch(`/api/automation/schedules/${scheduleId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadSchedules();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting schedule:', error);
+        showNotification('Error deleting schedule', 'error');
+    });
+}
+
+function formatDateTime(dateString) {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleString();
+}
+
+function getTimeUntil(dateString) {
+    if (!dateString) return 'N/A';
+    
+    const now = new Date();
+    const target = new Date(dateString);
+    const diff = target - now;
+    
+    if (diff < 0) return 'Overdue';
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) return `in ${days}d ${hours}h`;
+    if (hours > 0) return `in ${hours}h ${minutes}m`;
+    return `in ${minutes}m`;
+}
+
+function getStatusBadge(status, enabled) {
+    if (!enabled) {
+        return '<span class="badge bg-secondary">Disabled</span>';
+    }
+    
+    switch (status) {
+        case 'pending':
+            return '<span class="badge bg-warning">Pending</span>';
+        case 'completed':
+            return '<span class="badge bg-success">Completed</span>';
+        case 'failed':
+            return '<span class="badge bg-danger">Failed</span>';
+        default:
+            return '<span class="badge bg-info">Unknown</span>';
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Auto-refresh every 30 seconds
+setInterval(loadSchedules, 30000);
+</script>
+{% endblock %} 

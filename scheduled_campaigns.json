@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "campaign_id": 8,
+    "schedule_time": "2025-08-03T17:29:00",
+    "schedule_type": "once",
+    "repeat_interval": null,
+    "enabled": false,
+    "created_at": "2025-08-03T17:28:46.860714",
+    "last_run": "2025-08-03T17:29:32.198136",
+    "next_run": "2025-08-03T17:29:00",
+    "total_runs": 1,
+    "status": "failed"
+  }
+]

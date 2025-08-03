@@ -41,6 +41,12 @@ import psutil
 # Rate Limiting Configuration
 RATE_LIMIT_CONFIG_FILE = 'rate_limit_config.json'
 
+# Automation Configuration
+SCHEDULED_CAMPAIGNS_FILE = 'scheduled_campaigns.json'
+SCHEDULER_CHECK_INTERVAL = 60  # Check every 60 seconds
+scheduler_lock = threading.Lock()  # Prevent concurrent execution
+execution_tracker = {}  # Track recent executions to prevent duplicates
+
 # Default rate limiting settings - Conservative for reliable delivery
 DEFAULT_RATE_LIMIT = {
     'enabled': True,
@@ -286,6 +292,269 @@ def rate_limit_cleanup_thread():
 cleanup_thread = threading.Thread(target=rate_limit_cleanup_thread, daemon=True)
 cleanup_thread.start()
 
+# ============================================================================
+# AUTOMATION SYSTEM - SCHEDULED CAMPAIGNS
+# ============================================================================
+
+def load_scheduled_campaigns():
+    """Load scheduled campaigns from file"""
+    try:
+        with open(SCHEDULED_CAMPAIGNS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def save_scheduled_campaigns(scheduled_campaigns):
+    """Save scheduled campaigns to file"""
+    with open(SCHEDULED_CAMPAIGNS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(scheduled_campaigns, f, indent=2, ensure_ascii=False)
+
+def add_scheduled_campaign(campaign_id, schedule_time, schedule_type='once', repeat_interval=None, enabled=True):
+    """Add a new scheduled campaign"""
+    scheduled_campaigns = load_scheduled_campaigns()
+    
+    # Check if campaign already scheduled
+    existing = next((sc for sc in scheduled_campaigns if sc['campaign_id'] == campaign_id), None)
+    if existing:
+        return False, "Campaign already scheduled"
+    
+    # Validate schedule time
+    try:
+        if isinstance(schedule_time, str):
+            schedule_time = datetime.fromisoformat(schedule_time.replace('Z', '+00:00'))
+        if schedule_time < datetime.now():
+            return False, "Schedule time must be in the future"
+    except:
+        return False, "Invalid schedule time format"
+    
+    # Auto-reset completed campaigns to ready status
+    campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+    campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+    if campaign and campaign['status'] == 'completed':
+        campaign['status'] = 'ready'
+        campaign['total_sent'] = 0
+        campaign['total_attempted'] = 0
+        campaign['started_at'] = None
+        campaign['completed_at'] = None
+        write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+        print(f"🔄 Auto-reset completed campaign {campaign_id} to ready status for scheduling")
+    
+    new_schedule = {
+        'id': len(scheduled_campaigns) + 1,
+        'campaign_id': campaign_id,
+        'schedule_time': schedule_time.isoformat(),
+        'schedule_type': schedule_type,  # 'once', 'daily', 'weekly', 'monthly'
+        'repeat_interval': repeat_interval,  # For custom intervals
+        'enabled': enabled,
+        'created_at': datetime.now().isoformat(),
+        'last_run': None,
+        'next_run': schedule_time.isoformat(),
+        'total_runs': 0,
+        'status': 'pending'
+    }
+    
+    scheduled_campaigns.append(new_schedule)
+    save_scheduled_campaigns(scheduled_campaigns)
+    
+    print(f"📅 Scheduled campaign {campaign_id} for {schedule_time}")
+    return True, "Campaign scheduled successfully"
+
+def remove_scheduled_campaign(schedule_id):
+    """Remove a scheduled campaign"""
+    scheduled_campaigns = load_scheduled_campaigns()
+    scheduled_campaigns = [sc for sc in scheduled_campaigns if sc['id'] != schedule_id]
+    save_scheduled_campaigns(scheduled_campaigns)
+    return True
+
+def update_scheduled_campaign(schedule_id, **kwargs):
+    """Update a scheduled campaign"""
+    scheduled_campaigns = load_scheduled_campaigns()
+    
+    for sc in scheduled_campaigns:
+        if sc['id'] == schedule_id:
+            for key, value in kwargs.items():
+                if key in sc:
+                    sc[key] = value
+            save_scheduled_campaigns(scheduled_campaigns)
+            return True
+    
+    return False
+
+def get_scheduled_campaigns():
+    """Get all scheduled campaigns"""
+    return load_scheduled_campaigns()
+
+def execute_scheduled_campaign(schedule):
+    """Execute a scheduled campaign"""
+    try:
+        campaign_id = schedule['campaign_id']
+        
+        # Load campaign data
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        
+        if not campaign:
+            print(f"❌ Campaign {campaign_id} not found")
+            return False
+        
+        # Load account data
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((a for a in accounts if a['id'] == campaign['account_id']), None)
+        
+        if not account:
+            print(f"❌ Account {campaign['account_id']} not found")
+            return False
+        
+        print(f"🚀 Executing scheduled campaign: {campaign['name']} (ID: {campaign_id})")
+        
+        # Start the campaign
+        result = send_universal_campaign_emails(campaign, account)
+        
+        if result and result.get('success'):
+            print(f"✅ Scheduled campaign {campaign_id} executed successfully")
+            try:
+                add_notification(f"Scheduled campaign '{campaign['name']}' executed successfully", 'success', campaign_id)
+            except:
+                print(f"⚠️ Could not add notification for campaign {campaign_id}")
+            return True
+        else:
+            error_msg = result.get('message', 'Unknown error') if result else 'No result returned'
+            print(f"❌ Scheduled campaign {campaign_id} failed: {error_msg}")
+            try:
+                add_notification(f"Scheduled campaign '{campaign['name']}' failed: {error_msg}", 'error', campaign_id)
+            except:
+                print(f"⚠️ Could not add notification for campaign {campaign_id}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error executing scheduled campaign {schedule.get('campaign_id', 'unknown')}: {str(e)}")
+        try:
+            add_notification(f"Error executing scheduled campaign: {str(e)}", 'error', schedule.get('campaign_id'))
+        except:
+            print(f"⚠️ Could not add notification for error")
+        return False
+
+def calculate_next_run(schedule):
+    """Calculate the next run time for a recurring schedule"""
+    try:
+        current_time = datetime.now()
+        last_run = datetime.fromisoformat(schedule['last_run']) if schedule['last_run'] else datetime.fromisoformat(schedule['schedule_time'])
+        
+        if schedule['schedule_type'] == 'once':
+            return None  # No next run for one-time schedules
+        
+        elif schedule['schedule_type'] == 'daily':
+            next_run = last_run + timedelta(days=1)
+        
+        elif schedule['schedule_type'] == 'weekly':
+            next_run = last_run + timedelta(weeks=1)
+        
+        elif schedule['schedule_type'] == 'monthly':
+            # Simple monthly calculation (30 days)
+            next_run = last_run + timedelta(days=30)
+        
+        elif schedule['schedule_type'] == 'custom' and schedule['repeat_interval']:
+            # Custom interval in minutes
+            interval_minutes = int(schedule['repeat_interval'])
+            next_run = last_run + timedelta(minutes=interval_minutes)
+        
+        else:
+            return None
+        
+        return next_run.isoformat()
+        
+    except Exception as e:
+        print(f"❌ Error calculating next run: {str(e)}")
+        return None
+
+def check_and_execute_scheduled_campaigns():
+    """Check for campaigns that need to be executed and run them"""
+    try:
+        scheduled_campaigns = load_scheduled_campaigns()
+        current_time = datetime.now()
+        updated = False
+        
+        for schedule in scheduled_campaigns:
+            if not schedule['enabled']:
+                continue
+            
+            try:
+                next_run = datetime.fromisoformat(schedule['next_run'])
+                
+                # Check if this schedule should be executed now
+                if next_run <= current_time:
+                    # Use execution tracker to prevent duplicates
+                    campaign_key = f"campaign_{schedule['campaign_id']}"
+                    current_timestamp = current_time.timestamp()
+                    
+                    # Check if this campaign was executed recently (within last 10 minutes)
+                    if campaign_key in execution_tracker:
+                        last_execution = execution_tracker[campaign_key]
+                        time_since_last = current_timestamp - last_execution
+                        
+                        if time_since_last < 600:  # 10 minutes = 600 seconds
+                            print(f"⚠️ Skipping campaign {schedule['campaign_id']} - executed recently ({time_since_last:.1f}s ago)")
+                            continue
+                    
+                    print(f"⏰ Executing scheduled campaign {schedule['campaign_id']} at {current_time}")
+                    
+                    # Mark as executing to prevent duplicates
+                    execution_tracker[campaign_key] = current_timestamp
+                    
+                    # Execute the campaign
+                    success = execute_scheduled_campaign(schedule)
+                    
+                    # Update schedule immediately to prevent duplicate execution
+                    schedule['last_run'] = current_time.isoformat()
+                    schedule['total_runs'] += 1
+                    schedule['status'] = 'completed' if success else 'failed'
+                    
+                    # Calculate next run for recurring schedules
+                    next_run_time = calculate_next_run(schedule)
+                    if next_run_time:
+                        schedule['next_run'] = next_run_time
+                        schedule['status'] = 'pending'
+                    else:
+                        schedule['enabled'] = False  # Disable one-time schedules
+                    
+                    updated = True
+                    print(f"✅ Updated schedule {schedule['id']} - Next run: {schedule.get('next_run', 'Disabled')}")
+                    
+            except Exception as e:
+                print(f"❌ Error processing schedule {schedule['id']}: {str(e)}")
+                continue
+        
+        # Save all updates at once to prevent race conditions
+        if updated:
+            save_scheduled_campaigns(scheduled_campaigns)
+            print(f"💾 Saved updated schedules to file")
+        
+        # Clean up old execution tracker entries (older than 1 hour)
+        current_timestamp = datetime.now().timestamp()
+        old_keys = [key for key, timestamp in execution_tracker.items() 
+                   if current_timestamp - timestamp > 3600]  # 1 hour = 3600 seconds
+        for key in old_keys:
+            del execution_tracker[key]
+                
+    except Exception as e:
+        print(f"❌ Error checking scheduled campaigns: {str(e)}")
+
+def scheduler_thread():
+    """Background thread to check and execute scheduled campaigns"""
+    print("🕐 Starting campaign scheduler...")
+    while True:
+        try:
+            with scheduler_lock:
+                check_and_execute_scheduled_campaigns()
+            time.sleep(SCHEDULER_CHECK_INTERVAL)
+        except Exception as e:
+            print(f"❌ Scheduler error: {str(e)}")
+            time.sleep(60)  # Wait 1 minute on error
+
+# Start scheduler thread
+scheduler_thread_instance = threading.Thread(target=scheduler_thread, daemon=True)
+scheduler_thread_instance.start()
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -415,18 +684,18 @@ def init_data_files():
         NOTIFICATIONS_FILE: [],
         BOUNCE_DATA_FILE: {},
         DELIVERY_DATA_FILE: {},
-        DATA_LISTS_FILE: []
+        DATA_LISTS_FILE: [],
+        SCHEDULED_CAMPAIGNS_FILE: []
     }
     
     # Initialize each file
     for filename, default_content in files_config.items():
         try:
             if not os.path.exists(filename):
-                success = write_json_file_simple(filename, default_content)
-                if success:
-                    print(f"✅ Created {filename}")
-                else:
-                    print(f"❌ Failed to create {filename}")
+                # Simple file creation without using write_json_file_simple
+                with open(filename, 'w', encoding='utf-8') as f:
+                    json.dump(default_content, f, indent=2, ensure_ascii=False)
+                print(f"✅ Created {filename}")
             else:
                 print(f"✅ {filename} already exists")
         except Exception as e:
@@ -1619,10 +1888,17 @@ def api_campaigns():
     if request.method == 'GET':
         try:
             campaigns = get_user_campaigns(current_user)
-            return jsonify(campaigns)
+            return jsonify({
+                'success': True,
+                'campaigns': campaigns
+            })
         except Exception as e:
             print(f"Error loading campaigns: {str(e)}")
-            return jsonify([])
+            return jsonify({
+                'success': False,
+                'error': str(e),
+                'campaigns': []
+            })
     
     elif request.method == 'POST':
         try:
@@ -4776,18 +5052,9 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
             from_display = "Campaign Sender"
         
         # Properly escape the message content for Deluge script
-        def escape_for_deluge(text):
-            """Escape text for Deluge script while preserving HTML formatting"""
-            # First, normalize line endings
-            text = text.replace('\r\n', '\n').replace('\r', '\n')
-            # Remove all line breaks and extra spaces to create single-line HTML
-            text = ' '.join(text.split())
-            # Escape quotes
-            text = text.replace('"', '\\"')
-            return text
-        
-        escaped_message = escape_for_deluge(message)
-        escaped_subject = escape_for_deluge(subject)
+        # Remove all newlines and put HTML on one line for Deluge compatibility
+        escaped_message = message.replace('"', '\\"').replace('\n', ' ').replace('\r', ' ').replace('    ', ' ').replace('  ', ' ')
+        escaped_subject = subject.replace('"', '\\"').replace('\n', ' ').replace('\r', ' ').replace('    ', ' ').replace('  ', ' ')
         
         # Create the Deluge script for sending emails
         # Convert recipients list to Deluge list format
@@ -4807,7 +5074,7 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
         from: "{from_display} <" + zoho.loginuserid + ">"
         to: destinataires
         subject: emailSubject
-        html: emailMessage
+        message: emailMessage
     ];
     
     info "Universal email sent successfully to " + destinataires.size() + " recipients";
@@ -5061,18 +5328,15 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
             from_display = "Campaign Sender"
         
         # Properly escape the message content for Deluge script
-        def escape_for_deluge(text):
-            """Escape text for Deluge script while preserving HTML formatting"""
-            # First, normalize line endings
-            text = text.replace('\r\n', '\n').replace('\r', '\n')
-            # Remove all line breaks and extra spaces to create single-line HTML
-            text = ' '.join(text.split())
-            # Escape quotes
-            text = text.replace('"', '\\"')
-            return text
+        # Remove all newlines and put HTML on one line for Deluge compatibility
+        escaped_message = message.replace('"', '\\"').replace('\n', ' ').replace('\r', ' ').replace('    ', ' ').replace('  ', ' ')
+        escaped_subject = subject.replace('"', '\\"').replace('\n', ' ').replace('\r', ' ').replace('    ', ' ').replace('  ', ' ')
         
-        escaped_message = escape_for_deluge(message)
-        escaped_subject = escape_for_deluge(subject)
+        # Debug: Print the first 200 characters of the escaped message
+        print(f"🔍 Original message length: {len(message)}")
+        print(f"🔍 Escaped message preview: {escaped_message[:200]}...")
+        has_newlines = '\n' in escaped_message
+        print(f"🔍 Contains newlines: {has_newlines}")
         
         # Rate limiting variables
         user_id = current_user.id if current_user else 1
@@ -5125,7 +5389,7 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
         from: "{from_display} <" + zoho.loginuserid + ">"
         to: destinataires
         subject: emailSubject
-        html: emailMessage
+        message: emailMessage
     ];
     
     info "Sequential email sent successfully to " + destinataires.size() + " recipient";
@@ -5424,6 +5688,246 @@ def get_rate_limit_stats_api():
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error getting stats: {str(e)}'}), 500
 
+# ============================================================================
+# AUTOMATION API ENDPOINTS
+# ============================================================================
+
+@app.route('/automation')
+@login_required
+def automation():
+    """Automation dashboard page"""
+    return render_template('automation.html')
+
+@app.route('/api/automation/schedules', methods=['GET'])
+@login_required
+def api_schedules():
+    """Get all scheduled campaigns"""
+    try:
+        scheduled_campaigns = get_scheduled_campaigns()
+        
+        # Enrich with campaign details
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        enriched_schedules = []
+        
+        for schedule in scheduled_campaigns:
+            campaign = next((c for c in campaigns if c['id'] == schedule['campaign_id']), None)
+            enriched_schedule = schedule.copy()
+            enriched_schedule['campaign'] = campaign
+            enriched_schedules.append(enriched_schedule)
+        
+        return jsonify({
+            'success': True,
+            'schedules': enriched_schedules
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/automation/schedules', methods=['POST'])
+@login_required
+def create_schedule():
+    """Create a new scheduled campaign"""
+    try:
+        data = request.get_json()
+        
+        campaign_id = data.get('campaign_id')
+        schedule_time = data.get('schedule_time')
+        schedule_type = data.get('schedule_type', 'once')
+        repeat_interval = data.get('repeat_interval')
+        enabled = data.get('enabled', True)
+        
+        if not campaign_id or not schedule_time:
+            return jsonify({
+                'success': False,
+                'error': 'Campaign ID and schedule time are required'
+            }), 400
+        
+        success, message = add_scheduled_campaign(
+            campaign_id=campaign_id,
+            schedule_time=schedule_time,
+            schedule_type=schedule_type,
+            repeat_interval=repeat_interval,
+            enabled=enabled
+        )
+        
+        if success:
+            add_notification(f"Campaign scheduled successfully: {message}", 'success')
+            return jsonify({
+                'success': True,
+                'message': message
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': message
+            }), 400
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/automation/schedules/<int:schedule_id>', methods=['PUT'])
+@login_required
+def update_schedule(schedule_id):
+    """Update a scheduled campaign"""
+    try:
+        data = request.get_json()
+        
+        success = update_scheduled_campaign(schedule_id, **data)
+        
+        if success:
+            add_notification("Schedule updated successfully", 'success')
+            return jsonify({
+                'success': True,
+                'message': 'Schedule updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Schedule not found'
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/automation/schedules/<int:schedule_id>', methods=['DELETE'])
+@login_required
+def delete_schedule(schedule_id):
+    """Delete a scheduled campaign"""
+    try:
+        success = remove_scheduled_campaign(schedule_id)
+        
+        if success:
+            add_notification("Schedule removed successfully", 'success')
+            return jsonify({
+                'success': True,
+                'message': 'Schedule removed successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Schedule not found'
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/automation/schedules/<int:schedule_id>/toggle', methods=['POST'])
+@login_required
+def toggle_schedule(schedule_id):
+    """Toggle schedule enabled/disabled status"""
+    try:
+        scheduled_campaigns = get_scheduled_campaigns()
+        schedule = next((sc for sc in scheduled_campaigns if sc['id'] == schedule_id), None)
+        
+        if not schedule:
+            return jsonify({
+                'success': False,
+                'error': 'Schedule not found'
+            }), 404
+        
+        new_status = not schedule['enabled']
+        success = update_scheduled_campaign(schedule_id, enabled=new_status)
+        
+        if success:
+            status_text = "enabled" if new_status else "disabled"
+            add_notification(f"Schedule {status_text} successfully", 'success')
+            return jsonify({
+                'success': True,
+                'message': f'Schedule {status_text} successfully',
+                'enabled': new_status
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to update schedule'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/automation/schedules/<int:schedule_id>/execute', methods=['POST'])
+@login_required
+def execute_schedule_now(schedule_id):
+    """Execute a scheduled campaign immediately"""
+    try:
+        scheduled_campaigns = get_scheduled_campaigns()
+        schedule = next((sc for sc in scheduled_campaigns if sc['id'] == schedule_id), None)
+        
+        if not schedule:
+            return jsonify({
+                'success': False,
+                'error': 'Schedule not found'
+            }), 404
+        
+        success = execute_scheduled_campaign(schedule)
+        
+        if success:
+            add_notification("Campaign executed successfully", 'success')
+            return jsonify({
+                'success': True,
+                'message': 'Campaign executed successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Campaign execution failed'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/campaigns/<int:campaign_id>/reset-status', methods=['POST'])
+@login_required
+def reset_campaign_status(campaign_id):
+    """Reset campaign status to 'ready' so it can be scheduled again"""
+    try:
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        
+        if not campaign:
+            return jsonify({
+                'success': False,
+                'error': 'Campaign not found'
+            }), 404
+        
+        # Reset campaign status to ready
+        campaign['status'] = 'ready'
+        campaign['total_sent'] = 0
+        campaign['total_attempted'] = 0
+        campaign['started_at'] = None
+        campaign['completed_at'] = None
+        
+        # Save updated campaign
+        write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+        
+        add_notification(f"Campaign '{campaign['name']}' status reset to ready", 'success')
+        return jsonify({
+            'success': True,
+            'message': 'Campaign status reset successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 if __name__ == '__main__':
