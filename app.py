@@ -13,14 +13,7 @@ from datetime import datetime, timedelta
 import uuid
 import csv
 import pandas as pd
-from zoho_bounce_integration import (
-    initialize_zoho_bounce_detector, 
-    get_zoho_bounce_detector,
-    setup_bounce_webhook,
-    check_email_bounce_status,
-    start_bounce_monitoring,
-    get_bounce_statistics
-)
+
 from functools import wraps
 import smtplib
 from email.mime.text import MIMEText
@@ -32,7 +25,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import csv
 from werkzeug.utils import secure_filename
-import zoho_bounce_integration
+
 import zoho_oauth_integration
 import logging
 import gc
@@ -46,6 +39,18 @@ SCHEDULED_CAMPAIGNS_FILE = 'scheduled_campaigns.json'
 SCHEDULER_CHECK_INTERVAL = 60  # Check every 60 seconds
 scheduler_lock = threading.Lock()  # Prevent concurrent execution
 execution_tracker = {}  # Track recent executions to prevent duplicates
+execution_locks = {}  # Individual locks for each campaign to prevent concurrent execution
+
+# Data Files
+ACCOUNTS_FILE = 'accounts.json'
+CAMPAIGNS_FILE = 'campaigns.json'
+USERS_FILE = 'users.json'
+CAMPAIGN_LOGS_FILE = 'campaign_logs.json'
+NOTIFICATIONS_FILE = 'notifications.json'
+BOUNCE_DATA_FILE = 'bounce_data.json'
+DELIVERY_DATA_FILE = 'delivery_data.json'
+DATA_LISTS_FILE = 'data_lists.json'
+SCHEDULED_CAMPAIGNS_FILE = 'scheduled_campaigns.json'
 
 # Default rate limiting settings - Conservative for reliable delivery
 DEFAULT_RATE_LIMIT = {
@@ -310,7 +315,7 @@ def save_scheduled_campaigns(scheduled_campaigns):
         json.dump(scheduled_campaigns, f, indent=2, ensure_ascii=False)
 
 def add_scheduled_campaign(campaign_id, schedule_time, schedule_type='once', repeat_interval=None, enabled=True):
-    """Add a new scheduled campaign"""
+    """Add a new scheduled campaign with improved validation"""
     scheduled_campaigns = load_scheduled_campaigns()
     
     # Check if campaign already scheduled
@@ -327,10 +332,14 @@ def add_scheduled_campaign(campaign_id, schedule_time, schedule_type='once', rep
     except:
         return False, "Invalid schedule time format"
     
-    # Auto-reset completed campaigns to ready status
+    # Validate campaign exists and is in valid state
     campaigns = read_json_file_simple(CAMPAIGNS_FILE)
     campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-    if campaign and campaign['status'] == 'completed':
+    if not campaign:
+        return False, "Campaign not found"
+    
+    # Auto-reset completed campaigns to ready status
+    if campaign['status'] == 'completed':
         campaign['status'] = 'ready'
         campaign['total_sent'] = 0
         campaign['total_attempted'] = 0
@@ -339,8 +348,17 @@ def add_scheduled_campaign(campaign_id, schedule_time, schedule_type='once', rep
         write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         print(f"🔄 Auto-reset completed campaign {campaign_id} to ready status for scheduling")
     
+    # Ensure campaign is in ready state
+    if campaign['status'] not in ['ready', 'failed']:
+        return False, f"Cannot schedule campaign in '{campaign['status']}' status. Campaign must be ready or failed."
+    
+    # Generate unique schedule ID
+    schedule_id = 1
+    if scheduled_campaigns:
+        schedule_id = max(sc['id'] for sc in scheduled_campaigns) + 1
+    
     new_schedule = {
-        'id': len(scheduled_campaigns) + 1,
+        'id': schedule_id,
         'campaign_id': campaign_id,
         'schedule_time': schedule_time.isoformat(),
         'schedule_type': schedule_type,  # 'once', 'daily', 'weekly', 'monthly'
@@ -385,54 +403,88 @@ def get_scheduled_campaigns():
     return load_scheduled_campaigns()
 
 def execute_scheduled_campaign(schedule):
-    """Execute a scheduled campaign"""
-    try:
-        campaign_id = schedule['campaign_id']
-        
-        # Load campaign data
-        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-        
-        if not campaign:
-            print(f"❌ Campaign {campaign_id} not found")
-            return False
-        
-        # Load account data
-        accounts = read_json_file_simple(ACCOUNTS_FILE)
-        account = next((a for a in accounts if a['id'] == campaign['account_id']), None)
-        
-        if not account:
-            print(f"❌ Account {campaign['account_id']} not found")
-            return False
-        
-        print(f"🚀 Executing scheduled campaign: {campaign['name']} (ID: {campaign_id})")
-        
-        # Start the campaign
-        result = send_universal_campaign_emails(campaign, account)
-        
-        if result and result.get('success'):
-            print(f"✅ Scheduled campaign {campaign_id} executed successfully")
-            try:
-                add_notification(f"Scheduled campaign '{campaign['name']}' executed successfully", 'success', campaign_id)
-            except:
-                print(f"⚠️ Could not add notification for campaign {campaign_id}")
-            return True
-        else:
-            error_msg = result.get('message', 'Unknown error') if result else 'No result returned'
-            print(f"❌ Scheduled campaign {campaign_id} failed: {error_msg}")
-            try:
-                add_notification(f"Scheduled campaign '{campaign['name']}' failed: {error_msg}", 'error', campaign_id)
-            except:
-                print(f"⚠️ Could not add notification for campaign {campaign_id}")
-            return False
-            
-    except Exception as e:
-        print(f"❌ Error executing scheduled campaign {schedule.get('campaign_id', 'unknown')}: {str(e)}")
+    """Execute a scheduled campaign with duplicate prevention"""
+    campaign_id = schedule['campaign_id']
+    
+    # Get or create execution lock for this campaign
+    if campaign_id not in execution_locks:
+        execution_locks[campaign_id] = threading.Lock()
+    
+    # Use individual campaign lock to prevent concurrent execution
+    with execution_locks[campaign_id]:
         try:
-            add_notification(f"Error executing scheduled campaign: {str(e)}", 'error', schedule.get('campaign_id'))
-        except:
-            print(f"⚠️ Could not add notification for error")
-        return False
+            # Double-check campaign status before execution
+            campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+            campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+            
+            if not campaign:
+                print(f"❌ Campaign {campaign_id} not found")
+                return False
+            
+            # Check if campaign is already running or completed
+            if campaign['status'] in ['running', 'completed']:
+                print(f"⚠️ Campaign {campaign_id} is already {campaign['status']}, skipping execution")
+                return False
+            
+            # Load account data
+            accounts = read_json_file_simple(ACCOUNTS_FILE)
+            account = next((a for a in accounts if a['id'] == campaign['account_id']), None)
+            
+            if not account:
+                print(f"❌ Account {campaign['account_id']} not found")
+                return False
+            
+            print(f"🚀 Executing scheduled campaign: {campaign['name']} (ID: {campaign_id})")
+            
+            # Mark campaign as running to prevent duplicate execution
+            campaign['status'] = 'running'
+            campaign['started_at'] = datetime.now().isoformat()
+            write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+            
+            # Start the campaign
+            result = send_universal_campaign_emails(campaign, account)
+            
+            if result and result.get('success'):
+                print(f"✅ Scheduled campaign {campaign_id} executed successfully")
+                try:
+                    add_notification(f"Scheduled campaign '{campaign['name']}' executed successfully", 'success', campaign_id)
+                except:
+                    print(f"⚠️ Could not add notification for campaign {campaign_id}")
+                return True
+            else:
+                error_msg = result.get('message', 'Unknown error') if result else 'No result returned'
+                print(f"❌ Scheduled campaign {campaign_id} failed: {error_msg}")
+                
+                # Reset campaign status on failure
+                campaign['status'] = 'ready'
+                campaign['started_at'] = None
+                write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+                
+                try:
+                    add_notification(f"Scheduled campaign '{campaign['name']}' failed: {error_msg}", 'error', campaign_id)
+                except:
+                    print(f"⚠️ Could not add notification for campaign {campaign_id}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Error executing scheduled campaign {campaign_id}: {str(e)}")
+            
+            # Reset campaign status on error
+            try:
+                campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+                campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+                if campaign:
+                    campaign['status'] = 'ready'
+                    campaign['started_at'] = None
+                    write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+            except:
+                pass
+            
+            try:
+                add_notification(f"Error executing scheduled campaign: {str(e)}", 'error', campaign_id)
+            except:
+                print(f"⚠️ Could not add notification for error")
+            return False
 
 def calculate_next_run(schedule):
     """Calculate the next run time for a recurring schedule"""
@@ -468,7 +520,7 @@ def calculate_next_run(schedule):
         return None
 
 def check_and_execute_scheduled_campaigns():
-    """Check for campaigns that need to be executed and run them"""
+    """Check for campaigns that need to be executed and run them with improved duplicate prevention"""
     try:
         scheduled_campaigns = load_scheduled_campaigns()
         current_time = datetime.now()
@@ -483,20 +535,35 @@ def check_and_execute_scheduled_campaigns():
                 
                 # Check if this schedule should be executed now
                 if next_run <= current_time:
+                    campaign_id = schedule['campaign_id']
+                    
+                    # Check campaign status first
+                    campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+                    campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+                    
+                    if not campaign:
+                        print(f"❌ Campaign {campaign_id} not found, skipping schedule")
+                        continue
+                    
+                    # Skip if campaign is already running or completed
+                    if campaign['status'] in ['running', 'completed']:
+                        print(f"⚠️ Campaign {campaign_id} is {campaign['status']}, skipping execution")
+                        continue
+                    
                     # Use execution tracker to prevent duplicates
-                    campaign_key = f"campaign_{schedule['campaign_id']}"
+                    campaign_key = f"campaign_{campaign_id}"
                     current_timestamp = current_time.timestamp()
                     
-                    # Check if this campaign was executed recently (within last 10 minutes)
+                    # Check if this campaign was executed recently (within last 30 minutes)
                     if campaign_key in execution_tracker:
                         last_execution = execution_tracker[campaign_key]
                         time_since_last = current_timestamp - last_execution
                         
-                        if time_since_last < 600:  # 10 minutes = 600 seconds
-                            print(f"⚠️ Skipping campaign {schedule['campaign_id']} - executed recently ({time_since_last:.1f}s ago)")
+                        if time_since_last < 1800:  # 30 minutes = 1800 seconds
+                            print(f"⚠️ Skipping campaign {campaign_id} - executed recently ({time_since_last:.1f}s ago)")
                             continue
                     
-                    print(f"⏰ Executing scheduled campaign {schedule['campaign_id']} at {current_time}")
+                    print(f"⏰ Executing scheduled campaign {campaign_id} at {current_time}")
                     
                     # Mark as executing to prevent duplicates
                     execution_tracker[campaign_key] = current_timestamp
@@ -529,12 +596,20 @@ def check_and_execute_scheduled_campaigns():
             save_scheduled_campaigns(scheduled_campaigns)
             print(f"💾 Saved updated schedules to file")
         
-        # Clean up old execution tracker entries (older than 1 hour)
+        # Clean up old execution tracker entries (older than 2 hours)
         current_timestamp = datetime.now().timestamp()
         old_keys = [key for key, timestamp in execution_tracker.items() 
-                   if current_timestamp - timestamp > 3600]  # 1 hour = 3600 seconds
+                   if current_timestamp - timestamp > 7200]  # 2 hours = 7200 seconds
         for key in old_keys:
             del execution_tracker[key]
+        
+        # Clean up old execution locks (older than 1 hour)
+        current_timestamp = datetime.now().timestamp()
+        old_locks = [campaign_id for campaign_id, lock in execution_locks.items() 
+                    if hasattr(lock, '_last_used') and current_timestamp - lock._last_used > 3600]
+        for campaign_id in old_locks:
+            if campaign_id in execution_locks:
+                del execution_locks[campaign_id]
                 
     except Exception as e:
         print(f"❌ Error checking scheduled campaigns: {str(e)}")
@@ -648,15 +723,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Data storage
-ACCOUNTS_FILE = 'accounts.json'
-CAMPAIGNS_FILE = 'campaigns.json'
-USERS_FILE = 'users.json'
-CAMPAIGN_LOGS_FILE = 'campaign_logs.json'
-NOTIFICATIONS_FILE = 'notifications.json'
-BOUNCE_DATA_FILE = 'bounce_data.json'
-BOUNCES_FILE = 'bounces.json'
-DELIVERY_DATA_FILE = 'delivery_data.json'
-DATA_LISTS_FILE = 'data_lists.json'
 DATA_LISTS_DIR = 'data_lists'
 
 # File upload configuration
@@ -730,49 +796,7 @@ def init_data_files():
 # Initialize data files
 init_data_files()
 
-# Initialize Zoho bounce detector when app starts
-def initialize_zoho_bounce_system():
-    """Initialize Zoho bounce detection system"""
-    try:
-        # Load accounts to get credentials
-        with open(ACCOUNTS_FILE, 'r') as f:
-            accounts = json.load(f)
-        
-        if accounts and not get_zoho_bounce_detector():
-            # Use the first available account
-            first_account = accounts[0] if isinstance(accounts, list) and len(accounts) > 0 else None
-            
-            if first_account:
-                # Extract org_id from account data or headers
-                org_id = first_account.get('org_id') or '893358824'  # Default org ID
-                
-                # Initialize bounce detector
-                initialize_zoho_bounce_detector(
-                    account_cookies=first_account.get('cookies', {}),
-                    account_headers=first_account.get('headers', {}),
-                    org_id=org_id
-                )
-            else:
-                print("⚠️ No valid account found for bounce detector initialization")
-            
-            # Start background bounce monitoring
-            start_bounce_monitoring(interval_seconds=300)  # Check every 5 minutes
-            
-            print("✅ Zoho bounce detector initialized with account data")
-            
-            # Set up webhook if we have a public URL
-            # Note: In production, you would need a public URL for webhooks
-            # webhook_url = "https://your-domain.com/webhook/zoho/bounce"
-            # setup_bounce_webhook(webhook_url)
-            
-        else:
-            print("⚠️ No accounts available or bounce detector already initialized")
-            
-    except Exception as e:
-        print(f"⚠️ Could not initialize Zoho bounce detector: {e}")
 
-# Initialize Zoho bounce system
-initialize_zoho_bounce_system()
 
 # Global variable to track running campaigns
 running_campaigns = {}
@@ -910,20 +934,20 @@ def send_account_created_email(user_email, username, role):
 def save_campaign_logs(campaign_id, logs):
     """Save campaign logs to file"""
     try:
-        with open(CAMPAIGN_LOGS_FILE, 'r') as f:
+        with open(CAMPAIGN_LOGS_FILE, 'r', encoding='utf-8') as f:
             all_logs = json.load(f)
     except:
         all_logs = {}
     
     all_logs[str(campaign_id)] = logs
     
-    with open(CAMPAIGN_LOGS_FILE, 'w') as f:
+    with open(CAMPAIGN_LOGS_FILE, 'w', encoding='utf-8') as f:
         json.dump(all_logs, f, indent=2)
 
 def get_campaign_logs(campaign_id):
     """Get campaign logs from file"""
     try:
-        with open(CAMPAIGN_LOGS_FILE, 'r') as f:
+        with open(CAMPAIGN_LOGS_FILE, 'r', encoding='utf-8') as f:
             all_logs = json.load(f)
         
         # Try both string and integer keys
@@ -936,6 +960,29 @@ def get_campaign_logs(campaign_id):
         
         print(f"📋 Getting logs for campaign {campaign_id} (str: {campaign_id_str}, int: {campaign_id_int}), found {len(logs)} logs")
         return logs
+    except json.JSONDecodeError as e:
+        print(f"❌ JSON decode error reading campaign logs for {campaign_id}: {str(e)}")
+        # Try to fix corrupted JSON file
+        try:
+            with open(CAMPAIGN_LOGS_FILE, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Try to find the last valid JSON object
+                lines = content.split('\n')
+                for i in range(len(lines) - 1, -1, -1):
+                    try:
+                        partial_content = '\n'.join(lines[:i+1])
+                        json.loads(partial_content)
+                        # Found valid JSON, write it back
+                        with open(CAMPAIGN_LOGS_FILE, 'w', encoding='utf-8') as f:
+                            f.write(partial_content)
+                        print(f"✅ Fixed corrupted campaign logs file")
+                        # Try to get logs again
+                        return get_campaign_logs(campaign_id)
+                    except:
+                        continue
+        except Exception as fix_error:
+            print(f"❌ Could not fix corrupted campaign logs file: {str(fix_error)}")
+        return []
     except Exception as e:
         print(f"❌ Error reading campaign logs for {campaign_id}: {str(e)}")
         return []
@@ -956,37 +1003,7 @@ def log_email(recipient, subject, sender, status, campaign_id=None, details=None
     except Exception as e:
         print(f"❌ Error writing to email log: {e}")
 
-def add_bounce_email(email, campaign_id, reason, subject=None, sender=None):
-    """Add email to bounce list"""
-    try:
-        with open(BOUNCE_DATA_FILE, 'r') as f:
-            bounce_data = json.load(f)
-        
-        if str(campaign_id) not in bounce_data:
-            bounce_data[str(campaign_id)] = []
-        
-        bounce_entry = {
-            'email': email,
-            'campaign_id': campaign_id,
-            'reason': reason,
-            'subject': subject,
-            'sender': sender,
-            'timestamp': datetime.now().isoformat(),
-            'bounce_type': 'hard' if 'not found' in reason.lower() or 'invalid' in reason.lower() else 'soft'
-        }
-        
-        # Check if email already exists to avoid duplicates
-        existing_emails = [entry['email'] for entry in bounce_data[str(campaign_id)]]
-        if email not in existing_emails:
-            bounce_data[str(campaign_id)].append(bounce_entry)
-            
-            with open(BOUNCE_DATA_FILE, 'w') as f:
-                json.dump(bounce_data, f, indent=2)
-            
-            print(f"📧 Added {email} to bounce list for campaign {campaign_id}")
-        
-    except Exception as e:
-        print(f"Error adding bounce email: {e}")
+
 
 def add_delivered_email(email, campaign_id, subject=None, sender=None, details=None):
     """Add email to delivered list"""
@@ -1019,22 +1036,7 @@ def add_delivered_email(email, campaign_id, subject=None, sender=None, details=N
     except Exception as e:
         print(f"Error adding delivered email: {e}")
 
-def get_bounced_emails(campaign_id=None):
-    """Get bounced emails for a campaign or all campaigns"""
-    try:
-        with open(BOUNCE_DATA_FILE, 'r') as f:
-            bounce_data = json.load(f)
-        
-        if campaign_id:
-            return bounce_data.get(str(campaign_id), [])
-        else:
-            all_bounces = []
-            for campaign_bounces in bounce_data.values():
-                all_bounces.extend(campaign_bounces)
-            return all_bounces
-    except Exception as e:
-        print(f"Error getting bounced emails: {e}")
-        return []
+
 
 def get_delivered_emails(campaign_id=None):
     """Get delivered emails for a campaign or all campaigns"""
@@ -1053,148 +1055,59 @@ def get_delivered_emails(campaign_id=None):
         print(f"Error getting delivered emails: {e}")
         return []
 
-def filter_bounced_emails(emails, campaign_id):
-    """Filter out bounced emails from a list"""
-    try:
-        bounced_emails = get_bounced_emails(campaign_id)
-        bounced_email_list = [entry['email'] for entry in bounced_emails]
-        
-        filtered_emails = [email for email in emails if email not in bounced_email_list]
-        removed_count = len(emails) - len(filtered_emails)
-        
-        if removed_count > 0:
-            print(f"🚫 Filtered out {removed_count} bounced emails from campaign {campaign_id}")
-        
-        return filtered_emails
-    except Exception as e:
-        print(f"Error filtering bounced emails: {e}")
-        return emails
+
 
 def check_email_delivery_status(email, campaign_id, account):
-    """Check email delivery status with IMPROVED Zoho bounce detection"""
+    """Check email delivery status - simplified without bounce detection"""
     try:
-        # First, check if Zoho bounce detector is available
-        detector = get_zoho_bounce_detector()
-        
-        if detector:
-            # Use improved Zoho bounce detection
-            bounce_status = check_email_bounce_status(email)
-            
-            if bounce_status.get('bounced', False):
-                return {
-                    'status': 'bounced',
-                    'delivery_status': 'failed',
-                    'bounce_reason': bounce_status.get('bounce_reason', 'Unknown bounce'),
-                    'timestamp': bounce_status.get('timestamp', datetime.now().isoformat()),
-                    'details': f"Bounce detected: {bounce_status.get('bounce_reason', 'Unknown')}",
-                    'source': bounce_status.get('source', 'zoho'),
-                    'note': bounce_status.get('note', '')
-                }
-            else:
-                # Email appears valid and not in Zoho bounce list
-                source = bounce_status.get('source', 'zoho_verification')
-                note = bounce_status.get('note', '')
-                
-                if source == 'zoho_bounce_report':
-                    details = 'Email delivered successfully (confirmed by Zoho bounce reports)'
-                elif source == 'fallback_detection':
-                    details = 'Email appears valid (Zoho APIs not accessible, using fallback detection)'
-                else:
-                    details = 'Email delivered successfully (no bounce detected)'
-                
-                return {
-                    'status': 'delivered',
-                    'delivery_status': 'success',
-                    'timestamp': bounce_status.get('timestamp', datetime.now().isoformat()),
-                    'details': details,
-                    'source': source,
-                    'note': note
-                }
-        else:
-            # Enhanced bounce detection for emails with spaces and wrong extensions
-            bounce_indicators = [
-                "nonexistent", "invalid", "fake", "test", "bounce", 
-                "spam", "trash", "disposable", "temp", "throwaway",
-                "salsssaqz", "axxzexdflp", "asdf", "qwerty", "123456", 
-                "abcdef", "xyz", "aaa", "bbb", "test123", "demo", 
-                "sample", "placeholder", "invalid"
-            ]
-            
-            # Check for emails with spaces (common typo)
-            if ' ' in email:
-                return {
-                    'status': 'bounced',
-                    'delivery_status': 'failed',
-                    'bounce_reason': 'Email contains spaces (invalid format)',
-                    'timestamp': datetime.now().isoformat(),
-                    'details': 'Email format is invalid - contains spaces',
-                    'source': 'format_validation',
-                    'note': 'Enhanced validation detected spaces in email'
-                }
-            
-            # Check for wrong email extensions
-            wrong_extensions = [
-                '.con', '.cmo', '.cm', '.co', '.c', '.om', '.omg', '.gamil', '.gmial',
-                '.gmal', '.gmai', '.gmil', '.gmeil', '.gmale', '.gmaiil', '.hotmai', 
-                '.hotmal', '.hotmeil', '.hotmaiil', '.outlok', '.yaho', '.live', 
-                '.aol', '.icloud', '.proton', '.tutanota', '.mail', '.email'
-            ]
-            
-            email_lower = email.lower()
-            for ext in wrong_extensions:
-                if email_lower.endswith(ext):
-                    return {
-                        'status': 'bounced',
-                        'delivery_status': 'failed',
-                        'bounce_reason': f'Invalid email extension: {ext}',
-                        'timestamp': datetime.now().isoformat(),
-                        'details': f'Email has wrong extension: {ext}',
-                        'source': 'format_validation',
-                        'note': f'Enhanced validation detected wrong extension: {ext}'
-                    }
-            
-            email_lower = email.lower()
-            for indicator in bounce_indicators:
-                if indicator in email_lower:
-                    return {
-                        'status': 'bounced',
-                        'delivery_status': 'failed',
-                        'bounce_reason': f'Email contains "{indicator}" indicator',
-                        'timestamp': datetime.now().isoformat(),
-                        'details': 'Email likely to bounce - contains suspicious pattern',
-                        'source': 'pattern_detection',
-                        'note': 'Zoho detector not available, using pattern detection'
-                    }
-            
-            # Check for invalid email patterns
-            if not '@' in email or '.' not in email.split('@')[1]:
-                return {
-                    'status': 'bounced',
-                    'delivery_status': 'failed',
-                    'bounce_reason': 'Invalid email format',
-                    'timestamp': datetime.now().isoformat(),
-                    'details': 'Email format is invalid',
-                    'source': 'format_validation',
-                    'note': 'Zoho detector not available, using format validation'
-                }
-            
+        # Simple email format validation
+        if ' ' in email:
             return {
-                'status': 'delivered',
-                'delivery_status': 'success',
+                'status': 'invalid',
+                'delivery_status': 'failed',
+                'email': email,
+                'reason': 'Email contains spaces (invalid format)',
                 'timestamp': datetime.now().isoformat(),
-                'details': 'Email delivered successfully (pattern-based detection)',
-                'source': 'pattern_detection',
-                'note': 'Zoho detector not available, using pattern detection'
+                'details': 'Email format is invalid (contains spaces)',
+                'source': 'format_check'
             }
         
+        # Check for invalid email extensions
+        if '@' in email:
+            domain = email.split('@')[1]
+            ext = domain.split('.')[-1] if '.' in domain else ''
+            invalid_extensions = ['xyz', 'test', 'local', 'invalid', 'fake']
+            
+            if ext.lower() in invalid_extensions:
+                return {
+                    'status': 'invalid',
+                    'delivery_status': 'failed',
+                    'email': email,
+                    'reason': f'Invalid email extension: {ext}',
+                    'timestamp': datetime.now().isoformat(),
+                    'details': f'Email has invalid extension: {ext}',
+                    'source': 'extension_check'
+                }
+        
+        # Email appears valid
+        return {
+            'status': 'valid',
+            'delivery_status': 'success',
+            'email': email,
+            'timestamp': datetime.now().isoformat(),
+            'details': 'Email format appears valid',
+            'source': 'format_check'
+        }
+            
     except Exception as e:
+        print(f"❌ Error checking email delivery status for {email}: {str(e)}")
         return {
             'status': 'unknown',
             'delivery_status': 'unknown',
+            'email': email,
             'timestamp': datetime.now().isoformat(),
-            'details': f'Error checking delivery status: {str(e)}',
-            'source': 'error',
-            'note': f'Exception occurred: {str(e)}'
+            'details': f'Error checking status: {str(e)}',
+            'source': 'error'
         }
 
 # Data Lists Utility Functions
@@ -1564,28 +1477,47 @@ def live_campaigns():
     # Filter campaigns: running + completed today + ready
     active_campaigns = []
     for campaign in campaigns:
-        if campaign.get('status') == 'running':
-            # Load logs for running campaigns
-            campaign['logs'] = get_campaign_logs(campaign['id'])
-            active_campaigns.append(campaign)
-        elif campaign.get('status') == 'ready':
-            # Add ready campaigns (no logs yet)
-            campaign['logs'] = []
-            active_campaigns.append(campaign)
-        elif campaign.get('status') == 'completed':
-            # Check if completed today
-            try:
-                completed_date = datetime.fromisoformat(campaign.get('completed_at', '')).date()
-                if completed_date == current_date:
-                    # Load logs for completed campaigns
+        try:
+            if campaign.get('status') == 'running':
+                # Load logs for running campaigns
+                try:
                     campaign['logs'] = get_campaign_logs(campaign['id'])
-                    active_campaigns.append(campaign)
-            except:
-                # If no completed_at date, skip
-                pass
+                except Exception as e:
+                    print(f"❌ Error loading logs for campaign {campaign['id']}: {str(e)}")
+                    campaign['logs'] = []
+                active_campaigns.append(campaign)
+            elif campaign.get('status') == 'ready':
+                # Add ready campaigns (no logs yet)
+                campaign['logs'] = []
+                active_campaigns.append(campaign)
+            elif campaign.get('status') == 'completed':
+                # Check if completed today
+                try:
+                    completed_at = campaign.get('completed_at', '')
+                    if completed_at:
+                        completed_date = datetime.fromisoformat(completed_at).date()
+                        if completed_date == current_date:
+                            # Load logs for completed campaigns
+                            try:
+                                campaign['logs'] = get_campaign_logs(campaign['id'])
+                            except Exception as e:
+                                print(f"❌ Error loading logs for completed campaign {campaign['id']}: {str(e)}")
+                                campaign['logs'] = []
+                            active_campaigns.append(campaign)
+                except Exception as e:
+                    print(f"❌ Error processing completed campaign {campaign['id']}: {str(e)}")
+                    # If we can't parse the date, skip this campaign
+                    continue
+        except Exception as e:
+            print(f"❌ Error processing campaign {campaign.get('id', 'unknown')}: {str(e)}")
+            continue
     
     # Sort by status (running first) then by started_at
-    active_campaigns.sort(key=lambda x: (x.get('status') != 'running', x.get('started_at', '')))
+    try:
+        active_campaigns.sort(key=lambda x: (x.get('status') != 'running', x.get('started_at', '')))
+    except Exception as e:
+        print(f"❌ Error sorting campaigns: {str(e)}")
+        # If sorting fails, just return the campaigns as they are
     
     return render_template('live_campaigns.html', campaigns=active_campaigns)
 
@@ -1618,23 +1550,7 @@ def notifications():
     
     return render_template('notifications.html', notifications=notifications)
 
-@app.route('/bounces')
-@login_required
-def bounces():
-    """View bounced emails"""
-    campaign_id = request.args.get('campaign_id', type=int)
-    bounced_emails = get_bounced_emails(campaign_id)
-    
-    # Get campaign names for display
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
-    
-    campaign_names = {str(c['id']): c['name'] for c in campaigns}
-    
-    return render_template('bounces.html', 
-                         bounced_emails=bounced_emails, 
-                         campaign_names=campaign_names,
-                         selected_campaign=campaign_id)
+
 
 @app.route('/delivered')
 @login_required
@@ -2638,37 +2554,7 @@ def clear_campaign_logs_api(campaign_id):
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error clearing campaign logs: {str(e)}'}), 500
 
-@app.route('/api/download/bounces/<int:campaign_id>')
-@login_required
-def download_bounces(campaign_id):
-    """Download bounced emails as CSV"""
-    try:
-        bounced_emails = get_bounced_emails(campaign_id)
-        
-        if not bounced_emails:
-            return jsonify({'error': 'No bounced emails found'}), 404
-        
-        # Create CSV content
-        csv_content = "Email,Campaign ID,Reason,Subject,Sender,Timestamp,Bounce Type\n"
-        for entry in bounced_emails:
-            csv_content += f'"{entry["email"]}","{entry["campaign_id"]}","{entry["reason"]}","{entry.get("subject", "")}","{entry.get("sender", "")}","{entry["timestamp"]}","{entry["bounce_type"]}"\n'
-        
-        # Create response with CSV file
-        from io import StringIO
-        output = StringIO()
-        output.write(csv_content)
-        output.seek(0)
-        
-        from flask import send_file
-        return send_file(
-            StringIO(csv_content),
-            mimetype='text/csv',
-            as_attachment=True,
-            download_name=f'bounced_emails_campaign_{campaign_id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
-        )
-        
-    except Exception as e:
-        return jsonify({'error': f'Error downloading bounces: {str(e)}'}), 500
+
 
 @app.route('/api/download/delivered/<int:campaign_id>')
 @login_required
@@ -2702,238 +2588,9 @@ def download_delivered(campaign_id):
     except Exception as e:
         return jsonify({'error': f'Error downloading delivered emails: {str(e)}'}), 500
 
-@app.route('/api/bounces/<int:campaign_id>')
-@login_required
-def api_bounces(campaign_id):
-    """Get bounced emails for a campaign"""
-    try:
-        bounced_emails = get_bounced_emails(campaign_id)
-        return jsonify(bounced_emails)
-    except Exception as e:
-        return jsonify({'error': f'Error getting bounces: {str(e)}'}), 500
 
-@app.route('/api/delete/bounce/<int:campaign_id>/<path:email>', methods=['DELETE'])
-@login_required
-def delete_bounce(campaign_id, email):
-    """Delete a specific bounced email"""
-    try:
-        # Decode the email from URL
-        email = email.replace('%40', '@')
-        
-        print(f"🔍 Attempting to delete bounce: campaign_id={campaign_id}, email={email}")
-        
-        # Load bounced emails
-        try:
-            with open(BOUNCES_FILE, 'r') as f:
-                bounce_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            bounce_data = {}
-        
-        print(f"📊 Current bounce data: {json.dumps(bounce_data, indent=2)}")
-        
-        # Find and remove the specific bounce
-        campaign_key = str(campaign_id)
-        if campaign_key in bounce_data:
-            print(f"✅ Found campaign {campaign_id} with {len(bounce_data[campaign_key])} bounces")
-            
-            # Check if email exists in this campaign
-            existing_emails = [bounce['email'] for bounce in bounce_data[campaign_key]]
-            print(f"📧 Emails in campaign {campaign_id}: {existing_emails}")
-            
-            if email in existing_emails:
-                # Filter out the specific email
-                original_count = len(bounce_data[campaign_key])
-                bounce_data[campaign_key] = [
-                    bounce for bounce in bounce_data[campaign_key] 
-                    if bounce['email'] != email
-                ]
-                
-                # Save the updated data
-                with open(BOUNCES_FILE, 'w') as f:
-                    json.dump(bounce_data, f, indent=2)
-                
-                deleted_count = original_count - len(bounce_data[campaign_key])
-                
-                print(f"🗑️ Successfully deleted bounced email: {email} from campaign {campaign_id}")
-                return jsonify({
-                    'success': True, 
-                    'message': f'Bounced email {email} deleted successfully',
-                    'deleted_count': deleted_count
-                })
-            else:
-                print(f"❌ Email {email} not found in campaign {campaign_id}")
-                return jsonify({
-                    'success': False, 
-                    'message': f'Bounced email {email} not found in campaign {campaign_id}. Available emails: {existing_emails}'
-                }), 404
-        else:
-            print(f"❌ Campaign {campaign_id} not found in bounce data")
-            available_campaigns = list(bounce_data.keys())
-            return jsonify({
-                'success': False, 
-                'message': f'No bounce data found for campaign {campaign_id}. Available campaigns: {available_campaigns}'
-            }), 404
-            
-    except Exception as e:
-        print(f"❌ Error deleting bounced email: {str(e)}")
-        return jsonify({
-            'success': False, 
-            'message': f'Error deleting bounced email: {str(e)}'
-        }), 500
 
-@app.route('/api/delete/bounces/<int:campaign_id>', methods=['DELETE'])
-@login_required
-def delete_campaign_bounces(campaign_id):
-    """Delete all bounced emails for a specific campaign"""
-    try:
-        # Load bounced emails
-        try:
-            with open(BOUNCES_FILE, 'r') as f:
-                bounce_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            bounce_data = {}
-        
-        # Remove all bounces for the campaign
-        campaign_key = str(campaign_id)
-        if campaign_key in bounce_data:
-            deleted_count = len(bounce_data[campaign_key])
-            del bounce_data[campaign_key]
-            
-            # Save the updated data
-            with open(BOUNCES_FILE, 'w') as f:
-                json.dump(bounce_data, f, indent=2)
-            
-            print(f"🗑️ Deleted all {deleted_count} bounced emails from campaign {campaign_id}")
-            return jsonify({
-                'success': True, 
-                'message': f'All {deleted_count} bounced emails deleted from campaign {campaign_id}',
-                'deleted_count': deleted_count
-            })
-        else:
-            return jsonify({
-                'success': False, 
-                'message': f'No bounce data found for campaign {campaign_id}'
-            }), 404
-            
-    except Exception as e:
-        print(f"❌ Error deleting campaign bounces: {str(e)}")
-        return jsonify({
-            'success': False, 
-            'message': f'Error deleting campaign bounces: {str(e)}'
-        }), 500
 
-@app.route('/api/delete/bounces/all', methods=['DELETE'])
-@login_required
-def delete_all_bounces():
-    """Delete all bounced emails from all campaigns"""
-    try:
-        # Load bounced emails
-        try:
-            with open(BOUNCES_FILE, 'r') as f:
-                bounce_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            bounce_data = {}
-        
-        # Count total bounces
-        total_deleted = sum(len(bounces) for bounces in bounce_data.values())
-        
-        # Clear all bounce data
-        bounce_data = {}
-        
-        # Save the empty data
-        with open(BOUNCES_FILE, 'w') as f:
-            json.dump(bounce_data, f, indent=2)
-        
-        print(f"🗑️ Deleted all {total_deleted} bounced emails from all campaigns")
-        return jsonify({
-            'success': True, 
-            'message': f'All {total_deleted} bounced emails deleted from all campaigns',
-            'deleted_count': total_deleted
-        })
-            
-    except Exception as e:
-        print(f"❌ Error deleting all bounces: {str(e)}")
-        return jsonify({
-            'success': False, 
-            'message': f'Error deleting all bounces: {str(e)}'
-        }), 500
-
-@app.route('/webhook/zoho/bounce', methods=['POST'])
-def zoho_bounce_webhook():
-    """Webhook endpoint to receive bounce notifications from Zoho"""
-    try:
-        # Get webhook data from Zoho
-        webhook_data = request.get_json()
-        
-        if not webhook_data:
-            return jsonify({'error': 'No webhook data received'}), 400
-        
-        # Process the bounce notification
-        detector = get_zoho_bounce_detector()
-        if detector:
-            bounce_info = detector.process_webhook_bounce(webhook_data)
-            
-            # Add to bounce list if email is provided
-            if bounce_info.get('email'):
-                add_bounce_email(
-                    email=bounce_info['email'],
-                    campaign_id=bounce_info.get('campaign_id', 0),
-                    reason=bounce_info.get('bounce_reason', 'Unknown bounce'),
-                    subject=bounce_info.get('subject'),
-                    sender=bounce_info.get('sender')
-                )
-                
-                # Log the bounce
-                log_email(
-                    email=bounce_info['email'],
-                    subject=bounce_info.get('subject', 'Unknown'),
-                    sender=bounce_info.get('sender', 'Unknown'),
-                    status="BOUNCED",
-                    campaign_id=bounce_info.get('campaign_id', 0),
-                    details=f"Real Zoho bounce: {bounce_info.get('bounce_reason', 'Unknown')}"
-                )
-                
-                print(f"📧 REAL ZOHO BOUNCE: {bounce_info['email']} - {bounce_info.get('bounce_reason', 'Unknown')}")
-            
-            return jsonify({'status': 'success', 'message': 'Bounce processed'}), 200
-        else:
-            return jsonify({'error': 'Bounce detector not initialized'}), 500
-            
-    except Exception as e:
-        print(f"❌ Error processing Zoho bounce webhook: {str(e)}")
-        return jsonify({'error': f'Error processing bounce: {str(e)}'}), 500
-
-@app.route('/api/zoho/bounce-stats')
-@login_required
-def zoho_bounce_stats():
-    """Get bounce statistics from Zoho"""
-    try:
-        days = request.args.get('days', 30, type=int)
-        stats = get_bounce_statistics(days)
-        return jsonify(stats)
-    except Exception as e:
-        return jsonify({'error': f'Error getting bounce stats: {str(e)}'}), 500
-
-@app.route('/api/zoho/setup-webhook', methods=['POST'])
-@login_required
-def setup_zoho_webhook():
-    """Set up Zoho bounce webhook"""
-    try:
-        data = request.get_json()
-        webhook_url = data.get('webhook_url')
-        
-        if not webhook_url:
-            return jsonify({'error': 'Webhook URL required'}), 400
-        
-        success = setup_bounce_webhook(webhook_url)
-        
-        if success:
-            return jsonify({'status': 'success', 'message': 'Webhook setup successful'})
-        else:
-            return jsonify({'error': 'Failed to setup webhook'}), 500
-            
-    except Exception as e:
-        return jsonify({'error': f'Error setting up webhook: {str(e)}'}), 500
 
 @app.route('/api/delivered/<int:campaign_id>')
 @login_required
@@ -5199,15 +4856,11 @@ def send_universal_campaign_emails(campaign, account):
             print(f"❌ Error getting emails from data list: {str(e)}")
             return
         
-        # Filter out bounced emails
-        bounced_emails = get_bounced_emails(campaign['id'])
-        filtered_emails = [email for email in emails if email not in bounced_emails]
-        
-        if len(filtered_emails) != len(emails):
-            print(f"⚠️ Filtered out {len(emails) - len(filtered_emails)} bounced emails")
+        # Use all emails (no bounce filtering since bounce system was removed)
+        filtered_emails = emails
         
         if not filtered_emails:
-            print("❌ No valid emails to send to after filtering")
+            print("❌ No emails to send to")
             return
         
         # Get campaign content
@@ -5862,7 +5515,7 @@ def toggle_schedule(schedule_id):
 @app.route('/api/automation/schedules/<int:schedule_id>/execute', methods=['POST'])
 @login_required
 def execute_schedule_now(schedule_id):
-    """Execute a scheduled campaign immediately"""
+    """Execute a scheduled campaign immediately with duplicate prevention"""
     try:
         scheduled_campaigns = get_scheduled_campaigns()
         schedule = next((sc for sc in scheduled_campaigns if sc['id'] == schedule_id), None)
@@ -5872,6 +5525,36 @@ def execute_schedule_now(schedule_id):
                 'success': False,
                 'error': 'Schedule not found'
             }), 404
+        
+        # Check if campaign is already running
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        campaign = next((c for c in campaigns if c['id'] == schedule['campaign_id']), None)
+        
+        if not campaign:
+            return jsonify({
+                'success': False,
+                'error': 'Campaign not found'
+            }), 404
+        
+        if campaign['status'] in ['running', 'completed']:
+            return jsonify({
+                'success': False,
+                'error': f'Campaign is already {campaign["status"]}'
+            }), 400
+        
+        # Check execution tracker
+        campaign_key = f"campaign_{schedule['campaign_id']}"
+        current_timestamp = datetime.now().timestamp()
+        
+        if campaign_key in execution_tracker:
+            last_execution = execution_tracker[campaign_key]
+            time_since_last = current_timestamp - last_execution
+            
+            if time_since_last < 1800:  # 30 minutes
+                return jsonify({
+                    'success': False,
+                    'error': f'Campaign was executed recently ({time_since_last:.1f}s ago)'
+                }), 400
         
         success = execute_scheduled_campaign(schedule)
         
@@ -5914,6 +5597,15 @@ def reset_campaign_status(campaign_id):
         campaign['started_at'] = None
         campaign['completed_at'] = None
         
+        # Clear execution tracker for this campaign
+        campaign_key = f"campaign_{campaign_id}"
+        if campaign_key in execution_tracker:
+            del execution_tracker[campaign_key]
+        
+        # Clear execution lock for this campaign
+        if campaign_id in execution_locks:
+            del execution_locks[campaign_id]
+        
         # Save updated campaign
         write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
@@ -5929,6 +5621,69 @@ def reset_campaign_status(campaign_id):
             'error': str(e)
         }), 500
 
+
+@app.route('/api/automation/clear-execution-tracking', methods=['POST'])
+@login_required
+@admin_required
+def clear_execution_tracking():
+    """Clear all execution tracking data (admin only)"""
+    try:
+        global execution_tracker, execution_locks
+        
+        # Clear execution tracker
+        execution_tracker.clear()
+        
+        # Clear execution locks
+        execution_locks.clear()
+        
+        add_notification("Execution tracking data cleared successfully", 'success')
+        return jsonify({
+            'success': True,
+            'message': 'Execution tracking data cleared successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/automation/execution-status', methods=['GET'])
+@login_required
+def get_execution_status():
+    """Get current execution tracking status"""
+    try:
+        current_time = datetime.now().timestamp()
+        
+        # Get tracked campaigns
+        tracked_campaigns = []
+        for campaign_key, timestamp in execution_tracker.items():
+            campaign_id = campaign_key.replace('campaign_', '')
+            time_since = current_time - timestamp
+            
+            tracked_campaigns.append({
+                'campaign_id': int(campaign_id),
+                'last_execution': timestamp,
+                'time_since_execution': time_since,
+                'minutes_ago': time_since / 60
+            })
+        
+        # Get locked campaigns
+        locked_campaigns = list(execution_locks.keys())
+        
+        return jsonify({
+            'success': True,
+            'tracked_campaigns': tracked_campaigns,
+            'locked_campaigns': locked_campaigns,
+            'total_tracked': len(tracked_campaigns),
+            'total_locked': len(locked_campaigns)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 if __name__ == '__main__':
     # Production vs Development settings

@@ -1,5 +1,53 @@
 [
   {
+    "id": "9c4d4b08-07a0-4daf-9475-f9bb83f4faf1",
+    "message": "Scheduled campaign 'dssaf' failed: No result returned",
+    "type": "error",
+    "timestamp": "2025-08-03T18:16:13.955089",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "288bd122-c814-478c-a2fd-0a29240acc69",
+    "message": "Campaign 'dssaf' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-03T18:16:13.823973",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "dc43f558-11f9-48c8-ac33-256cf81e4189",
+    "message": "Scheduled campaign 'dssaf' failed: No result returned",
+    "type": "error",
+    "timestamp": "2025-08-03T18:16:08.592161",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "e4249ff0-cadb-4a7c-a5c0-51f840e0812a",
+    "message": "Campaign 'dssaf' failed with error: name 'get_bounced_emails' is not defined",
+    "type": "error",
+    "timestamp": "2025-08-03T18:16:08.582176",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "edf8b1c2-3e40-483f-b8ba-be2473ab1106",
+    "message": "Campaign scheduled successfully: Campaign scheduled successfully",
+    "type": "success",
+    "timestamp": "2025-08-03T18:15:19.938065",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "c773f2ec-15c3-4f0d-9922-9dc75ff857d4",
+    "message": "Campaign 'dssaf' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-03T18:15:07.103740",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
     "id": "cbf748f0-3865-448d-b680-3c7ab568181d",
     "message": "Scheduled campaign 'VBNFGN' failed: No result returned",
     "type": "error",

@@ -962,6 +962,19 @@
         "account_name": "phungvanhuonghie"
       },
       "timestamp": "2025-07-30T17:24:03.092942"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 9,
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "beyondtheclassroom.shop",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-03T18:16:13.789064"
     }
   ],
   "10": [

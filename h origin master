@@ -1,0 +1,5 @@
+[33m1475288[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m  Complete Automation System Upgrade
+[33ma922508[m[33m ([m[1;31morigin/master[m[33m)[m Fix HTML template formatting - convert HTML to single line using text.split()
+[33m0f4f703[m Revert HTML template fix - restore proper Deluge script escaping
+[33mda1e389[m Fix HTML template formatting issue - preserve newlines in custom templates
+[33m63e37a1[m Fix real-time logging and Unicode encoding issues - Add Socket.IO emissions for universal email system - Fix UTF-8 encoding for all file operations - Add refresh button and auto-refresh functionality to campaign logs - Add comprehensive real-time logging with start, success, error, and completion events - Implement manual refresh API endpoint for campaign logs - Add auto-refresh every 10 seconds for running campaigns - Fix corrupted character in campaigns.json - Improve user experience with loading states and notifications

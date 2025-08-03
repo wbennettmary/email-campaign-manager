@@ -92,5 +92,80 @@
         "account_name": "beyondtheclassroom.shop"
       }
     }
+  ],
+  "9": [
+    {
+      "timestamp": "2025-08-03T18:16:05.154023",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-03T18:16:06.933172",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-03T18:16:08.518719",
+      "type": "error",
+      "message": "Campaign error: name 'get_bounced_emails' is not defined",
+      "details": {
+        "error": "name 'get_bounced_emails' is not defined"
+      }
+    },
+    {
+      "timestamp": "2025-08-03T18:16:08.631371",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-03T18:16:10.357026",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-03T18:16:12.097451",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-03T18:16:13.801039",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "weadcsa",
+      "sender": "sadcqwd <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-03T18:16:13.815995",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "weadcsa",
+        "from_used": "sadcqwd <895363434@zoho.com>",
+        "account_name": "beyondtheclassroom.shop"
+      }
+    }
   ]
 }
