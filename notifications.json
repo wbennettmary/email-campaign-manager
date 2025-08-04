@@ -1,5 +1,189 @@
 [
   {
+    "id": "d4153e3d-6f55-4e73-a42c-5c06a104ecaa",
+    "message": "Account 'manager@deanimalslovers.info' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T17:22:06.094854",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "e0e3da05-340c-4f77-a799-9336d1ab7281",
+    "message": "Account 'dfge' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:22:38.940397",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "aade8b0a-7ba2-4991-91b6-b8d3f0f34c52",
+    "message": "Account 'manager@deanimalslovers.info' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:22:36.835842",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "dfadc588-e90a-4607-b4e0-7d11d26de36b",
+    "message": "Account 'dfge' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:22:33.510544",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "5c1795b7-4b51-47cf-9101-ce07b434d6be",
+    "message": "Account 'manager@deanimalslovers.info' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:20:36.390925",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "0dd7dd31-99df-4886-8a62-eb6f7e638888",
+    "message": "Account 'manager@deanimalslovers' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:19:59.316732",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "d5c8bf74-07f4-45d2-8acb-462834bf8e70",
+    "message": "Account 'manager@deanimalslovers.info' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:19:38.554604",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "312e64f4-46a4-4584-ad9c-e2b3ed80fc38",
+    "message": "Account 'manager@deanimalslovers' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:19:34.890567",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "3a5506c1-f1d6-41fd-bea9-50342e79ad02",
+    "message": "Account 'manager@deanimalslovers.info' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:18:02.019009",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "4b9de3d3-7dfb-4456-8b43-7bdf3cf78834",
+    "message": "Account 'deanimallovers' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:17:26.419278",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "ed8fea53-94c8-4c57-85c7-b5e96bcc7aa5",
+    "message": "Campaign 'rtyrt' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:06:55.894367",
+    "read": false,
+    "campaign_id": 19
+  },
+  {
+    "id": "1c830193-2832-456e-8d78-5b956a66330b",
+    "message": "Campaign 'rtyrt' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:06:31.426334",
+    "read": false,
+    "campaign_id": 19
+  },
+  {
+    "id": "52ef05cc-46b2-4d5d-b478-cfe327c21d25",
+    "message": "Campaign 'rtyrt' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:06:27.523410",
+    "read": false,
+    "campaign_id": 19
+  },
+  {
+    "id": "e6d1df71-a976-47b4-a03e-be5d71565293",
+    "message": "Campaign 'ccd' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:05:34.033779",
+    "read": false,
+    "campaign_id": 18
+  },
+  {
+    "id": "d43b7517-815f-49e6-9856-cfa93e9ae8e9",
+    "message": "Campaign 'ccd' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:05:14.071349",
+    "read": false,
+    "campaign_id": 18
+  },
+  {
+    "id": "c53f83fc-4f9e-4188-9b0e-fa48b148560c",
+    "message": "Campaign 'ccd' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:05:06.876582",
+    "read": false,
+    "campaign_id": 18
+  },
+  {
+    "id": "b8488897-3e48-45b1-895a-353189e83ea9",
+    "message": "Account 'ximobolk@hotmail' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:04:25.930429",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "2fcd87ef-6cfd-4c84-9f80-154033d97981",
+    "message": "Account 'ximobolk@hotmail.com' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T16:03:50.054902",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "f4a76043-564e-46a0-97ae-eb4e7c0f57d7",
+    "message": "Campaign 'test' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:57:52.936742",
+    "read": false,
+    "campaign_id": 17
+  },
+  {
+    "id": "eb230936-b114-48b7-a6a7-315080ce8657",
+    "message": "Campaign 'test' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:57:32.080342",
+    "read": false,
+    "campaign_id": 17
+  },
+  {
+    "id": "fe2526a1-5ee8-4492-9bc2-5b34561374cf",
+    "message": "Campaign 'test' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:57:27.993807",
+    "read": false,
+    "campaign_id": 17
+  },
+  {
+    "id": "a03b56c5-8772-4323-b367-4492aa049299",
+    "message": "Account 'deanimallovers' updated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:56:47.178005",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "de549509-87ee-49c0-b75b-dcf657496def",
+    "message": "Account 'xa' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:56:15.053315",
+    "read": false,
+    "campaign_id": null
+  },
+  {
     "id": "4a40d7a0-b01b-4059-9326-f40570aa948b",
     "message": "Campaign 'FE' completed successfully",
     "type": "success",

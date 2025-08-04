@@ -2635,6 +2635,8 @@ def resume_campaign_api(campaign_id):
 def clear_campaign_logs_api(campaign_id):
     """Clear logs for a specific campaign without deleting the campaign"""
     try:
+        print(f"🧹 Clearing logs for campaign {campaign_id}")
+        
         # Clear campaign logs
         try:
             with open(CAMPAIGN_LOGS_FILE, 'r') as f:
@@ -2642,23 +2644,35 @@ def clear_campaign_logs_api(campaign_id):
             
             if str(campaign_id) in all_logs:
                 del all_logs[str(campaign_id)]
+                print(f"✅ Removed logs for campaign {campaign_id}")
                 
             with open(CAMPAIGN_LOGS_FILE, 'w') as f:
                 json.dump(all_logs, f, indent=2)
-        except:
-            pass
+                print(f"✅ Saved updated logs file")
+        except FileNotFoundError:
+            print(f"⚠️ Campaign logs file not found, creating empty file")
+            with open(CAMPAIGN_LOGS_FILE, 'w') as f:
+                json.dump({}, f, indent=2)
+        except Exception as e:
+            print(f"❌ Error clearing logs: {str(e)}")
+            return jsonify({'success': False, 'message': f'Error clearing logs: {str(e)}'}), 500
         
         # Get campaign name for notification
-        with open(CAMPAIGNS_FILE, 'r') as f:
-            campaigns = json.load(f)
-        
-        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-        campaign_name = campaign['name'] if campaign else f'Campaign {campaign_id}'
+        try:
+            with open(CAMPAIGNS_FILE, 'r') as f:
+                campaigns = json.load(f)
+            
+            campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+            campaign_name = campaign['name'] if campaign else f'Campaign {campaign_id}'
+        except:
+            campaign_name = f'Campaign {campaign_id}'
         
         add_notification(f"Logs cleared for campaign '{campaign_name}'", 'info', campaign_id)
         
+        print(f"✅ Successfully cleared logs for campaign {campaign_id}")
         return jsonify({'success': True, 'message': 'Campaign logs cleared successfully'})
     except Exception as e:
+        print(f"❌ Error in clear_campaign_logs_api: {str(e)}")
         return jsonify({'success': False, 'message': f'Error clearing campaign logs: {str(e)}'}), 500
 
 

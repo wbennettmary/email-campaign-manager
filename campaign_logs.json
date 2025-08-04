@@ -499,5 +499,238 @@
         "account_name": "administration@beyondtheclassroom.shop"
       }
     }
+  ],
+  "17": [
+    {
+      "timestamp": "2025-08-04T15:57:44.873794",
+      "status": "error",
+      "message": "Email 1/6 failed to salssapp@gmail.com: HTTP 400",
+      "email": "salssapp@gmail.com",
+      "subject": "fhfjhj",
+      "sender": "ngju <895495349@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:57:46.485998",
+      "status": "error",
+      "message": "Email 2/6 failed to jetalpha@outlook.fr: HTTP 400",
+      "email": "jetalpha@outlook.fr",
+      "subject": "fhfjhj",
+      "sender": "ngju <895495349@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:57:48.094710",
+      "status": "error",
+      "message": "Email 3/6 failed to lesgavasimind@gmx.com: HTTP 400",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "fhfjhj",
+      "sender": "ngju <895495349@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:57:49.685901",
+      "status": "error",
+      "message": "Email 4/6 failed to abdo.charhamane@gmail.com: HTTP 400",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "fhfjhj",
+      "sender": "ngju <895495349@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:57:51.273360",
+      "status": "error",
+      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 400",
+      "email": "wbennettmary@gmail.com",
+      "subject": "fhfjhj",
+      "sender": "ngju <895495349@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:57:52.895345",
+      "status": "error",
+      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 400",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "fhfjhj",
+      "sender": "ngju <895495349@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:57:52.915016",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 0 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 0, Failed: 6",
+        "emails_sent": 0,
+        "emails_failed": 6,
+        "total_attempted": 6,
+        "template_used": 1,
+        "function_used": "Send_Email_Template1",
+        "subject_used": "fhfjhj",
+        "from_used": "ngju <895495349@zoho.com>",
+        "account_name": "deanimallovers"
+      }
+    }
+  ],
+  "18": [
+    {
+      "timestamp": "2025-08-04T16:05:14.877643",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:18.622849",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:22.441399",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:26.243345",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:30.254877",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:31.025722",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 5 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:33.994078",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:05:34.014695",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "cdsdcv",
+        "from_used": "crecds <894798766@zoho.com>",
+        "account_name": "ximobolk@hotmail"
+      }
+    }
+  ],
+  "19": [
+    {
+      "timestamp": "2025-08-04T16:06:32.260807",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:36.058401",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:36.854395",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 2 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:40.049248",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:43.908432",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:44.612002",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 4 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:51.368503",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:55.141572",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:55.867094",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 6 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] ghdrt",
+      "sender": "alfred <894798766@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T16:06:55.878258",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "ghdrt",
+        "from_used": "alfred <894798766@zoho.com>",
+        "account_name": "ximobolk@hotmail"
+      }
+    }
   ]
 }

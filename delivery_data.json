@@ -507,6 +507,45 @@
       "sender": "nother",
       "details": "Email delivered successfully (pattern-based detection)",
       "timestamp": "2025-07-27T00:02:05.407253"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 18,
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 4
+      },
+      "timestamp": "2025-08-04T16:05:26.233809"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 18,
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 5
+      },
+      "timestamp": "2025-08-04T16:05:30.246460"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 18,
+      "subject": "cdsdcv",
+      "sender": "crecds <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-04T16:05:33.982288"
     }
   ],
   "1": [
@@ -1174,6 +1213,86 @@
         "email_number": 6
       },
       "timestamp": "2025-08-04T15:41:51.408014"
+    }
+  ],
+  "19": [
+    {
+      "email": "salssapp@gmail.com",
+      "campaign_id": 19,
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 1
+      },
+      "timestamp": "2025-08-04T16:06:32.250731"
+    },
+    {
+      "email": "jetalpha@outlook.fr",
+      "campaign_id": 19,
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 2
+      },
+      "timestamp": "2025-08-04T16:06:35.995961"
+    },
+    {
+      "email": "lesgavasimind@gmx.com",
+      "campaign_id": 19,
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 3
+      },
+      "timestamp": "2025-08-04T16:06:40.040547"
+    },
+    {
+      "email": "abdo.charhamane@gmail.com",
+      "campaign_id": 19,
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 4
+      },
+      "timestamp": "2025-08-04T16:06:43.899329"
+    },
+    {
+      "email": "wbennettmary@gmail.com",
+      "campaign_id": 19,
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 5
+      },
+      "timestamp": "2025-08-04T16:06:51.358431"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 19,
+      "subject": "ghdrt",
+      "sender": "alfred <894798766@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "ximobolk@hotmail",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-04T16:06:55.132020"
     }
   ]
 }
