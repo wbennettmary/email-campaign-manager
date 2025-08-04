@@ -1879,7 +1879,8 @@ def api_campaigns():
             new_campaign = {
                 'id': new_id,
                 'name': str(data['name'])[:100],  # Limit name length
-                'account_id': int(data['account_id']),
+                'account_id': int(data['account_id']),  # Keep for backward compatibility
+                'account_ids': data.get('account_ids', [int(data['account_id'])]),  # Support multiple accounts
                 'subject': str(data['subject']),
                 'message': str(data['message']),  # Custom template content
                 'data_list_id': int(data['data_list_id']),
@@ -1887,6 +1888,11 @@ def api_campaigns():
                 'template_id': str(data.get('template_id', '')),  # Optional Zoho template ID
                 'use_custom_template': data.get('use_custom_template', True),  # Default to custom template
                 'rate_limits': rate_limits,  # Custom rate limits for this campaign
+                'test_after_config': data.get('test_after_config', {
+                    'enabled': False,
+                    'emails_count': 500,
+                    'test_email': ''
+                }),
                 'status': 'ready',
                 'created_at': datetime.now().isoformat(),
                 'created_by': current_user.id,
@@ -1974,7 +1980,8 @@ def api_campaign(campaign_id):
         # Update campaign with new data while preserving essential fields
         campaign.update({
             'name': str(data.get('name', campaign['name']))[:100],
-            'account_id': int(data.get('account_id', campaign['account_id'])),
+            'account_ids': data.get('account_ids', campaign.get('account_ids', [campaign.get('account_id', 0)])),  # Support multiple accounts
+            'account_id': int(data.get('account_id', campaign['account_id'])),  # Keep for backward compatibility
             'subject': str(data.get('subject', campaign.get('subject', ''))),
             'message': str(data.get('message', campaign.get('message', ''))),
             'data_list_id': int(data.get('data_list_id', campaign.get('data_list_id', 0))),
@@ -1982,6 +1989,11 @@ def api_campaign(campaign_id):
             'template_id': str(data.get('template_id', campaign.get('template_id', ''))),
             'use_custom_template': data.get('use_custom_template', campaign.get('use_custom_template', True)),
             'rate_limits': data.get('rate_limits', campaign.get('rate_limits')),
+            'test_after_config': data.get('test_after_config', campaign.get('test_after_config', {
+                'enabled': False,
+                'emails_count': 500,
+                'test_email': ''
+            })),
             'system_version': 'universal_v2'  # Ensure it uses the new system
         })
         
@@ -2032,13 +2044,32 @@ def start_campaign(campaign_id):
     if campaign['status'] not in ['ready', 'stopped', 'paused']:
         return jsonify({'error': 'Campaign cannot be started from current status'}), 400
     
-    # Get account
+    # Get accounts (support multiple accounts)
     with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
         accounts = json.load(f)
     
-    account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
-    if not account:
-        return jsonify({'error': 'Account not found'}), 404
+    # Check if campaign uses multiple accounts
+    if campaign.get('account_ids') and len(campaign['account_ids']) > 1:
+        # Multi-account campaign
+        campaign_accounts = []
+        for account_id in campaign['account_ids']:
+            account = next((acc for acc in accounts if acc['id'] == account_id), None)
+            if account:
+                campaign_accounts.append(account)
+            else:
+                return jsonify({'error': f'Account {account_id} not found'}), 404
+        
+        if not campaign_accounts:
+            return jsonify({'error': 'No valid accounts found'}), 404
+        
+        account = campaign_accounts[0]  # Use first account for backward compatibility
+        print(f"📧 Multi-account campaign: Using {len(campaign_accounts)} accounts")
+    else:
+        # Single account campaign
+        account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+        campaign_accounts = [account]
     
     # Check if campaign uses new universal system
     if campaign.get('system_version') == 'universal_v2':
@@ -2061,7 +2092,21 @@ def start_campaign(campaign_id):
         running_campaigns[campaign_id] = True
         
         # Start campaign in background thread using universal system
-        thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
+        if len(campaign_accounts) > 1:
+            # Multi-account campaign
+            thread = threading.Thread(target=send_multi_account_campaign, args=(
+                campaign, 
+                campaign_accounts, 
+                get_data_list_emails(campaign['data_list_id']),
+                campaign['subject'],
+                campaign['message'],
+                campaign.get('from_name'),
+                campaign.get('template_id'),
+                campaign.get('test_after_config')
+            ))
+        else:
+            # Single account campaign
+            thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
         thread.daemon = True
         thread.start()
         
@@ -4985,7 +5030,98 @@ def send_universal_campaign_emails(campaign, account):
         
         add_notification(f"Campaign '{campaign['name']}' failed with error: {str(e)}", 'error', campaign['id'])
 
-def send_sequential_emails(account, recipients, subject, message, from_name=None, template_id=None, campaign_id=None):
+def send_multi_account_campaign(campaign, accounts, recipients, subject, message, from_name=None, template_id=None, test_after_config=None):
+    """
+    Send campaign using multiple accounts - splits data between accounts and applies rate limits
+    """
+    try:
+        print(f"🚀 Starting multi-account campaign: {campaign['name']}")
+        print(f"📧 Using {len(accounts)} accounts for {len(recipients)} recipients")
+        
+        # Split recipients between accounts
+        total_recipients = len(recipients)
+        accounts_count = len(accounts)
+        recipients_per_account = total_recipients // accounts_count
+        remainder = total_recipients % accounts_count
+        
+        print(f"📊 Splitting {total_recipients} recipients across {accounts_count} accounts")
+        print(f"📊 {recipients_per_account} recipients per account + {remainder} remainder")
+        
+        # Create recipient chunks for each account
+        account_recipients = []
+        start_index = 0
+        
+        for i, account in enumerate(accounts):
+            # Calculate how many recipients this account gets
+            chunk_size = recipients_per_account
+            if i < remainder:  # Distribute remainder among first accounts
+                chunk_size += 1
+            
+            end_index = start_index + chunk_size
+            account_recipients_chunk = recipients[start_index:end_index]
+            account_recipients.append({
+                'account': account,
+                'recipients': account_recipients_chunk,
+                'count': len(account_recipients_chunk)
+            })
+            
+            print(f"📧 Account {account['name']}: {len(account_recipients_chunk)} recipients")
+            start_index = end_index
+        
+        # Send emails using each account
+        total_sent = 0
+        total_failed = 0
+        
+        for account_data in account_recipients:
+            account = account_data['account']
+            account_recipients_list = account_data['recipients']
+            
+            print(f"📧 Sending {len(account_recipients_list)} emails using account: {account['name']}")
+            
+            # Send emails for this account
+            result = send_sequential_emails(
+                account=account,
+                recipients=account_recipients_list,
+                subject=subject,
+                message=message,
+                from_name=from_name,
+                template_id=template_id,
+                campaign_id=campaign.get('id'),
+                test_after_config=test_after_config
+            )
+            
+            if result.get('success'):
+                total_sent += result.get('emails_sent', 0)
+                total_failed += result.get('emails_failed', 0)
+                print(f"✅ Account {account['name']} completed: {result.get('emails_sent', 0)} sent, {result.get('emails_failed', 0)} failed")
+            else:
+                print(f"❌ Account {account['name']} failed: {result.get('error', 'Unknown error')}")
+                total_failed += len(account_recipients_list)
+        
+        print(f"🏁 Multi-account campaign completed!")
+        print(f"✅ Total sent: {total_sent}")
+        print(f"❌ Total failed: {total_failed}")
+        
+        return {
+            'success': True,
+            'message': f'Multi-account campaign completed. Sent: {total_sent}, Failed: {total_failed}',
+            'emails_sent': total_sent,
+            'emails_failed': total_failed,
+            'total_attempted': total_recipients,
+            'accounts_used': len(accounts)
+        }
+        
+    except Exception as e:
+        error_msg = f"❌ Error in multi-account campaign: {str(e)}"
+        print(error_msg)
+        
+        return {
+            'success': False,
+            'message': f'Error in multi-account campaign: {str(e)}',
+            'error': str(e)
+        }
+
+def send_sequential_emails(account, recipients, subject, message, from_name=None, template_id=None, campaign_id=None, test_after_config=None):
     """
     Sequential email sending function - sends emails one by one with proper delays
     This ensures emails are sent sequentially, not in parallel
@@ -5180,6 +5316,43 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                             })
                         except Exception as e:
                             print(f"⚠️ Socket.IO emission failed: {e}")
+                
+                # Test After Mechanism
+                if test_after_config and test_after_config.get('enabled') and test_after_config.get('test_email'):
+                    test_emails_count = test_after_config.get('emails_count', 500)
+                    test_email = test_after_config.get('test_email', '')
+                    
+                    if emails_sent % test_emails_count == 0:
+                        print(f"🧪 Test After Mechanism: Sending test email after {emails_sent} emails sent")
+                        try:
+                            # Send test email using the same account and template
+                            test_result = send_test_email(
+                                account=account,
+                                test_email=test_email,
+                                template_id=template_id,
+                                custom_message=message,
+                                custom_subject=f"[TEST] {subject}",
+                                custom_from_name=from_name
+                            )
+                            
+                            if test_result.get('success'):
+                                print(f"✅ Test email sent successfully to {test_email}")
+                                # Log test email
+                                if campaign_id:
+                                    test_log_entry = {
+                                        'timestamp': datetime.now().isoformat(),
+                                        'status': 'test',
+                                        'message': f'Test email sent to {test_email} after {emails_sent} emails',
+                                        'email': test_email,
+                                        'subject': f"[TEST] {subject}",
+                                        'sender': f"{from_display} <{account.get('org_id', 'test')}@zoho.com>"
+                                    }
+                                    add_campaign_log(campaign_id, test_log_entry)
+                            else:
+                                print(f"❌ Test email failed: {test_result.get('error', 'Unknown error')}")
+                                
+                        except Exception as e:
+                            print(f"❌ Error sending test email: {str(e)}")
                 
                 # Wait between emails (1 second)
                 if i < len(recipients) - 1:  # Don't wait after the last email

@@ -40,16 +40,54 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="accountId" class="form-label">Account</label>
-                                    <select class="form-select" id="accountId" required onchange="loadAccountTemplates()">
-                                        <option value="">Select Account</option>
-                                        {% for account in accounts %}
-                                        <option value="{{ account.id }}" {% if account.id == campaign.account_id %}selected{% endif %}>
-                                            {{ account.name }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
+                                    <label for="accountSelection" class="form-label">Account Selection</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="accountType" id="singleAccount" value="single" checked>
+                                        <label class="form-check-label" for="singleAccount">
+                                            Single Account
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="accountType" id="multipleAccounts" value="multiple">
+                                        <label class="form-check-label" for="multipleAccounts">
+                                            Multiple Accounts (Split Data)
+                                        </label>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Single Account Selection -->
+                        <div id="singleAccountSection">
+                            <div class="mb-3">
+                                <label for="accountId" class="form-label">Account</label>
+                                <select class="form-select" id="accountId" onchange="loadAccountTemplates()">
+                                    <option value="">Select Account</option>
+                                    {% for account in accounts %}
+                                    <option value="{{ account.id }}" {% if account.id == campaign.account_id %}selected{% endif %}>
+                                        {{ account.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Multiple Account Selection -->
+                        <div id="multipleAccountsSection" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Select Multiple Accounts</label>
+                                <div class="border rounded p-3">
+                                    {% for account in accounts %}
+                                    <div class="form-check">
+                                        <input class="form-check-input account-checkbox" type="checkbox" value="{{ account.id }}" id="account{{ account.id }}"
+                                               {% if account.id in campaign.account_ids %}checked{% endif %}>
+                                        <label class="form-check-label" for="account{{ account.id }}">
+                                            {{ account.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-text">Selected accounts will split the data list equally</div>
                             </div>
                         </div>
 
@@ -96,6 +134,92 @@
                                     <strong>Selected List:</strong> <span id="selectedListName">-</span>
                                     <br>
                                     <small>Emails: <span id="selectedListCount">0</span> | Geography: <span id="selectedListGeo">-</span> | ISP: <span id="selectedListIsp">-</span></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test After Mechanism -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-vial"></i> Test After Mechanism
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="testAfterEnabled">
+                                    <label class="form-check-label" for="testAfterEnabled">
+                                        Enable Test After Mechanism
+                                    </label>
+                                    <div class="form-text">Send test email after specified number of emails</div>
+                                </div>
+                                
+                                <div id="testAfterOptions" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="testAfterCount" class="form-label">Test After X Emails</label>
+                                                <input type="number" class="form-control" id="testAfterCount" value="500" min="1">
+                                                <div class="form-text">Send test email every X emails sent</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="testEmail" class="form-label">Test Email Address</label>
+                                                <input type="email" class="form-control" id="testEmail" placeholder="test@example.com">
+                                                <div class="form-text">Email address to receive test emails</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rate Limits -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-tachometer-alt"></i> Rate Limits
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="customRateLimits">
+                                    <label class="form-check-label" for="customRateLimits">
+                                        Use Custom Rate Limits
+                                    </label>
+                                    <div class="form-text">Override default rate limits for this campaign</div>
+                                </div>
+                                
+                                <div id="rateLimitOptions" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="emailsPerSecond" class="form-label">Emails per Second</label>
+                                                <input type="number" class="form-control" id="emailsPerSecond" value="1" min="0.1" step="0.1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="emailsPerMinute" class="form-label">Emails per Minute</label>
+                                                <input type="number" class="form-control" id="emailsPerMinute" value="50" min="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="emailsPerHour" class="form-label">Emails per Hour</label>
+                                                <input type="number" class="form-control" id="emailsPerHour" value="500" min="1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="waitBetweenEmails" class="form-label">Wait Between Emails (seconds)</label>
+                                                <input type="number" class="form-control" id="waitBetweenEmails" value="1.0" min="0.1" step="0.1">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -224,15 +348,29 @@ document.getElementById('editCampaignForm').addEventListener('submit', function(
 
 function saveCampaign() {
     const campaignId = document.getElementById('campaignId').value;
+    
+    // Get selected accounts
+    const selectedAccounts = getSelectedAccounts();
+    const accountId = selectedAccounts.length > 0 ? selectedAccounts[0] : null; // For backward compatibility
+    
+    // Get test after configuration
+    const testAfterConfig = getTestAfterConfig();
+    
+    // Get rate limits
+    const rateLimits = getRateLimits();
+    
     const formData = {
         name: document.getElementById('campaignName').value,
-        account_id: parseInt(document.getElementById('accountId').value),
+        account_id: accountId, // For backward compatibility
+        account_ids: selectedAccounts, // New multi-account support
         template_id: document.getElementById('templateId').value,
         from_name: document.getElementById('fromName').value,
         subject: document.getElementById('subject').value,
         message: document.getElementById('message').value,
         data_list_id: parseInt(document.getElementById('dataListSelect').value),
-        use_custom_template: true
+        use_custom_template: true,
+        test_after_config: testAfterConfig,
+        rate_limits: rateLimits
     };
 
     fetch(`/api/campaigns/${campaignId}`, {
@@ -345,6 +483,124 @@ function deleteCampaign() {
             showNotification('Error deleting campaign', 'error');
         });
     }
+}
+
+// Initialize form on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeForm();
+    setupEventListeners();
+});
+
+function initializeForm() {
+    // Initialize account selection
+    const accountType = document.querySelector('input[name="accountType"]:checked').value;
+    toggleAccountSections(accountType);
+    
+    // Initialize test after mechanism
+    const testAfterEnabled = {{ campaign.test_after_config.enabled|default(false)|tojson }};
+    document.getElementById('testAfterEnabled').checked = testAfterEnabled;
+    toggleTestAfterOptions(testAfterEnabled);
+    
+    // Initialize rate limits
+    const customRateLimits = {{ campaign.rate_limits|default(false)|tojson }};
+    document.getElementById('customRateLimits').checked = !!customRateLimits;
+    toggleRateLimitOptions(!!customRateLimits);
+    
+    // Load initial values
+    if (testAfterEnabled) {
+        document.getElementById('testAfterCount').value = {{ campaign.test_after_config.emails_count|default(500) }};
+        document.getElementById('testEmail').value = '{{ campaign.test_after_config.test_email|default("") }}';
+    }
+    
+    if (customRateLimits) {
+        document.getElementById('emailsPerSecond').value = {{ campaign.rate_limits.emails_per_second|default(1) }};
+        document.getElementById('emailsPerMinute').value = {{ campaign.rate_limits.emails_per_minute|default(50) }};
+        document.getElementById('emailsPerHour').value = {{ campaign.rate_limits.emails_per_hour|default(500) }};
+        document.getElementById('waitBetweenEmails').value = {{ campaign.rate_limits.wait_time_between_emails|default(1.0) }};
+    }
+}
+
+function setupEventListeners() {
+    // Account type selection
+    document.querySelectorAll('input[name="accountType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            toggleAccountSections(this.value);
+        });
+    });
+    
+    // Test after mechanism
+    document.getElementById('testAfterEnabled').addEventListener('change', function() {
+        toggleTestAfterOptions(this.checked);
+    });
+    
+    // Custom rate limits
+    document.getElementById('customRateLimits').addEventListener('change', function() {
+        toggleRateLimitOptions(this.checked);
+    });
+}
+
+function toggleAccountSections(accountType) {
+    const singleSection = document.getElementById('singleAccountSection');
+    const multipleSection = document.getElementById('multipleAccountsSection');
+    
+    if (accountType === 'single') {
+        singleSection.style.display = 'block';
+        multipleSection.style.display = 'none';
+    } else {
+        singleSection.style.display = 'none';
+        multipleSection.style.display = 'block';
+    }
+}
+
+function toggleTestAfterOptions(enabled) {
+    const options = document.getElementById('testAfterOptions');
+    options.style.display = enabled ? 'block' : 'none';
+}
+
+function toggleRateLimitOptions(enabled) {
+    const options = document.getElementById('rateLimitOptions');
+    options.style.display = enabled ? 'block' : 'none';
+}
+
+function getSelectedAccounts() {
+    const accountType = document.querySelector('input[name="accountType"]:checked').value;
+    
+    if (accountType === 'single') {
+        const accountId = document.getElementById('accountId').value;
+        return accountId ? [parseInt(accountId)] : [];
+    } else {
+        const checkboxes = document.querySelectorAll('.account-checkbox:checked');
+        return Array.from(checkboxes).map(cb => parseInt(cb.value));
+    }
+}
+
+function getTestAfterConfig() {
+    const enabled = document.getElementById('testAfterEnabled').checked;
+    if (!enabled) {
+        return { enabled: false, emails_count: 500, test_email: '' };
+    }
+    
+    return {
+        enabled: true,
+        emails_count: parseInt(document.getElementById('testAfterCount').value) || 500,
+        test_email: document.getElementById('testEmail').value || ''
+    };
+}
+
+function getRateLimits() {
+    const enabled = document.getElementById('customRateLimits').checked;
+    if (!enabled) {
+        return null;
+    }
+    
+    return {
+        enabled: true,
+        emails_per_second: parseFloat(document.getElementById('emailsPerSecond').value) || 1,
+        emails_per_minute: parseInt(document.getElementById('emailsPerMinute').value) || 50,
+        emails_per_hour: parseInt(document.getElementById('emailsPerHour').value) || 500,
+        emails_per_day: 5000,
+        wait_time_between_emails: parseFloat(document.getElementById('waitBetweenEmails').value) || 1.0
+    };
 }
 
 function loadAccountTemplates() {
