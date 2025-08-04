@@ -65,5 +65,72 @@
         "account_name": "pro domain"
       }
     }
+  ],
+  "11": [
+    {
+      "timestamp": "2025-08-04T15:08:21.476063",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:08:25.204583",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:08:28.967467",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:08:32.782180",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:08:36.555943",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:08:40.329603",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:08:40.341073",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "jfghjft",
+        "from_used": "jfghjf <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
   ]
 }

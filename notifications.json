@@ -1,5 +1,53 @@
 [
   {
+    "id": "45cddc2b-dd8a-488c-9e88-782ffa5c3d08",
+    "message": "Campaign 'ghjfj' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:08:40.355127",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "780b9a1f-3b29-4e21-99ed-a0d50a3e081d",
+    "message": "Campaign 'ghjfj' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:08:20.513825",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "65fd26be-6d59-4d51-866a-41cf89a21571",
+    "message": "Campaign 'ghjfj' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:08:09.761925",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "2162eeb1-d844-4f34-81e9-3cad320c73ba",
+    "message": "Campaign 'AOL1' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:03:41.410701",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "f1796349-3cbe-4ec8-826b-ae4bae1b1aaf",
+    "message": "Campaign 'AOL1' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:03:32.696070",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
+    "id": "dc7cbcb9-7d70-4a32-a0ed-247c9422387f",
+    "message": "Campaign 'AOL1' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:03:25.264075",
+    "read": false,
+    "campaign_id": 11
+  },
+  {
     "id": "17e80b0a-b77c-4a4e-8211-8c8eed0f05f0",
     "message": "Campaign 'poiu (Copy)' completed successfully",
     "type": "success",

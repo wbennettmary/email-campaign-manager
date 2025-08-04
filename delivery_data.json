@@ -57,6 +57,19 @@
         "email_number": 5
       },
       "timestamp": "2025-07-30T17:59:53.626326"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 11,
+      "subject": "jfghjft",
+      "sender": "jfghjf <894798836@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "robachalabi@outlook.com",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-04T15:08:40.315037"
     }
   ],
   "12": [

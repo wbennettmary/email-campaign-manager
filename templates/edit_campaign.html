@@ -236,6 +236,30 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="burstLimit" class="form-label">Burst Limit</label>
+                                                <input type="number" class="form-control" id="burstLimit" value="10" min="1">
+                                                <div class="form-text">Maximum emails sent in a burst</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="cooldownPeriod" class="form-label">Cooldown (seconds)</label>
+                                                <input type="number" class="form-control" id="cooldownPeriod" value="5" min="1">
+                                                <div class="form-text">Wait time after burst limit is reached</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="alert alert-info">
+                                                <strong>Rate Limit Summary:</strong>
+                                                <span id="rateLimitSummary">1 email/sec, 50/min, 500/hour, 1s wait, 10 burst, 5s cooldown</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -534,10 +558,34 @@ function initializeForm() {
         document.getElementById('emailsPerMinute').value = {{ campaign.rate_limits.emails_per_minute|default(50) }};
         document.getElementById('emailsPerHour').value = {{ campaign.rate_limits.emails_per_hour|default(500) }};
         document.getElementById('waitBetweenEmails').value = {{ campaign.rate_limits.wait_time_between_emails|default(1.0) }};
+        document.getElementById('burstLimit').value = {{ campaign.rate_limits.burst_limit|default(10) }};
+        document.getElementById('cooldownPeriod').value = {{ campaign.rate_limits.cooldown_period|default(5) }};
+        updateRateLimitSummary();
     }
     
     // Initialize start line
     document.getElementById('startLine').value = {{ campaign.start_line|default(1) }};
+    
+    // Add event listeners for rate limit inputs
+    const rateLimitInputs = ['emailsPerSecond', 'emailsPerMinute', 'emailsPerHour', 'waitBetweenEmails', 'burstLimit', 'cooldownPeriod'];
+    rateLimitInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateRateLimitSummary);
+        }
+    });
+}
+
+function updateRateLimitSummary() {
+    const perSecond = document.getElementById('emailsPerSecond').value || 1;
+    const perMinute = document.getElementById('emailsPerMinute').value || 50;
+    const perHour = document.getElementById('emailsPerHour').value || 500;
+    const waitTime = document.getElementById('waitBetweenEmails').value || 1.0;
+    const burst = document.getElementById('burstLimit').value || 10;
+    const cooldown = document.getElementById('cooldownPeriod').value || 5;
+    
+    const summary = `${perSecond} email/sec, ${perMinute}/min, ${perHour}/hour, ${waitTime}s wait, ${burst} burst, ${cooldown}s cooldown`;
+    document.getElementById('rateLimitSummary').textContent = summary;
 }
 
 function setupEventListeners() {
@@ -619,7 +667,9 @@ function getRateLimits() {
         emails_per_minute: parseInt(document.getElementById('emailsPerMinute').value) || 50,
         emails_per_hour: parseInt(document.getElementById('emailsPerHour').value) || 500,
         emails_per_day: 5000,
-        wait_time_between_emails: parseFloat(document.getElementById('waitBetweenEmails').value) || 1.0
+        wait_time_between_emails: parseFloat(document.getElementById('waitBetweenEmails').value) || 1.0,
+        burst_limit: parseInt(document.getElementById('burstLimit').value) || 10,
+        cooldown_period: parseInt(document.getElementById('cooldownPeriod').value) || 5
     };
 }
 

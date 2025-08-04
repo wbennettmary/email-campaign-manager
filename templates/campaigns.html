@@ -199,6 +199,60 @@
                         <div class="form-text">Select an existing Zoho email template</div>
                     </div>
                     
+                    <!-- Start Line Configuration -->
+                    <div class="mb-3">
+                        <label class="form-label">Start Line Configuration</label>
+                        <div class="alert alert-info">
+                            <i class="fas fa-play"></i>
+                            <strong>Start Line:</strong> Specify which line to start sending from (useful for resuming stopped campaigns).
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="startLine" class="form-label">Start From Line Number</label>
+                                <input type="number" class="form-control" id="startLine" value="1" min="1">
+                                <div class="form-text">Default: 1 (start from beginning)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-text">
+                                    <strong>Use Cases:</strong><br>
+                                    • Resume stopped campaigns<br>
+                                    • Skip already sent emails<br>
+                                    • Test with specific data range
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test After Mechanism -->
+                    <div class="mb-3">
+                        <label class="form-label">Test After Mechanism</label>
+                        <div class="alert alert-info">
+                            <i class="fas fa-vial"></i>
+                            <strong>Test After:</strong> Send a test email to a specified address after sending a certain number of emails.
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="testAfterEnabled" onchange="toggleTestAfterOptions()">
+                                    <label class="form-check-label" for="testAfterEnabled">
+                                        <strong>Enable Test After</strong>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="testAfterCount" class="form-label">Test After X Emails</label>
+                                <input type="number" class="form-control" id="testAfterCount" value="500" min="1" disabled>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="testEmail" class="form-label">Test Email Address</label>
+                                <input type="email" class="form-control" id="testEmail" placeholder="test@example.com" disabled>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <strong>How it works:</strong> After sending the specified number of emails, a test email will be sent to verify delivery.
+                        </div>
+                    </div>
+
                     <!-- Rate Limiting Settings -->
                     <div class="mb-3">
                         <label class="form-label">Rate Limiting Settings</label>
@@ -517,6 +571,17 @@ function saveCampaign() {
         };
     }
     
+    // Get Test After Configuration
+    const testAfterEnabled = document.getElementById('testAfterEnabled').checked;
+    const testAfterConfig = {
+        enabled: testAfterEnabled,
+        emails_count: testAfterEnabled ? parseInt(document.getElementById('testAfterCount').value) : 500,
+        test_email: testAfterEnabled ? document.getElementById('testEmail').value : ''
+    };
+
+    // Get Start Line Configuration
+    const startLine = parseInt(document.getElementById('startLine').value) || 1;
+
     // Prepare campaign data
     const campaignData = {
         name: name,
@@ -526,7 +591,9 @@ function saveCampaign() {
         from_name: fromName || 'Campaign Sender',
         use_custom_template: templateType === 'custom',
         system_version: 'universal_v2',
-        rate_limits: rateLimits
+        rate_limits: rateLimits,
+        test_after_config: testAfterConfig,
+        start_line: startLine
     };
     
     // Handle template ID for Zoho templates
@@ -974,6 +1041,21 @@ function sendTestCampaignEmail(campaignId) {
         console.error('Error:', error);
         showAlert('Error testing campaign: ' + error.message, 'danger');
     });
+}
+
+// Test After Mechanism Functions
+function toggleTestAfterOptions() {
+    const enabled = document.getElementById('testAfterEnabled').checked;
+    const countInput = document.getElementById('testAfterCount');
+    const emailInput = document.getElementById('testEmail');
+    
+    countInput.disabled = !enabled;
+    emailInput.disabled = !enabled;
+    
+    if (!enabled) {
+        countInput.value = '500';
+        emailInput.value = '';
+    }
 }
 
 // Rate Limiting Functions

@@ -38,5 +38,42 @@
     "started_at": null,
     "completed_at": null,
     "system_version": "universal_v2"
+  },
+  {
+    "id": 11,
+    "name": "ghjfj",
+    "account_id": 13,
+    "account_ids": [
+      13
+    ],
+    "subject": "jfghjft",
+    "message": "ghjgk",
+    "data_list_id": 2,
+    "from_name": "jfghjf",
+    "template_id": "",
+    "use_custom_template": true,
+    "rate_limits": {
+      "emails_per_second": 1,
+      "emails_per_minute": 30,
+      "emails_per_hour": 1800,
+      "emails_per_day": 43200,
+      "wait_time_between_emails": 3,
+      "burst_limit": 10,
+      "cooldown_period": 5
+    },
+    "test_after_config": {
+      "enabled": false,
+      "emails_count": 500,
+      "test_email": ""
+    },
+    "start_line": 1,
+    "status": "completed",
+    "created_at": "2025-08-04T15:08:09.743723",
+    "created_by": 1,
+    "total_sent": 6,
+    "total_attempted": 6,
+    "system_version": "universal_v2",
+    "started_at": "2025-08-04T15:08:20.501713",
+    "completed_at": "2025-08-04T15:08:40.341073"
   }
 ]
