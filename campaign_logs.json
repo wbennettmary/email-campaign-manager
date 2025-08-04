@@ -1,82 +1,70 @@
 {
-  "8": [
+  "1": [
     {
-      "timestamp": "2025-08-03T17:29:36.918607",
-      "type": "success",
-      "message": "Campaign completed successfully. Sent to 3 recipients.",
+      "timestamp": "2025-08-04T12:23:27.628470",
+      "type": "error",
+      "message": "Campaign failed: Error in sequential email sending: name 'add_bounce_email' is not defined",
       "details": {
-        "success": true,
-        "message": "Sequential email sending completed. Sent: 3, Failed: 3",
-        "emails_sent": 3,
-        "emails_failed": 3,
-        "total_attempted": 6,
-        "template_used": 2,
-        "function_used": "Send_Email_Template2",
-        "subject_used": "FSHNSFG",
-        "from_used": "BNXFGCH <895363434@zoho.com>",
-        "account_name": "beyondtheclassroom.shop"
+        "success": false,
+        "message": "Error in sequential email sending: name 'add_bounce_email' is not defined",
+        "error": "name 'add_bounce_email' is not defined",
+        "emails_sent": 0,
+        "emails_failed": 2,
+        "total_attempted": 6
       }
-    },
+    }
+  ],
+  "2": [
     {
-      "timestamp": "2025-08-03T17:29:36.940543",
-      "type": "success",
-      "message": "Campaign completed successfully. Sent to 3 recipients.",
-      "details": {
-        "success": true,
-        "message": "Sequential email sending completed. Sent: 3, Failed: 3",
-        "emails_sent": 3,
-        "emails_failed": 3,
-        "total_attempted": 6,
-        "template_used": 2,
-        "function_used": "Send_Email_Template2",
-        "subject_used": "FSHNSFG",
-        "from_used": "BNXFGCH <895363434@zoho.com>",
-        "account_name": "beyondtheclassroom.shop"
-      }
-    },
-    {
-      "timestamp": "2025-08-03T17:29:37.531821",
+      "timestamp": "2025-08-04T12:38:13.152625",
       "status": "error",
-      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 429",
-      "email": "pamela.rod@yahoo.com",
-      "subject": "FSHNSFG",
-      "sender": "BNXFGCH <895363434@zoho.com>"
+      "message": "Email 1/6 failed to salssapp@gmail.com: HTTP 401",
+      "email": "salssapp@gmail.com",
+      "subject": "Exclusive Discounts on Insurance",
+      "sender": "Canrn <895363434@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T17:29:37.684615",
-      "type": "success",
-      "message": "Campaign completed successfully. Sent to 2 recipients.",
-      "details": {
-        "success": true,
-        "message": "Sequential email sending completed. Sent: 2, Failed: 4",
-        "emails_sent": 2,
-        "emails_failed": 4,
-        "total_attempted": 6,
-        "template_used": 2,
-        "function_used": "Send_Email_Template2",
-        "subject_used": "FSHNSFG",
-        "from_used": "BNXFGCH <895363434@zoho.com>",
-        "account_name": "beyondtheclassroom.shop"
-      }
-    },
-    {
-      "timestamp": "2025-08-03T17:29:39.292451",
+      "timestamp": "2025-08-04T12:38:14.769171",
       "status": "error",
-      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 429",
+      "message": "Email 2/6 failed to jetalpha@outlook.fr: HTTP 401",
+      "email": "jetalpha@outlook.fr",
+      "subject": "Exclusive Discounts on Insurance",
+      "sender": "Canrn <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:38:16.387707",
+      "status": "error",
+      "message": "Email 3/6 failed to lesgavasimind@gmx.com: HTTP 401",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "Exclusive Discounts on Insurance",
+      "sender": "Canrn <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:38:17.995089",
+      "status": "error",
+      "message": "Email 4/6 failed to abdo.charhamane@gmail.com: HTTP 401",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "Exclusive Discounts on Insurance",
+      "sender": "Canrn <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:38:19.599021",
+      "status": "error",
+      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 401",
       "email": "wbennettmary@gmail.com",
-      "subject": "FSHNSFG",
-      "sender": "BNXFGCH <895363434@zoho.com>"
+      "subject": "Exclusive Discounts on Insurance",
+      "sender": "Canrn <895363434@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T17:29:40.880758",
+      "timestamp": "2025-08-04T12:38:21.206570",
       "status": "error",
-      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 429",
+      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 401",
       "email": "pamela.rod@yahoo.com",
-      "subject": "FSHNSFG",
-      "sender": "BNXFGCH <895363434@zoho.com>"
+      "subject": "Exclusive Discounts on Insurance",
+      "sender": "Canrn <895363434@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T17:29:40.897357",
+      "timestamp": "2025-08-04T12:38:21.217231",
       "type": "success",
       "message": "Campaign completed successfully. Sent to 0 recipients.",
       "details": {
@@ -87,84 +75,76 @@
         "total_attempted": 6,
         "template_used": 2,
         "function_used": "Send_Email_Template2",
-        "subject_used": "FSHNSFG",
-        "from_used": "BNXFGCH <895363434@zoho.com>",
+        "subject_used": "Exclusive Discounts on Insurance",
+        "from_used": "Canrn <895363434@zoho.com>",
         "account_name": "beyondtheclassroom.shop"
       }
     }
   ],
-  "9": [
+  "3": [
     {
-      "timestamp": "2025-08-03T18:16:05.154023",
-      "status": "success",
-      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "timestamp": "2025-08-04T12:43:18.475599",
+      "status": "error",
+      "message": "Email 1/6 failed to salssapp@gmail.com: HTTP 401",
       "email": "salssapp@gmail.com",
-      "subject": "weadcsa",
-      "sender": "sadcqwd <895363434@zoho.com>"
+      "subject": "jngh hjfgdgfh",
+      "sender": "htgfgh <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T18:16:06.933172",
-      "status": "success",
-      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "timestamp": "2025-08-04T12:43:20.065145",
+      "status": "error",
+      "message": "Email 2/6 failed to jetalpha@outlook.fr: HTTP 401",
       "email": "jetalpha@outlook.fr",
-      "subject": "weadcsa",
-      "sender": "sadcqwd <895363434@zoho.com>"
+      "subject": "jngh hjfgdgfh",
+      "sender": "htgfgh <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T18:16:08.518719",
-      "type": "error",
-      "message": "Campaign error: name 'get_bounced_emails' is not defined",
-      "details": {
-        "error": "name 'get_bounced_emails' is not defined"
-      }
-    },
-    {
-      "timestamp": "2025-08-03T18:16:08.631371",
-      "status": "success",
-      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "timestamp": "2025-08-04T12:43:21.675630",
+      "status": "error",
+      "message": "Email 3/6 failed to lesgavasimind@gmx.com: HTTP 401",
       "email": "lesgavasimind@gmx.com",
-      "subject": "weadcsa",
-      "sender": "sadcqwd <895363434@zoho.com>"
+      "subject": "jngh hjfgdgfh",
+      "sender": "htgfgh <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T18:16:10.357026",
-      "status": "success",
-      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "timestamp": "2025-08-04T12:43:23.276578",
+      "status": "error",
+      "message": "Email 4/6 failed to abdo.charhamane@gmail.com: HTTP 401",
       "email": "abdo.charhamane@gmail.com",
-      "subject": "weadcsa",
-      "sender": "sadcqwd <895363434@zoho.com>"
+      "subject": "jngh hjfgdgfh",
+      "sender": "htgfgh <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T18:16:12.097451",
-      "status": "success",
-      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "timestamp": "2025-08-04T12:43:24.864995",
+      "status": "error",
+      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 401",
       "email": "wbennettmary@gmail.com",
-      "subject": "weadcsa",
-      "sender": "sadcqwd <895363434@zoho.com>"
+      "subject": "jngh hjfgdgfh",
+      "sender": "htgfgh <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T18:16:13.801039",
-      "status": "success",
-      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "timestamp": "2025-08-04T12:43:26.491005",
+      "status": "error",
+      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 401",
       "email": "pamela.rod@yahoo.com",
-      "subject": "weadcsa",
-      "sender": "sadcqwd <895363434@zoho.com>"
+      "subject": "jngh hjfgdgfh",
+      "sender": "htgfgh <894798836@zoho.com>"
     },
     {
-      "timestamp": "2025-08-03T18:16:13.815995",
+      "timestamp": "2025-08-04T12:43:26.499624",
       "type": "success",
-      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "message": "Campaign completed successfully. Sent to 0 recipients.",
       "details": {
         "success": true,
-        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
-        "emails_sent": 6,
-        "emails_failed": 0,
+        "message": "Sequential email sending completed. Sent: 0, Failed: 6",
+        "emails_sent": 0,
+        "emails_failed": 6,
         "total_attempted": 6,
         "template_used": 2,
         "function_used": "Send_Email_Template2",
-        "subject_used": "weadcsa",
-        "from_used": "sadcqwd <895363434@zoho.com>",
-        "account_name": "beyondtheclassroom.shop"
+        "subject_used": "jngh hjfgdgfh",
+        "from_used": "htgfgh <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
       }
     }
   ]

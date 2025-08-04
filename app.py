@@ -1312,20 +1312,12 @@ def dashboard():
             status = campaign.get('status', 'unknown')
             status_counts[status] = status_counts.get(status, 0) + 1
         
-        # Get bounce and delivery statistics
-        total_bounced = len(get_bounced_emails())
+        # Get delivery statistics (bounce handling removed)
+        total_bounced = 0  # Bounce system removed
         total_delivered = len(get_delivered_emails())
         
-        # Get real Zoho bounce statistics if available
+        # Zoho bounce statistics removed
         zoho_bounce_stats = {}
-        try:
-            detector = get_zoho_bounce_detector()
-            if detector:
-                zoho_stats = get_bounce_statistics(days=30)
-                if 'error' not in zoho_stats:
-                    zoho_bounce_stats = zoho_stats
-        except Exception as e:
-            print(f"⚠️ Could not get Zoho bounce stats: {e}")
         
         return render_template('dashboard.html', 
                              total_accounts=total_accounts,
@@ -3076,7 +3068,6 @@ def send_campaign_emails(campaign, account):
                         print(f"✅ Email confirmed delivered to {email}")
                     elif delivery_status.get('bounced'):
                         bounced_count += 1
-                        add_bounce_email(email, campaign_id, delivery_status.get('bounce_reason', 'Unknown'), subject, sender)
                         print(f"❌ Email bounced: {email} - {delivery_status.get('bounce_reason', 'Unknown')}")
                     else:
                         print(f"⚠️ Delivery status unknown for {email}")
@@ -4795,10 +4786,9 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
             print(error_msg)
             print(f"📄 Full response: {response.text}")
             
-            # Log failed sends
+            # Log failed sends (bounce handling removed)
             if campaign_id:
-                for recipient in recipients:
-                    add_bounce_email(recipient, campaign_id, "API Error", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
+                print(f"❌ Failed to send to {len(recipients)} recipients")
             
             return {
                 'success': False,
@@ -4816,10 +4806,9 @@ def send_universal_email(account, recipients, subject, message, from_name=None, 
         error_msg = f"❌ Error sending universal email: {str(e)}"
         print(error_msg)
         
-        # Log error for all recipients
+        # Log error for all recipients (bounce handling removed)
         if campaign_id:
-            for recipient in recipients:
-                add_bounce_email(recipient, campaign_id, "System Error", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
+            print(f"❌ System error affected {len(recipients)} recipients")
         
         return {
             'success': False,
@@ -5119,9 +5108,9 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                     print(f"❌ Email {i+1} failed to {recipient} (Status: {response.status_code})")
                     emails_failed += 1
                     
-                    # Log failed send
+                    # Log failed send (bounce handling removed)
                     if campaign_id:
-                        add_bounce_email(recipient, campaign_id, f"API Error {response.status_code}", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
+                        print(f"❌ Failed to send to {recipient}")
                     
                     # Add campaign log
                     if campaign_id:
@@ -5163,9 +5152,9 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                 print(f"❌ Error sending email {i+1} to {recipient}: {str(e)}")
                 emails_failed += 1
                 
-                # Log error
+                # Log error (bounce handling removed)
                 if campaign_id:
-                    add_bounce_email(recipient, campaign_id, f"System Error: {str(e)}", subject, f"{from_display} <{account.get('org_id', 'test')}@zoho.com>")
+                    print(f"❌ System error for {recipient}: {str(e)}")
                 
                 # Add campaign log
                 if campaign_id:

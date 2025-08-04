@@ -1,5 +1,77 @@
 [
   {
+    "id": "aa006bf4-4947-4ce1-b58a-4d7ef8cb8099",
+    "message": "Campaign 'ghh' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:43:26.512434",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "c98a5875-3cd3-4b09-a5a4-77e2080f77ab",
+    "message": "Campaign 'ghh' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:43:17.881624",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "e2e77a2c-2191-465a-800e-0e27f5c1f1c6",
+    "message": "Campaign 'ghh' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:43:12.231121",
+    "read": false,
+    "campaign_id": 3
+  },
+  {
+    "id": "bd07b516-8a2f-4faf-845e-3d45b23b1597",
+    "message": "Campaign 'waq' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:38:21.230705",
+    "read": false,
+    "campaign_id": 2
+  },
+  {
+    "id": "07e23f8a-4725-4baf-878e-861fc2e1f0fb",
+    "message": "Campaign 'waq' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:38:12.516192",
+    "read": false,
+    "campaign_id": 2
+  },
+  {
+    "id": "10bd7564-eb65-4500-a40e-3fcfbf205f8a",
+    "message": "Campaign 'waq' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:38:07.851097",
+    "read": false,
+    "campaign_id": 2
+  },
+  {
+    "id": "939de30c-07b9-48af-bfe7-43817be2d623",
+    "message": "Campaign 'Aol' failed: Error in sequential email sending: name 'add_bounce_email' is not defined",
+    "type": "error",
+    "timestamp": "2025-08-04T12:23:27.636011",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "7fc314b7-7af0-4350-a8f3-d7cac1380a53",
+    "message": "Campaign 'Aol' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:23:26.771544",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
+    "id": "30594554-637e-4392-bfac-bdbde8e3e51b",
+    "message": "Campaign 'Aol' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:22:24.090659",
+    "read": false,
+    "campaign_id": 1
+  },
+  {
     "id": "9c4d4b08-07a0-4daf-9475-f9bb83f4faf1",
     "message": "Scheduled campaign 'dssaf' failed: No result returned",
     "type": "error",
