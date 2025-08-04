@@ -1,5 +1,13 @@
 [
   {
+    "id": "e4fe1551-ea76-49cb-9161-54abae073436",
+    "message": "User 'admin' updated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T22:32:34.803053",
+    "read": false,
+    "campaign_id": null
+  },
+  {
     "id": "d4153e3d-6f55-4e73-a42c-5c06a104ecaa",
     "message": "Account 'manager@deanimalslovers.info' added successfully",
     "type": "success",

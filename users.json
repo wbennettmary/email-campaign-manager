@@ -2,7 +2,7 @@
   {
     "id": 1,
     "username": "admin",
-    "password": "pbkdf2:sha256:600000$LNpPnPtJg6rMl4Fy$d763003b621720fcfcc7c2e78f250ac872c71fca52cc950d0603edd04633070f",
+    "password": "scrypt:32768:8:1$gKQZ7e5u3tL5V9gy$905df7e5c0985b74ca5bb1c4dc25b431e722bcc86ba60ae3254c7a5d70aa4d91f88481a94e0b918b642e0a1bb48a07bed541ba29fa042a5f49bff0d5844c64f7",
     "email": "admin@example.com",
     "role": "admin",
     "created_at": "2025-07-28T19:00:00",
@@ -13,7 +13,6 @@
       "manage_data",
       "view_all_campaigns",
       "manage_all_campaigns",
-      "manage_users",
       "view_reports"
     ]
   },

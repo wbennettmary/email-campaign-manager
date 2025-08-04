@@ -6002,6 +6002,176 @@ def get_execution_status():
             'error': str(e)
         }), 500
 
+# Performance optimizations for AWS t3a.large
+import os
+import gc
+import threading
+from functools import lru_cache
+from collections import defaultdict
+import time
+
+# Global caches for better performance
+_account_cache = {}
+_campaign_cache = {}
+_user_cache = {}
+_data_list_cache = {}
+_cache_lock = threading.Lock()
+
+# Cache TTL (Time To Live) in seconds
+CACHE_TTL = 300  # 5 minutes
+
+def clear_expired_cache():
+    """Clear expired cache entries"""
+    global _account_cache, _campaign_cache, _user_cache, _data_list_cache
+    current_time = time.time()
+    
+    with _cache_lock:
+        # Clear expired account cache
+        expired_accounts = [k for k, v in _account_cache.items() if current_time - v['timestamp'] > CACHE_TTL]
+        for k in expired_accounts:
+            del _account_cache[k]
+        
+        # Clear expired campaign cache
+        expired_campaigns = [k for k, v in _campaign_cache.items() if current_time - v['timestamp'] > CACHE_TTL]
+        for k in expired_campaigns:
+            del _campaign_cache[k]
+        
+        # Clear expired user cache
+        expired_users = [k for k, v in _user_cache.items() if current_time - v['timestamp'] > CACHE_TTL]
+        for k in expired_users:
+            del _user_cache[k]
+        
+        # Clear expired data list cache
+        expired_lists = [k for k, v in _data_list_cache.items() if current_time - v['timestamp'] > CACHE_TTL]
+        for k in expired_lists:
+            del _data_list_cache[k]
+
+# Schedule cache cleanup every 5 minutes
+def schedule_cache_cleanup():
+    while True:
+        time.sleep(300)  # 5 minutes
+        clear_expired_cache()
+        gc.collect()  # Force garbage collection
+
+# Start cache cleanup thread
+cache_cleanup_thread = threading.Thread(target=schedule_cache_cleanup, daemon=True)
+cache_cleanup_thread.start()
+
+# Optimized file reading with caching
+def read_json_file_optimized(file_path, cache_dict, cache_key):
+    """Optimized JSON file reading with caching"""
+    current_time = time.time()
+    
+    with _cache_lock:
+        if cache_key in cache_dict:
+            cache_entry = cache_dict[cache_key]
+            if current_time - cache_entry['timestamp'] < CACHE_TTL:
+                return cache_entry['data']
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        with _cache_lock:
+            cache_dict[cache_key] = {
+                'data': data,
+                'timestamp': current_time
+            }
+        
+        return data
+    except Exception as e:
+        print(f"❌ Error reading {file_path}: {str(e)}")
+        return {}
+
+# Optimized file writing with cache invalidation
+def write_json_file_optimized(file_path, data, cache_dict, cache_key):
+    """Optimized JSON file writing with cache invalidation"""
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        # Invalidate cache
+        with _cache_lock:
+            if cache_key in cache_dict:
+                del cache_dict[cache_key]
+        
+        return True
+    except Exception as e:
+        print(f"❌ Error writing {file_path}: {str(e)}")
+        return False
+
+# Optimized logging - reduce I/O operations
+def optimized_log(message, level="INFO"):
+    """Optimized logging with reduced I/O"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}] {level}: {message}"
+    
+    # Only print to console for important messages
+    if level in ["ERROR", "WARNING"] or "🧪" in message or "🚀" in message:
+        print(log_entry)
+    
+    # Write to file in batches to reduce I/O
+    if not hasattr(optimized_log, 'log_buffer'):
+        optimized_log.log_buffer = []
+        optimized_log.last_flush = time.time()
+    
+    optimized_log.log_buffer.append(log_entry)
+    
+    # Flush buffer every 10 seconds or if buffer is full
+    current_time = time.time()
+    if (current_time - optimized_log.last_flush > 10 or 
+        len(optimized_log.log_buffer) > 50):
+        
+        try:
+            with open('app.log', 'a', encoding='utf-8') as f:
+                f.write('\n'.join(optimized_log.log_buffer) + '\n')
+            optimized_log.log_buffer = []
+            optimized_log.last_flush = current_time
+        except Exception as e:
+            print(f"❌ Error writing to log file: {str(e)}")
+
+# Replace print statements with optimized logging
+def replace_prints_with_optimized_logging():
+    """Replace print statements with optimized logging"""
+    # This function will be called to replace print statements
+    pass
+
+# Optimized data loading functions
+def load_accounts_optimized():
+    """Optimized accounts loading with caching"""
+    return read_json_file_optimized(ACCOUNTS_FILE, _account_cache, 'accounts')
+
+def load_campaigns_optimized():
+    """Optimized campaigns loading with caching"""
+    return read_json_file_optimized(CAMPAIGNS_FILE, _campaign_cache, 'campaigns')
+
+def load_users_optimized():
+    """Optimized users loading with caching"""
+    return read_json_file_optimized(USERS_FILE, _user_cache, 'users')
+
+def load_data_lists_optimized():
+    """Optimized data lists loading with caching"""
+    return read_json_file_optimized(DATA_LISTS_FILE, _data_list_cache, 'data_lists')
+
+# Optimized saving functions
+def save_accounts_optimized(accounts):
+    """Optimized accounts saving with cache invalidation"""
+    return write_json_file_optimized(ACCOUNTS_FILE, accounts, _account_cache, 'accounts')
+
+def save_campaigns_optimized(campaigns):
+    """Optimized campaigns saving with cache invalidation"""
+    return write_json_file_optimized(CAMPAIGNS_FILE, campaigns, _campaign_cache, 'campaigns')
+
+def save_users_optimized(users):
+    """Optimized users saving with cache invalidation"""
+    return write_json_file_optimized(USERS_FILE, users, _user_cache, 'users')
+
+def save_data_lists_optimized(data_lists):
+    """Optimized data lists saving with cache invalidation"""
+    return write_json_file_optimized(DATA_LISTS_FILE, data_lists, _data_list_cache, 'data_lists')
+
+# ... existing code ...
+
 if __name__ == '__main__':
     # Production vs Development settings
     import os
