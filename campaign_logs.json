@@ -363,5 +363,139 @@
         "account_name": "pro domain"
       }
     }
+  ],
+  "8": [
+    {
+      "timestamp": "2025-08-04T13:17:50.346448",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:17:52.221482",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:17:54.014442",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:17:55.836477",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:17:57.658687",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:17:59.500311",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:17:59.530125",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "fghncvb vbcncvbn",
+        "from_used": "dfghc <895363434@zoho.com>",
+        "account_name": "pro domain"
+      }
+    }
+  ],
+  "9": [
+    {
+      "timestamp": "2025-08-04T13:50:30.784505",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:50:32.627792",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:50:34.436402",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:50:36.229221",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:50:38.318719",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:50:40.183918",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:50:40.208492",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "fghncvb vbcncvbn",
+        "from_used": "dfghc <895363434@zoho.com>",
+        "account_name": "pro domain"
+      }
+    }
   ]
 }

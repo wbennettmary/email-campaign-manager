@@ -1,5 +1,69 @@
 [
   {
+    "id": "b1ed4bfe-8e67-440d-b2ae-40e3144d1f3d",
+    "message": "Campaign 'poiu (Copy)' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:50:40.233146",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "18553840-bfe4-4e4a-8e42-06ca0ec7ecaf",
+    "message": "Campaign 'poiu (Copy)' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:50:29.421525",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "c5f74f80-2422-4d29-a1e4-ef9f8980ef5e",
+    "message": "Campaign 'poiu (Copy)' updated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:50:22.988258",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "e05336de-2f60-4510-8122-b8e27e66964b",
+    "message": "Campaign 'poiu' duplicated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:50:07.193596",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "5e467df3-70b7-40a6-98e9-da8d223c447f",
+    "message": "Campaign 'poiu' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:17:59.539625",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "60c08f21-ca7a-4346-8c5d-6441367de88e",
+    "message": "Campaign 'poiu' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:17:49.227289",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "a753303a-1901-45f2-a2bc-70db28805130",
+    "message": "Campaign 'poiu' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:17:43.343925",
+    "read": false,
+    "campaign_id": 8
+  },
+  {
+    "id": "7fc5e58e-1079-4ff1-9c50-d44821ac79b1",
+    "message": "Account 'beyondtheclassroom.shop' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:10:17.782749",
+    "read": false,
+    "campaign_id": null
+  },
+  {
     "id": "05a866f6-7072-40ef-a132-deadf65a209f",
     "message": "Campaign 'ONMq' completed successfully",
     "type": "success",

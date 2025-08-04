@@ -750,6 +750,19 @@
         "account_name": "phungvanhuonghie"
       },
       "timestamp": "2025-07-30T17:14:28.950138"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 8,
+      "subject": "fghncvb vbcncvbn",
+      "sender": "dfghc <895363434@zoho.com>",
+      "details": {
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "account_name": "pro domain",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-04T13:17:59.492541"
     }
   ],
   "5": [

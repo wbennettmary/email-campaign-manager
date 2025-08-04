@@ -72,6 +72,9 @@
                                 <a href="/campaigns/{{ campaign.id }}/edit" class="btn btn-outline-secondary" title="Edit Campaign">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                <button class="btn btn-outline-success" onclick="duplicateCampaign({{ campaign.id }})" title="Duplicate Campaign">
+                                    <i class="fas fa-copy"></i>
+                                </button>
                                 <button class="btn btn-outline-info" onclick="testCampaign({{ campaign.id }})" title="Test Campaign">
                                     <i class="fas fa-vial"></i>
                                 </button>
@@ -770,6 +773,34 @@ function showAlert(message, type) {
             alertDiv.remove();
         }
     }, 5000);
+}
+
+function duplicateCampaign(campaignId) {
+    if (confirm('Are you sure you want to duplicate this campaign? This will create a copy with all the same settings.')) {
+        fetch(`/api/campaigns/${campaignId}/duplicate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Campaign duplicated successfully!', 'success');
+                
+                // Reload the page after a short delay to show the new campaign
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showAlert('Error duplicating campaign: ' + (data.error || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Error duplicating campaign. Please try again.', 'danger');
+        });
+    }
 }
 
 function deleteCampaign(campaignId) {

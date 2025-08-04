@@ -9,9 +9,14 @@
             <i class="fas fa-edit text-primary"></i>
             Edit Campaign: {{ campaign.name }}
         </h1>
-        <a href="/campaigns" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Campaigns
-        </a>
+        <div>
+            <button class="btn btn-success me-2" onclick="duplicateCampaign()">
+                <i class="fas fa-copy"></i> Duplicate Campaign
+            </button>
+            <a href="/campaigns" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Campaigns
+            </a>
+        </div>
     </div>
 
     <div class="row">
@@ -50,63 +55,49 @@
 
                         <div class="mb-3">
                             <label for="templateSelect" class="form-label">Email Template</label>
-                            <select class="form-select" id="templateSelect" required onchange="updateTemplateId()">
+                            <select class="form-select" id="templateSelect" onchange="updateTemplateId()">
                                 <option value="">Select Account First</option>
                             </select>
-                            <input type="hidden" id="templateId" value="{{ campaign.template_id }}" required>
+                            <input type="hidden" id="templateId" value="{{ campaign.template_id }}">
                             <div class="form-text">Select an account to see available templates</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Recipients</label>
-                            <div class="alert alert-info mb-3">
-                                <i class="fas fa-info-circle"></i>
-                                <strong>Note:</strong> When editing a campaign, you can select any data list or enter emails manually. The original recipient list is not displayed for security.
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="recipientType" class="form-label">Recipient Source</label>
-                                    <select class="form-select" id="recipientType" onchange="toggleRecipientSource()">
-                                        <option value="manual">Manual Entry</option>
-                                        <option value="data_list">Data List</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6" id="dataListContainer" style="display: none;">
-                                    <label for="dataListSelect" class="form-label">Select Data List</label>
-                                    <select class="form-select" id="dataListSelect" onchange="loadDataListEmails()">
-                                        <option value="">Select Data List</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mt-2">
-                                <label for="destinataires" class="form-label">Email Addresses</label>
-                                <div id="manualEmailContainer">
-                                    <textarea class="form-control" id="destinataires" rows="6" required placeholder="email1@example.com&#10;email2@example.com&#10;email3@example.com"></textarea>
-                                </div>
-                                <div id="dataListInfoContainer" style="display: none;">
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-list"></i>
-                                        <strong>Data List Selected:</strong> <span id="selectedListName">-</span>
-                                        <br>
-                                        <small>Emails: <span id="selectedListCount">0</span> | Geography: <span id="selectedListGeo">-</span> | ISP: <span id="selectedListIsp">-</span></small>
-                                    </div>
-                                </div>
-                                <div class="form-text">
-                                    <span id="emailCount">0</span> emails loaded
-                                </div>
-                            </div>
+                            <label for="fromName" class="form-label">From Name</label>
+                            <input type="text" class="form-control" id="fromName" value="{{ campaign.from_name }}" required>
+                            <div class="form-text">The name that will appear as the sender</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="subjects" class="form-label">Email Subjects (one per line)</label>
-                            <textarea class="form-control" id="subjects" rows="3" required>{{ campaign.subjects }}</textarea>
-                            <div class="form-text">Enter email subjects, one per line. One will be randomly selected for each email.</div>
+                            <label for="subject" class="form-label">Email Subject</label>
+                            <input type="text" class="form-control" id="subject" value="{{ campaign.subject }}" required>
+                            <div class="form-text">The subject line for your email campaign</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="froms" class="form-label">Sender Names (one per line)</label>
-                            <textarea class="form-control" id="froms" rows="3" required>{{ campaign.froms }}</textarea>
-                            <div class="form-text">Enter sender names, one per line. One will be randomly selected for each email.</div>
+                            <label for="message" class="form-label">Email Message</label>
+                            <textarea class="form-control" id="message" rows="8" required>{{ campaign.message }}</textarea>
+                            <div class="form-text">The HTML content of your email message</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="dataListSelect" class="form-label">Data List</label>
+                            <select class="form-select" id="dataListSelect" required onchange="loadDataListInfo()">
+                                <option value="">Select Data List</option>
+                                {% for data_list in data_lists %}
+                                <option value="{{ data_list.id }}" {% if data_list.id == campaign.data_list_id %}selected{% endif %}>
+                                    {{ data_list.name }} ({{ data_list.email_count }} emails - {{ data_list.geography or 'Unknown' }}/{{ data_list.isp or 'Unknown' }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div id="dataListInfo" class="mt-2" style="display: none;">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-list"></i>
+                                    <strong>Selected List:</strong> <span id="selectedListName">-</span>
+                                    <br>
+                                    <small>Emails: <span id="selectedListCount">0</span> | Geography: <span id="selectedListGeo">-</span> | ISP: <span id="selectedListIsp">-</span></small>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex gap-2">
@@ -161,17 +152,21 @@
                     
                     <div class="mb-3">
                         <strong>Total Recipients:</strong><br>
-                        {% if campaign.system_version == 'universal_v2' %}
-                            <span class="badge bg-info">{{ campaign.total_attempted or 0 }}</span>
-                        {% else %}
-                            <span class="badge bg-info">{{ campaign.destinataires.split('\n')|length }}</span>
-                        {% endif %}
+                        <span class="badge bg-info">{{ campaign.total_attempted or 0 }}</span>
                     </div>
                     
                     {% if campaign.total_sent %}
                     <div class="mb-3">
                         <strong>Emails Sent:</strong><br>
                         <span class="badge bg-success">{{ campaign.total_sent }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if data_list_info %}
+                    <div class="mb-3">
+                        <strong>Current Data List:</strong><br>
+                        <span class="badge bg-secondary">{{ data_list_info.name }}</span>
+                        <br><small class="text-muted">{{ data_list_info.email_count }} emails</small>
                     </div>
                     {% endif %}
                 </div>
@@ -217,20 +212,9 @@
 
 {% block scripts %}
 <script>
-// Load data lists when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    loadDataLists();
-    
-    // Initialize the form - set to manual entry by default
-    // This ensures users can select any data list they want
-    document.getElementById('recipientType').value = 'manual';
-    document.getElementById('destinataires').value = '';
-    document.getElementById('emailCount').textContent = '0';
-    
-    // Ensure the manual email container is visible and data list container is hidden
-    document.getElementById('manualEmailContainer').style.display = 'block';
-    document.getElementById('dataListContainer').style.display = 'none';
-    document.getElementById('dataListInfoContainer').style.display = 'none';
+    loadAccountTemplates();
+    loadDataListInfo();
 });
 
 document.getElementById('editCampaignForm').addEventListener('submit', function(e) {
@@ -239,44 +223,16 @@ document.getElementById('editCampaignForm').addEventListener('submit', function(
 });
 
 function saveCampaign() {
-    const recipientType = document.getElementById('recipientType').value;
-    const listId = document.getElementById('dataListSelect').value;
-    
-    // If data list is selected, we need to fetch the emails first
-    if (recipientType === 'data_list' && listId) {
-        fetch(`/api/data-lists/${listId}/campaign-emails`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.emails && data.emails.length > 0) {
-                    updateCampaignWithEmails(data.emails.join('\n'));
-                } else {
-                    alert('No emails found in selected data list');
-                }
-            })
-            .catch(error => {
-                console.error('Error loading data list emails:', error);
-                alert('Error loading emails from data list');
-            });
-    } else {
-        // Manual entry - use the textarea value
-        const destinataires = document.getElementById('destinataires').value;
-        if (!destinataires.trim()) {
-            showNotification('Please enter email addresses or select a data list', 'error');
-            return;
-        }
-        updateCampaignWithEmails(destinataires);
-    }
-}
-
-function updateCampaignWithEmails(destinataires) {
     const campaignId = document.getElementById('campaignId').value;
     const formData = {
         name: document.getElementById('campaignName').value,
         account_id: parseInt(document.getElementById('accountId').value),
         template_id: document.getElementById('templateId').value,
-        destinataires: destinataires,
-        subjects: document.getElementById('subjects').value,
-        froms: document.getElementById('froms').value,
+        from_name: document.getElementById('fromName').value,
+        subject: document.getElementById('subject').value,
+        message: document.getElementById('message').value,
+        data_list_id: parseInt(document.getElementById('dataListSelect').value),
+        use_custom_template: true
     };
 
     fetch(`/api/campaigns/${campaignId}`, {
@@ -288,8 +244,8 @@ function updateCampaignWithEmails(destinataires) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.message) {
-            showNotification(data.message, 'success');
+        if (data.error) {
+            showNotification(data.error, 'error');
         } else {
             showNotification('Campaign updated successfully!', 'success');
         }
@@ -298,6 +254,34 @@ function updateCampaignWithEmails(destinataires) {
         console.error('Error:', error);
         showNotification('Error updating campaign', 'error');
     });
+}
+
+function duplicateCampaign() {
+    const campaignId = document.getElementById('campaignId').value;
+    
+    if (confirm('Are you sure you want to duplicate this campaign? This will create a copy with all the same settings.')) {
+        fetch(`/api/campaigns/${campaignId}/duplicate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = '/campaigns';
+                }, 2000);
+            } else {
+                showNotification(data.error || 'Error duplicating campaign', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error duplicating campaign', 'error');
+        });
+    }
 }
 
 function saveAndRelaunch() {
@@ -363,24 +347,6 @@ function deleteCampaign() {
     }
 }
 
-function loadDataLists() {
-    fetch('/api/data-lists')
-        .then(response => response.json())
-        .then(dataLists => {
-            const select = document.getElementById('dataListSelect');
-            select.innerHTML = '<option value="">Select Data List</option>';
-            dataLists.forEach(list => {
-                const option = document.createElement('option');
-                option.value = list.id;
-                option.textContent = `${list.name} (${list.email_count} emails - ${list.geography || 'Unknown'}/${list.isp || 'Unknown'})`;
-                select.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading data lists:', error);
-        });
-}
-
 function loadAccountTemplates() {
     const accountId = document.getElementById('accountId').value;
     const templateSelect = document.getElementById('templateSelect');
@@ -431,37 +397,12 @@ function updateTemplateId() {
     }
 }
 
-function toggleRecipientSource() {
-    const recipientType = document.getElementById('recipientType').value;
-    const dataListContainer = document.getElementById('dataListContainer');
-    const manualEmailContainer = document.getElementById('manualEmailContainer');
-    const dataListInfoContainer = document.getElementById('dataListInfoContainer');
-    const destinatairesTextarea = document.getElementById('destinataires');
-    
-    if (recipientType === 'data_list') {
-        dataListContainer.style.display = 'block';
-        manualEmailContainer.style.display = 'none';
-        dataListInfoContainer.style.display = 'block';
-        destinatairesTextarea.value = '';
-        document.getElementById('emailCount').textContent = '0';
-    } else {
-        dataListContainer.style.display = 'none';
-        manualEmailContainer.style.display = 'block';
-        dataListInfoContainer.style.display = 'none';
-        destinatairesTextarea.placeholder = 'email1@example.com\nemail2@example.com\nemail3@example.com';
-        destinatairesTextarea.value = '';
-        document.getElementById('emailCount').textContent = '0';
-    }
-}
-
-function loadDataListEmails() {
+function loadDataListInfo() {
     const listId = document.getElementById('dataListSelect').value;
+    const dataListInfo = document.getElementById('dataListInfo');
+    
     if (!listId) {
-        document.getElementById('selectedListName').textContent = '-';
-        document.getElementById('selectedListCount').textContent = '0';
-        document.getElementById('selectedListGeo').textContent = '-';
-        document.getElementById('selectedListIsp').textContent = '-';
-        document.getElementById('emailCount').textContent = '0';
+        dataListInfo.style.display = 'none';
         return;
     }
     
@@ -484,7 +425,9 @@ function loadDataListEmails() {
     document.getElementById('selectedListCount').textContent = count;
     document.getElementById('selectedListGeo').textContent = geography;
     document.getElementById('selectedListIsp').textContent = isp;
-    document.getElementById('emailCount').textContent = count;
+    
+    // Show the info container
+    dataListInfo.style.display = 'block';
 }
 
 function showNotification(message, type = 'info') {
@@ -498,24 +441,5 @@ function showNotification(message, type = 'info') {
         toast.classList.remove('show');
     }, 5000);
 }
-
-// Rate Limiting Functions
-// Remove the entire "Rate Limiting Settings" card
-// Remove the rate limit JavaScript functions
-// Remove rate_limits from the updateCampaign function
-
-// Initialize the form
-document.addEventListener('DOMContentLoaded', function() {
-    loadDataLists();
-    loadAccountTemplates(); // Load templates for the selected account
-    
-    // Set default recipient type to manual
-    document.getElementById('recipientType').value = 'manual';
-    toggleRecipientSource();
-    
-    // Clear the destinataires textarea for security
-    document.getElementById('destinataires').value = '';
-    document.getElementById('emailCount').textContent = '0';
-});
 </script>
 {% endblock %} 

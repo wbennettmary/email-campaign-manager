@@ -1431,13 +1431,28 @@ def edit_campaign(campaign_id):
     try:
         campaigns = read_json_file_simple(CAMPAIGNS_FILE)
         accounts = read_json_file_simple(ACCOUNTS_FILE)
+        data_lists = read_json_file_simple(DATA_LISTS_FILE)
         
         campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
         if not campaign:
             flash('Campaign not found')
             return redirect(url_for('campaigns'))
         
-        return render_template('edit_campaign.html', campaign=campaign, accounts=accounts)
+        # Check if user can access this campaign
+        if not has_permission(current_user, 'view_all_campaigns') and campaign.get('created_by') != current_user.id:
+            flash('Access denied. You can only edit your own campaigns.')
+            return redirect(url_for('campaigns'))
+        
+        # Get the data list information if it exists
+        data_list_info = None
+        if campaign.get('data_list_id'):
+            data_list_info = next((dl for dl in data_lists if dl['id'] == campaign['data_list_id']), None)
+        
+        return render_template('edit_campaign.html', 
+                             campaign=campaign, 
+                             accounts=accounts, 
+                             data_lists=data_lists,
+                             data_list_info=data_list_info)
     except Exception as e:
         print(f"❌ Error in edit_campaign: {str(e)}")
         flash('Error loading campaign data')
@@ -1931,13 +1946,14 @@ def api_campaigns():
 @app.route('/api/campaigns/<int:campaign_id>', methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def api_campaign(campaign_id):
-    with open(CAMPAIGNS_FILE, 'r') as f:
-        campaigns = json.load(f)
+    campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+    if not isinstance(campaigns, list):
+        campaigns = []
     
     campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
     
     if not campaign:
-        return ('', 404)
+        return jsonify({'error': 'Campaign not found'}), 404
     
     # Check if user can access this campaign
     if not has_permission(current_user, 'view_all_campaigns') and campaign.get('created_by') != current_user.id:
@@ -1952,13 +1968,38 @@ def api_campaign(campaign_id):
             return jsonify({'error': 'Access denied. You can only edit your own campaigns.'}), 403
         
         data = request.json
-        campaign.update(data)
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
         
-        with open(CAMPAIGNS_FILE, 'w') as f:
-            json.dump(campaigns, f)
+        # Update campaign with new data while preserving essential fields
+        campaign.update({
+            'name': str(data.get('name', campaign['name']))[:100],
+            'account_id': int(data.get('account_id', campaign['account_id'])),
+            'subject': str(data.get('subject', campaign.get('subject', ''))),
+            'message': str(data.get('message', campaign.get('message', ''))),
+            'data_list_id': int(data.get('data_list_id', campaign.get('data_list_id', 0))),
+            'from_name': str(data.get('from_name', campaign.get('from_name', 'Campaign Sender'))),
+            'template_id': str(data.get('template_id', campaign.get('template_id', ''))),
+            'use_custom_template': data.get('use_custom_template', campaign.get('use_custom_template', True)),
+            'rate_limits': data.get('rate_limits', campaign.get('rate_limits')),
+            'system_version': 'universal_v2'  # Ensure it uses the new system
+        })
         
-        add_notification(f"Campaign '{campaign['name']}' updated successfully", 'success', campaign_id)
-        return jsonify(campaign)
+        # Reset campaign status to ready for editing
+        campaign['status'] = 'ready'
+        campaign['total_sent'] = 0
+        campaign['total_attempted'] = 0
+        campaign['started_at'] = None
+        campaign['completed_at'] = None
+        
+        # Save updated campaigns
+        write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+        
+        if write_success:
+            add_notification(f"Campaign '{campaign['name']}' updated successfully", 'success', campaign_id)
+            return jsonify(campaign)
+        else:
+            return jsonify({'error': 'Failed to save campaign'}), 500
     
     elif request.method == 'DELETE':
         # Check if user has permission to delete campaigns
@@ -1967,11 +2008,13 @@ def api_campaign(campaign_id):
         
         campaign_name = campaign['name']
         campaigns.remove(campaign)
-        with open(CAMPAIGNS_FILE, 'w') as f:
-            json.dump(campaigns, f)
+        write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
-        add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
-        return ('', 204)
+        if write_success:
+            add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
+            return jsonify({'message': 'Campaign deleted successfully'})
+        else:
+            return jsonify({'error': 'Failed to delete campaign'}), 500
 
 @app.route('/api/campaigns/<int:campaign_id>/start', methods=['POST'])
 @login_required
@@ -5564,6 +5607,69 @@ def execute_schedule_now(schedule_id):
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/api/campaigns/<int:campaign_id>/duplicate', methods=['POST'])
+@login_required
+def duplicate_campaign(campaign_id):
+    """Duplicate a campaign with all its configurations"""
+    try:
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        if not isinstance(campaigns, list):
+            campaigns = []
+        
+        # Find the original campaign
+        original_campaign = next((camp for camp in campaigns if camp['id'] == campaign_id), None)
+        if not original_campaign:
+            return jsonify({'error': 'Campaign not found'}), 404
+        
+        # Check if user can access this campaign
+        if not has_permission(current_user, 'view_all_campaigns') and original_campaign.get('created_by') != current_user.id:
+            return jsonify({'error': 'Access denied. You can only duplicate your own campaigns.'}), 403
+        
+        # Generate new campaign ID
+        new_id = max([camp['id'] for camp in campaigns], default=0) + 1 if campaigns else 1
+        
+        # Create duplicate campaign with all original configurations
+        duplicated_campaign = {
+            'id': new_id,
+            'name': f"{original_campaign['name']} (Copy)",
+            'account_id': original_campaign['account_id'],
+            'subject': original_campaign.get('subject', ''),
+            'message': original_campaign.get('message', ''),
+            'data_list_id': original_campaign.get('data_list_id', 0),
+            'from_name': original_campaign.get('from_name', 'Campaign Sender'),
+            'template_id': original_campaign.get('template_id', ''),
+            'use_custom_template': original_campaign.get('use_custom_template', True),
+            'rate_limits': original_campaign.get('rate_limits'),
+            'status': 'ready',  # Reset status for new campaign
+            'created_at': datetime.now().isoformat(),
+            'created_by': current_user.id,
+            'total_sent': 0,
+            'total_attempted': 0,
+            'started_at': None,
+            'completed_at': None,
+            'system_version': 'universal_v2'
+        }
+        
+        # Add to campaigns list
+        campaigns.append(duplicated_campaign)
+        
+        # Save updated campaigns
+        write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
+        
+        if write_success:
+            add_notification(f"Campaign '{original_campaign['name']}' duplicated successfully", 'success', new_id)
+            return jsonify({
+                'success': True,
+                'message': 'Campaign duplicated successfully',
+                'campaign': duplicated_campaign
+            })
+        else:
+            return jsonify({'error': 'Failed to save duplicated campaign'}), 500
+            
+    except Exception as e:
+        print(f"❌ Error duplicating campaign: {str(e)}")
+        return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
 @app.route('/api/campaigns/<int:campaign_id>/reset-status', methods=['POST'])
 @login_required
