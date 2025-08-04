@@ -4942,7 +4942,6 @@ def send_universal_campaign_emails(campaign, account):
         print(f"📧 Account: {account['name']}")
         print(f"📨 Subject: {campaign['subject']}")
         print(f"👤 From: {campaign.get('from_name', 'Campaign Sender')}")
-        print(f"🧪 DEBUG: Function called successfully")
         
         # Get data list emails
         data_list_id = campaign.get('data_list_id')
@@ -4980,10 +4979,6 @@ def send_universal_campaign_emails(campaign, account):
         
         # Get test after configuration
         test_after_config = campaign.get('test_after_config')
-        print(f"🧪 Test After Config: {test_after_config}")
-        print(f"🧪 Test After Config Type: {type(test_after_config)}")
-        print(f"🧪 Test After Config Enabled: {test_after_config.get('enabled') if test_after_config else 'None'}")
-        print(f"🧪 Test After Config Email: {test_after_config.get('test_email') if test_after_config else 'None'}")
         
         # Send emails using sequential email function (one by one)
         result = send_sequential_emails(
@@ -5359,14 +5354,8 @@ def send_sequential_emails(account, recipients, subject, message, from_name=None
                     test_emails_count = test_after_config.get('emails_count', 500)
                     test_email = test_after_config.get('test_email', '')
                     
-                    print(f"🧪 Test After Debug: emails_sent={emails_sent}, test_count={test_emails_count}, enabled={test_after_config.get('enabled')}, test_email={test_email}")
-                    
-                    # Send test email if we've reached the threshold OR if this is the first email (for testing)
-                    should_send_test = (emails_sent % test_emails_count == 0 and emails_sent > 0) or (emails_sent == 1 and test_emails_count > 1)
-                    
-                    # For testing purposes, also send test email after first email if count is small
-                    if test_emails_count > len(recipients):
-                        should_send_test = should_send_test or emails_sent == 1
+                    # Send test email ONLY when we've reached the exact threshold
+                    should_send_test = (emails_sent % test_emails_count == 0 and emails_sent > 0)
                     
                     if should_send_test:
                         print(f"🧪 Test After Mechanism: Sending test email after {emails_sent} emails sent")

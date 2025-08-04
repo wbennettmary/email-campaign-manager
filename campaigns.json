@@ -150,5 +150,108 @@
       "test_email": "ahamjik.med@gmail.com"
     },
     "start_line": 1
+  },
+  {
+    "id": 14,
+    "name": "4R5T3",
+    "account_id": 21,
+    "account_ids": [
+      21
+    ],
+    "subject": "GRTGERYH",
+    "message": "YHTERTYHFGD",
+    "data_list_id": 2,
+    "from_name": "TYURTYH",
+    "template_id": "",
+    "use_custom_template": true,
+    "rate_limits": {
+      "emails_per_second": 1,
+      "emails_per_minute": 50,
+      "emails_per_hour": 3000,
+      "emails_per_day": 72000,
+      "wait_time_between_emails": 2,
+      "burst_limit": 10,
+      "cooldown_period": 5
+    },
+    "test_after_config": {
+      "enabled": true,
+      "emails_count": 6,
+      "test_email": "ahamjik.med@gmail.com"
+    },
+    "start_line": 1,
+    "status": "completed",
+    "created_at": "2025-08-04T15:38:20.438659",
+    "created_by": 1,
+    "total_sent": 0,
+    "total_attempted": 6,
+    "system_version": "universal_v2",
+    "started_at": "2025-08-04T15:38:27.313240",
+    "completed_at": "2025-08-04T15:38:36.009731"
+  },
+  {
+    "id": 15,
+    "name": "WZAS",
+    "account_id": 22,
+    "account_ids": [
+      22
+    ],
+    "subject": "we are here sir dearS",
+    "message": "DGFDSFG",
+    "data_list_id": 2,
+    "from_name": "NicolaS",
+    "template_id": "",
+    "use_custom_template": true,
+    "rate_limits": null,
+    "test_after_config": {
+      "enabled": true,
+      "emails_count": 5,
+      "test_email": "ahamjik.med@gmail.com"
+    },
+    "start_line": 1,
+    "status": "completed",
+    "created_at": "2025-08-04T15:41:30.134946",
+    "created_by": 1,
+    "total_sent": 6,
+    "total_attempted": 6,
+    "system_version": "universal_v2",
+    "started_at": "2025-08-04T15:41:39.604091",
+    "completed_at": "2025-08-04T15:41:51.440558"
+  },
+  {
+    "id": 16,
+    "name": "FE",
+    "account_id": 22,
+    "account_ids": [
+      22
+    ],
+    "subject": "GFDDFG",
+    "message": "DFGDTGF",
+    "data_list_id": 2,
+    "from_name": "VREVDF",
+    "template_id": "",
+    "use_custom_template": true,
+    "rate_limits": {
+      "emails_per_second": 1,
+      "emails_per_minute": 30,
+      "emails_per_hour": 1800,
+      "emails_per_day": 43200,
+      "wait_time_between_emails": 3,
+      "burst_limit": 10,
+      "cooldown_period": 5
+    },
+    "test_after_config": {
+      "enabled": true,
+      "emails_count": 5,
+      "test_email": "ahamjik.med@gmail.com"
+    },
+    "start_line": 1,
+    "status": "completed",
+    "created_at": "2025-08-04T15:48:18.878055",
+    "created_by": 1,
+    "total_sent": 6,
+    "total_attempted": 6,
+    "system_version": "universal_v2",
+    "started_at": "2025-08-04T15:48:23.505183",
+    "completed_at": "2025-08-04T15:48:46.746808"
   }
 ]

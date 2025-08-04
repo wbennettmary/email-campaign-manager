@@ -1,5 +1,117 @@
 [
   {
+    "id": "4a40d7a0-b01b-4059-9326-f40570aa948b",
+    "message": "Campaign 'FE' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:48:46.772910",
+    "read": false,
+    "campaign_id": 16
+  },
+  {
+    "id": "f982e0ff-d2cb-4bce-9ab3-c83d3a78f84a",
+    "message": "Campaign 'FE' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:48:23.528983",
+    "read": false,
+    "campaign_id": 16
+  },
+  {
+    "id": "05e07748-0a03-4d19-9814-efb37feed5ad",
+    "message": "Campaign 'FE' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:48:18.908534",
+    "read": false,
+    "campaign_id": 16
+  },
+  {
+    "id": "64078022-1fa4-4f34-8dd1-5f9773dce705",
+    "message": "Account 'ximobolk@hotmail.com' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:46:50.568544",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "8ce22600-8a6e-4430-8e0f-3791b46a14a8",
+    "message": "Account 'administration@beyondtheclassroom.shop' updated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:42:31.808682",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "7b878199-717f-4dcb-a123-fee22f9ee81e",
+    "message": "Campaign 'WZAS' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:41:51.464370",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "e15dc27a-37e2-4886-b820-d264e5989490",
+    "message": "Campaign 'WZAS' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:41:39.625043",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "e7837c12-64b5-4af0-84d1-02fbca47f84a",
+    "message": "Campaign 'WZAS' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:41:30.174836",
+    "read": false,
+    "campaign_id": 15
+  },
+  {
+    "id": "89c6cb39-6d00-4b98-81b0-c49143f9e826",
+    "message": "Account 'pro domain' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:40:42.947581",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "26fde1e8-a06e-426f-982b-81e35cae6473",
+    "message": "Account 'TESTS' deleted successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:40:40.264486",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "83293a84-52b6-4a80-a23d-f223fb438a22",
+    "message": "Account 'CDCSD' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:40:11.453404",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "8d15191d-273a-43e6-a20a-5ec848aa18c3",
+    "message": "Campaign '4R5T3' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:38:36.104524",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "2c1acb14-e0f1-4d1b-ac81-ae718a415f8a",
+    "message": "Campaign '4R5T3' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:38:27.358913",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
+    "id": "3d57dd46-99f7-4cd0-8ccd-e169cc151613",
+    "message": "Campaign '4R5T3' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:38:20.497159",
+    "read": false,
+    "campaign_id": 14
+  },
+  {
     "id": "b3e0258a-5cd4-4aed-b277-350e1dab9565",
     "message": "Account 'TESTS' added successfully",
     "type": "success",

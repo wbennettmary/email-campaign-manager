@@ -266,5 +266,238 @@
         "account_name": "robachalabi@outlook.com"
       }
     }
+  ],
+  "14": [
+    {
+      "timestamp": "2025-08-04T15:38:28.006167",
+      "status": "error",
+      "message": "Email 1/6 failed to salssapp@gmail.com: HTTP 429",
+      "email": "salssapp@gmail.com",
+      "subject": "GRTGERYH",
+      "sender": "TYURTYH <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:38:29.611451",
+      "status": "error",
+      "message": "Email 2/6 failed to jetalpha@outlook.fr: HTTP 429",
+      "email": "jetalpha@outlook.fr",
+      "subject": "GRTGERYH",
+      "sender": "TYURTYH <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:38:31.247940",
+      "status": "error",
+      "message": "Email 3/6 failed to lesgavasimind@gmx.com: HTTP 429",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "GRTGERYH",
+      "sender": "TYURTYH <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:38:32.819079",
+      "status": "error",
+      "message": "Email 4/6 failed to abdo.charhamane@gmail.com: HTTP 429",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "GRTGERYH",
+      "sender": "TYURTYH <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:38:34.416068",
+      "status": "error",
+      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 429",
+      "email": "wbennettmary@gmail.com",
+      "subject": "GRTGERYH",
+      "sender": "TYURTYH <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:38:35.995127",
+      "status": "error",
+      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 429",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "GRTGERYH",
+      "sender": "TYURTYH <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:38:36.009731",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 0 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 0, Failed: 6",
+        "emails_sent": 0,
+        "emails_failed": 6,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "GRTGERYH",
+        "from_used": "TYURTYH <895363434@zoho.com>",
+        "account_name": "TESTS"
+      }
+    }
+  ],
+  "15": [
+    {
+      "timestamp": "2025-08-04T15:41:40.486940",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:41.289953",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 1 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:43.174022",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:44.994097",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:46.945743",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:48.818282",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:49.636324",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 5 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:51.422716",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:41:51.440558",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 3,
+        "function_used": "Send_Email_Template3",
+        "subject_used": "we are here sir dearS",
+        "from_used": "NicolaS <895363434@zoho.com>",
+        "account_name": "CDCSD"
+      }
+    }
+  ],
+  "16": [
+    {
+      "timestamp": "2025-08-04T15:48:24.428127",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:25.246335",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 1 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:28.274469",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:32.227450",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:36.065120",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:42.923348",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:43.850321",
+      "status": "test",
+      "message": "Test email sent to ahamjik.med@gmail.com after 5 emails",
+      "email": "ahamjik.med@gmail.com",
+      "subject": "[TEST] GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:46.720228",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:48:46.746808",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 3,
+        "function_used": "Send_Email_Template3",
+        "subject_used": "GFDDFG",
+        "from_used": "VREVDF <895363434@zoho.com>",
+        "account_name": "administration@beyondtheclassroom.shop"
+      }
+    }
   ]
 }

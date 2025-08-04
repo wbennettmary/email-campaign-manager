@@ -394,6 +394,19 @@
         "email_number": 5
       },
       "timestamp": "2025-08-01T16:02:27.383194"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 16,
+      "subject": "GFDDFG",
+      "sender": "VREVDF <895363434@zoho.com>",
+      "details": {
+        "template_used": 3,
+        "function_used": "Send_Email_Template3",
+        "account_name": "administration@beyondtheclassroom.shop",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-04T15:48:46.700559"
     }
   ],
   "17": [
@@ -1148,6 +1161,19 @@
         "email_number": 5
       },
       "timestamp": "2025-08-01T16:01:32.059832"
+    },
+    {
+      "email": "pamela.rod@yahoo.com",
+      "campaign_id": 15,
+      "subject": "we are here sir dearS",
+      "sender": "NicolaS <895363434@zoho.com>",
+      "details": {
+        "template_used": 3,
+        "function_used": "Send_Email_Template3",
+        "account_name": "CDCSD",
+        "email_number": 6
+      },
+      "timestamp": "2025-08-04T15:41:51.408014"
     }
   ]
 }
