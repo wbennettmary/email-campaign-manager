@@ -146,21 +146,21 @@ def check_rate_limit(user_id, campaign_id=None):
         rate_limit_data['burst_count'][user_id] = 0
         return False, cooldown_duration, f"Burst limit exceeded. Cooldown for {cooldown_duration} seconds"
     
-    # Check wait time between emails (reduced for better delivery)
-    wait_time_between = max(config.get('wait_time_between_emails', 0.5), 0.1)  # Min 0.1 seconds
+    # Check wait time between emails (using new field names)
+    wait_time_between = max(config.get('wait_time_between_emails', 1.0), 0.1)  # Min 0.1 seconds
     time_since_last = current_time - rate_limit_data['last_send_time'][user_id]
     if time_since_last < wait_time_between:
         wait_time = wait_time_between - time_since_last
-        # Don't wait more than 5 seconds between emails
-        if wait_time > 5:
-            wait_time = 5
+        # Don't wait more than 10 seconds between emails
+        if wait_time > 10:
+            wait_time = 10
         return False, wait_time, f"Wait {wait_time:.1f} seconds between emails"
     
     # Check daily quota
     if current_day not in rate_limit_data['daily_sent'][user_id]:
         rate_limit_data['daily_sent'][user_id][current_day] = 0
     
-    daily_quota = config.get('daily_quota', 10000)
+    daily_quota = config.get('emails_per_day', 5000)
     if rate_limit_data['daily_sent'][user_id][current_day] >= daily_quota:
         next_day = current_day + 1
         wait_time = (next_day * 86400) - current_time
@@ -170,7 +170,7 @@ def check_rate_limit(user_id, campaign_id=None):
     if current_hour not in rate_limit_data['hourly_sent'][user_id]:
         rate_limit_data['hourly_sent'][user_id][current_hour] = 0
     
-    hourly_quota = config.get('hourly_quota', 1000)
+    hourly_quota = config.get('emails_per_hour', 500)
     if rate_limit_data['hourly_sent'][user_id][current_hour] >= hourly_quota:
         next_hour = current_hour + 1
         wait_time = (next_hour * 3600) - current_time
@@ -180,7 +180,7 @@ def check_rate_limit(user_id, campaign_id=None):
     if current_minute not in rate_limit_data['minute_sent'][user_id]:
         rate_limit_data['minute_sent'][user_id][current_minute] = 0
     
-    minute_quota = config.get('minute_quota', 100)
+    minute_quota = config.get('emails_per_minute', 50)
     if rate_limit_data['minute_sent'][user_id][current_minute] >= minute_quota:
         next_minute = current_minute + 1
         wait_time = (next_minute * 60) - current_time
@@ -190,7 +190,7 @@ def check_rate_limit(user_id, campaign_id=None):
     if current_second not in rate_limit_data['second_sent'][user_id]:
         rate_limit_data['second_sent'][user_id][current_second] = 0
     
-    second_quota = config.get('second_quota', 2)
+    second_quota = config.get('emails_per_second', 1)
     if rate_limit_data['second_sent'][user_id][current_second] >= second_quota:
         next_second = current_second + 1
         wait_time = next_second - current_time
@@ -1212,8 +1212,8 @@ def add_data_list(name, geography, isp, emails, filename=None, description=""):
         print(f"Error adding data list: {e}")
         return None
 
-def get_data_list_emails(list_id):
-    """Get emails from a specific data list"""
+def get_data_list_emails(list_id, start_line=1):
+    """Get emails from a specific data list with start line support"""
     try:
         data_lists = get_data_lists()
         data_list = next((lst for lst in data_lists if lst['id'] == list_id), None)
@@ -1226,7 +1226,15 @@ def get_data_list_emails(list_id):
             return []
         
         with open(file_path, 'r', encoding='utf-8') as f:
-            emails = [line.strip() for line in f.readlines() if line.strip()]
+            all_lines = f.readlines()
+        
+        # Convert start_line to 0-based index and ensure it's valid
+        start_index = max(0, start_line - 1)
+        if start_index >= len(all_lines):
+            return []
+        
+        # Get emails from start_line onwards
+        emails = [line.strip() for line in all_lines[start_index:] if line.strip()]
         
         return emails
     except Exception as e:
@@ -1442,6 +1450,23 @@ def edit_campaign(campaign_id):
         if not has_permission(current_user, 'view_all_campaigns') and campaign.get('created_by') != current_user.id:
             flash('Access denied. You can only edit your own campaigns.')
             return redirect(url_for('campaigns'))
+        
+        # Initialize missing campaign attributes for backward compatibility
+        if 'test_after_config' not in campaign:
+            campaign['test_after_config'] = {
+                'enabled': False,
+                'emails_count': 500,
+                'test_email': ''
+            }
+        
+        if 'account_ids' not in campaign:
+            campaign['account_ids'] = [campaign.get('account_id', 0)]
+        
+        if 'rate_limits' not in campaign:
+            campaign['rate_limits'] = None
+        
+        if 'start_line' not in campaign:
+            campaign['start_line'] = 1
         
         # Get the data list information if it exists
         data_list_info = None
@@ -1893,6 +1918,7 @@ def api_campaigns():
                     'emails_count': 500,
                     'test_email': ''
                 }),
+                'start_line': data.get('start_line', 1),  # Start from specific line in data list
                 'status': 'ready',
                 'created_at': datetime.now().isoformat(),
                 'created_by': current_user.id,
@@ -1994,6 +2020,7 @@ def api_campaign(campaign_id):
                 'emails_count': 500,
                 'test_email': ''
             })),
+            'start_line': data.get('start_line', campaign.get('start_line', 1)),  # Start from specific line
             'system_version': 'universal_v2'  # Ensure it uses the new system
         })
         
@@ -2097,7 +2124,7 @@ def start_campaign(campaign_id):
             thread = threading.Thread(target=send_multi_account_campaign, args=(
                 campaign, 
                 campaign_accounts, 
-                get_data_list_emails(campaign['data_list_id']),
+                get_data_list_emails(campaign['data_list_id'], campaign.get('start_line', 1)),
                 campaign['subject'],
                 campaign['message'],
                 campaign.get('from_name'),
@@ -4922,13 +4949,14 @@ def send_universal_campaign_emails(campaign, account):
             print("❌ No data list ID found in campaign")
             return
         
-        # Get emails from data list
+        # Get emails from data list with start line support
         try:
-            emails = get_data_list_emails(data_list_id)
+            start_line = campaign.get('start_line', 1)
+            emails = get_data_list_emails(data_list_id, start_line)
             if not emails:
                 print("❌ No emails found in data list")
                 return
-            print(f"📧 Found {len(emails)} emails in data list")
+            print(f"📧 Found {len(emails)} emails in data list (starting from line {start_line})")
         except Exception as e:
             print(f"❌ Error getting emails from data list: {str(e)}")
             return

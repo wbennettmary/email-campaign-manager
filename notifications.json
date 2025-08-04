@@ -1,5 +1,29 @@
 [
   {
+    "id": "17e80b0a-b77c-4a4e-8211-8c8eed0f05f0",
+    "message": "Campaign 'poiu (Copy)' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T14:53:06.353356",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "75b2e38c-4395-4de5-86b6-d779f97c8d9f",
+    "message": "Campaign 'poiu (Copy)' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T14:52:56.533643",
+    "read": false,
+    "campaign_id": 9
+  },
+  {
+    "id": "9c9a517d-6ee4-421a-ada3-00a221888720",
+    "message": "Campaign 'poiu (Copy)' duplicated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T14:51:17.482963",
+    "read": false,
+    "campaign_id": 10
+  },
+  {
     "id": "b1ed4bfe-8e67-440d-b2ae-40e3144d1f3d",
     "message": "Campaign 'poiu (Copy)' completed successfully",
     "type": "success",

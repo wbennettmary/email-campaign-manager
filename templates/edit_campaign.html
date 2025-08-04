@@ -138,6 +138,22 @@
                             </div>
                         </div>
 
+                        <!-- Start Line Configuration -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-play"></i> Start Line Configuration
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="startLine" class="form-label">Start From Line Number</label>
+                                    <input type="number" class="form-control" id="startLine" value="{{ campaign.start_line|default(1) }}" min="1">
+                                    <div class="form-text">Specify which line to start sending from (useful for resuming stopped campaigns)</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Test After Mechanism -->
                         <div class="card mb-3">
                             <div class="card-header">
@@ -368,6 +384,7 @@ function saveCampaign() {
         subject: document.getElementById('subject').value,
         message: document.getElementById('message').value,
         data_list_id: parseInt(document.getElementById('dataListSelect').value),
+        start_line: parseInt(document.getElementById('startLine').value) || 1,
         use_custom_template: true,
         test_after_config: testAfterConfig,
         rate_limits: rateLimits
@@ -518,6 +535,9 @@ function initializeForm() {
         document.getElementById('emailsPerHour').value = {{ campaign.rate_limits.emails_per_hour|default(500) }};
         document.getElementById('waitBetweenEmails').value = {{ campaign.rate_limits.wait_time_between_emails|default(1.0) }};
     }
+    
+    // Initialize start line
+    document.getElementById('startLine').value = {{ campaign.start_line|default(1) }};
 }
 
 function setupEventListeners() {
