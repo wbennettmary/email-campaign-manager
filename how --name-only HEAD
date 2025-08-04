@@ -1,0 +1,5 @@
+[33m49c7586[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Add server permission fix scripts - Created Linux scripts to fix permission issues on production server for data_lists directory and JSON files
+[33ma29fddb[m Fix campaign editing and duplication - Updated edit_campaign template to work with new universal structure, added duplicate campaign functionality, fixed permission issues for data_lists directory
+[33m26da764[m Complete bounce email system removal - Fixed all add_bounce_email and get_bounced_emails references, removed Zoho bounce detector integration, cleaned up dashboard statistics
+[33mba6ea9f[m Add authentication checking for expired Zoho tokens - New API endpoint to check account auth status
+[33mebe6abd[m Remove all bounce email functionality - Fixed add_bounce_email and get_bounced_emails references
