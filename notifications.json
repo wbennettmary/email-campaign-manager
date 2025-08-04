@@ -1,5 +1,109 @@
 [
   {
+    "id": "05a866f6-7072-40ef-a132-deadf65a209f",
+    "message": "Campaign 'ONMq' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:02:22.515525",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "d816f825-7bb5-4089-ade7-bb6797f62965",
+    "message": "Campaign 'ONMq' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:02:12.358017",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "0a129b7d-0f72-437f-bd50-e2234f1388cc",
+    "message": "Campaign 'ONMq' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T13:01:45.166080",
+    "read": false,
+    "campaign_id": 7
+  },
+  {
+    "id": "0f96a7b9-8346-4cf1-92f6-ed838f51c4c7",
+    "message": "Campaign 'pp lines' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:59:53.005985",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "f1053a73-bb76-4e61-b11a-7f07b7738499",
+    "message": "Campaign 'pp lines' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:59:42.987059",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "34f99e46-2aba-45f6-a9e3-ce2f0656d684",
+    "message": "Campaign 'pp lines' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:59:30.938622",
+    "read": false,
+    "campaign_id": 6
+  },
+  {
+    "id": "709b4c5b-d502-4935-a87a-92bee7aa7621",
+    "message": "Account 'pro domain' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:59:00.743792",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "581d20e5-f86d-4a72-9d1d-2818216fc444",
+    "message": "Campaign 'dfsser' failed: Error in sequential email sending: name 'add_bounce_email' is not defined",
+    "type": "error",
+    "timestamp": "2025-08-04T12:51:38.196851",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "4f6e601b-3e85-40ea-8d8c-aca11c04c764",
+    "message": "Campaign 'dfsser' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:51:37.525590",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "d66c57ff-56e5-442b-bdca-5b6941403a63",
+    "message": "Campaign 'dfsser' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:51:33.105289",
+    "read": false,
+    "campaign_id": 5
+  },
+  {
+    "id": "70dd7063-89a0-4528-939c-6ba623200efc",
+    "message": "Campaign 'wes' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:49:43.949267",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "b07eb30e-f395-45e6-beea-bdde30d087dd",
+    "message": "Campaign 'wes' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:49:35.308924",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
+    "id": "bda7047c-14c4-44d0-948f-f24ed9c552cd",
+    "message": "Campaign 'wes' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T12:49:32.295737",
+    "read": false,
+    "campaign_id": 4
+  },
+  {
     "id": "aa006bf4-4947-4ce1-b58a-4d7ef8cb8099",
     "message": "Campaign 'ghh' completed successfully",
     "type": "success",

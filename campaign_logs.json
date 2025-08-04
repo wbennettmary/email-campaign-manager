@@ -147,5 +147,221 @@
         "account_name": "robachalabi@outlook.com"
       }
     }
+  ],
+  "4": [
+    {
+      "timestamp": "2025-08-04T12:49:35.954691",
+      "status": "error",
+      "message": "Email 1/6 failed to salssapp@gmail.com: HTTP 401",
+      "email": "salssapp@gmail.com",
+      "subject": "weqs",
+      "sender": "Nicola <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:49:37.539811",
+      "status": "error",
+      "message": "Email 2/6 failed to jetalpha@outlook.fr: HTTP 401",
+      "email": "jetalpha@outlook.fr",
+      "subject": "weqs",
+      "sender": "Nicola <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:49:39.142691",
+      "status": "error",
+      "message": "Email 3/6 failed to lesgavasimind@gmx.com: HTTP 401",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "weqs",
+      "sender": "Nicola <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:49:40.737978",
+      "status": "error",
+      "message": "Email 4/6 failed to abdo.charhamane@gmail.com: HTTP 401",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "weqs",
+      "sender": "Nicola <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:49:42.345344",
+      "status": "error",
+      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 401",
+      "email": "wbennettmary@gmail.com",
+      "subject": "weqs",
+      "sender": "Nicola <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:49:43.931305",
+      "status": "error",
+      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 401",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "weqs",
+      "sender": "Nicola <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:49:43.938287",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 0 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 0, Failed: 6",
+        "emails_sent": 0,
+        "emails_failed": 6,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "weqs",
+        "from_used": "Nicola <895363434@zoho.com>",
+        "account_name": "beyondtheclassroom.shop"
+      }
+    }
+  ],
+  "5": [
+    {
+      "timestamp": "2025-08-04T12:51:38.187374",
+      "type": "error",
+      "message": "Campaign failed: Error in sequential email sending: name 'add_bounce_email' is not defined",
+      "details": {
+        "success": false,
+        "message": "Error in sequential email sending: name 'add_bounce_email' is not defined",
+        "error": "name 'add_bounce_email' is not defined",
+        "emails_sent": 0,
+        "emails_failed": 2,
+        "total_attempted": 6
+      }
+    }
+  ],
+  "6": [
+    {
+      "timestamp": "2025-08-04T12:59:43.833154",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "sdcqsdfres fgvdfs",
+      "sender": "dsfvgdsfg <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:59:45.645393",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "sdcqsdfres fgvdfs",
+      "sender": "dsfvgdsfg <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:59:47.392752",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "sdcqsdfres fgvdfs",
+      "sender": "dsfvgdsfg <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:59:49.182271",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "sdcqsdfres fgvdfs",
+      "sender": "dsfvgdsfg <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:59:50.991525",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "sdcqsdfres fgvdfs",
+      "sender": "dsfvgdsfg <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:59:52.985588",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "sdcqsdfres fgvdfs",
+      "sender": "dsfvgdsfg <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T12:59:52.995564",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "sdcqsdfres fgvdfs",
+        "from_used": "dsfvgdsfg <895363434@zoho.com>",
+        "account_name": "pro domain"
+      }
+    }
+  ],
+  "7": [
+    {
+      "timestamp": "2025-08-04T13:02:13.227629",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "qqq",
+      "sender": "qaqws <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:02:15.063388",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "qqq",
+      "sender": "qaqws <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:02:16.874169",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "qqq",
+      "sender": "qaqws <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:02:18.847790",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "qqq",
+      "sender": "qaqws <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:02:20.618877",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "qqq",
+      "sender": "qaqws <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:02:22.492884",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "qqq",
+      "sender": "qaqws <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T13:02:22.501560",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "qqq",
+        "from_used": "qaqws <895363434@zoho.com>",
+        "account_name": "pro domain"
+      }
+    }
   ]
 }

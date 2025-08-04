@@ -3886,27 +3886,7 @@ def test_smtp_config():
     except Exception as e:
         return jsonify({'error': f'Error testing SMTP configuration: {str(e)}'}), 500
 
-def check_account_authentication(account):
-    """Check if account authentication is still valid"""
-    try:
-        # Test basic API access
-        test_url = "https://crm.zoho.com/crm/v7/settings/functions"
-        headers = account.get('headers', {}).copy()
-        
-        response = requests.get(test_url, headers=headers, timeout=10)
-        
-        if response.status_code == 401:
-            return False, "Authentication expired - 401 Unauthorized"
-        elif response.status_code == 200:
-            return True, "Authentication valid"
-        else:
-            return False, f"Authentication check failed - Status: {response.status_code}"
-            
-    except Exception as e:
-        return False, f"Authentication check error: {str(e)}"
-
 def test_account_authentication(account_id, test_email=None, custom_message=None, custom_subject=None, custom_from_name=None):
-    """Test account authentication and refresh tokens if needed"""
     """
     Test account by sending a test email to verify both authentication and email sending
     """
@@ -4079,36 +4059,6 @@ def refresh_account_templates(account_id):
         
     except Exception as e:
         return jsonify({'error': f'Error refreshing templates: {str(e)}'}), 500
-
-@app.route('/api/accounts/<int:account_id>/check-auth', methods=['GET'])
-@login_required
-def check_account_auth(account_id):
-    """Check if account authentication is still valid"""
-    try:
-        accounts = read_json_file_simple(ACCOUNTS_FILE)
-        account = next((a for a in accounts if a['id'] == account_id), None)
-        
-        if not account:
-            return jsonify({
-                'success': False,
-                'error': 'Account not found'
-            }), 404
-        
-        is_valid, message = check_account_authentication(account)
-        
-        return jsonify({
-            'success': True,
-            'account_id': account_id,
-            'account_name': account['name'],
-            'is_authenticated': is_valid,
-            'message': message
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
 
 @app.route('/api/accounts/<int:account_id>/test', methods=['POST'])
 @login_required
