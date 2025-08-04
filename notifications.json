@@ -1,5 +1,85 @@
 [
   {
+    "id": "b3e0258a-5cd4-4aed-b277-350e1dab9565",
+    "message": "Account 'TESTS' added successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:36:37.611823",
+    "read": false,
+    "campaign_id": null
+  },
+  {
+    "id": "4afd8e11-156f-4332-804d-6163592d5bb6",
+    "message": "Campaign 'wawww (Copy)' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:22:05.910670",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "e4cd471d-8f96-48b8-b5a8-407031d3a03d",
+    "message": "Campaign 'wawww (Copy)' relaunched successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:21:46.258192",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "e89a8319-0a0d-4a1b-b354-07ace2dad2fd",
+    "message": "Campaign 'wawww (Copy)' updated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:21:44.182084",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "ad41ec18-5636-4b06-b452-426e008dfb27",
+    "message": "Campaign 'wawww (Copy)' updated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:21:41.473933",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "7b7f0f5b-1a49-4797-ae9e-2ef6212b563d",
+    "message": "Campaign 'wawww' duplicated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:20:48.332332",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "bd39e2f1-5f55-4974-9925-94e1d257cccf",
+    "message": "Campaign 'wawww' completed successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:20:39.631882",
+    "read": false,
+    "campaign_id": 12
+  },
+  {
+    "id": "8f511811-abb6-4ec3-ba5b-797473810bd3",
+    "message": "Campaign 'wawww' started successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:20:30.942983",
+    "read": false,
+    "campaign_id": 12
+  },
+  {
+    "id": "4df0ca69-e13c-4ae7-9cad-92210da0ae96",
+    "message": "Campaign 'wawww' duplicated successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:20:24.144183",
+    "read": false,
+    "campaign_id": 13
+  },
+  {
+    "id": "0a3de1c2-d27c-4e2f-9b92-1d92cb362b7d",
+    "message": "Campaign 'wawww' created successfully",
+    "type": "success",
+    "timestamp": "2025-08-04T15:20:18.817049",
+    "read": false,
+    "campaign_id": 12
+  },
+  {
     "id": "45cddc2b-dd8a-488c-9e88-782ffa5c3d08",
     "message": "Campaign 'ghjfj' completed successfully",
     "type": "success",

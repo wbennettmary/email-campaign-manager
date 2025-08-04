@@ -454,5 +454,92 @@
     ],
     "zoho_templates": [],
     "template_mapping": {}
+  },
+  {
+    "id": 21,
+    "name": "TESTS",
+    "org_id": "895363434",
+    "cookies": {
+      "delugeBuilder": "false",
+      "zft-sdc": "isef%3Dtrue-isfr%3Dtrue-source%3Dgoogle",
+      "zps-tgr-dts": "sc%3D1-expAppOnNewSession%3D%5B%5D-pc%3D1-sesst%3D1754308401146",
+      "_iamadt": "b9cec2d32fff560f98eaf1053b8000b8e841391ae866c27bd12cfdd93fe10b22baa51eaa40634330a6e710d97b0e0b14",
+      "_iambdt": "30ef5410d75b8fa67c8ac02b72210363ce6efc4cd903af58b63043f84e227d8d9cedc114343607da139af76202ebf697594a2942311655c6ec91f1c0667dd7de",
+      "zalb_6e4b8efee4": "d962f19b54ad31880cd346e84c4de522",
+      "crmcsr": "6c5372bcce6796b41e9e64a2dbd6dcf30fef565f68759f3a521f27a3ab0f711cbbf9cc1b39c88e20e818113258e5ebd5d3a75848e929dbb239caf4b9538c4c1c",
+      "_zcsr_tmp": "6c5372bcce6796b41e9e64a2dbd6dcf30fef565f68759f3a521f27a3ab0f711cbbf9cc1b39c88e20e818113258e5ebd5d3a75848e929dbb239caf4b9538c4c1c",
+      "CROSSCDNID": "cea02c240361e40b94735eb9f8bd03d827f58f55076b34e80dbc464a3be86c2bc243a27e94b6e50065ecb4753c68bbf9",
+      "CROSSCDNCOUNTRY": "DE",
+      "JSESSIONID": "EDD46265A7A8438A971B48BC46CAD334",
+      "zalb_8b7213828d": "5ab2d5349e7ae573756d0e16381747f9",
+      "CSRF_TOKEN": "6c5372bcce6796b41e9e64a2dbd6dcf30fef565f68759f3a521f27a3ab0f711cbbf9cc1b39c88e20e818113258e5ebd5d3a75848e929dbb239caf4b9538c4c1c",
+      "zalb_3309580ed5": "291445b8f0f7b61edd901158c8be6a53",
+      "CT_CSRF_TOKEN": "6c5372bcce6796b41e9e64a2dbd6dcf30fef565f68759f3a521f27a3ab0f711cbbf9cc1b39c88e20e818113258e5ebd5d3a75848e929dbb239caf4b9538c4c1c",
+      "wms-tkp-token": "895367611-6721bb8b-a0a3b48df502192768e734c311743ea0",
+      "zalb_c9d678d763": "4487d25b80cde3a96106707b9be4ddba",
+      "drecn": "6c5372bcce6796b41e9e64a2dbd6dcf30fef565f68759f3a521f27a3ab0f711cbbf9cc1b39c88e20e818113258e5ebd5d3a75848e929dbb239caf4b9538c4c1c",
+      "showEditorLeftPane": "undefined",
+      "com_chat_owner": "1754318036749",
+      "com_avcliq_owner": "1754318036749"
+    },
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0",
+      "Accept": "application/json",
+      "Accept-Language": "en-US,en;q=0.5",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      "Referer": "https://crm.zoho.com/",
+      "X-ZCSRF-TOKEN": "crmcsrfparam=6c5372bcce6796b41e9e64a2dbd6dcf30fef565f68759f3a521f27a3ab0f711cbbf9cc1b39c88e20e818113258e5ebd5d3a75848e929dbb239caf4b9538c4c1c",
+      "Content-type": "application/json; charset=utf-8",
+      "X-CRM-ORG": "895363434",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-Client-SubVersion": "b73c7db980c0cb9050e76ce1638e818e",
+      "X-Static-Version": "11183557",
+      "x-my-normurl": "crm.settings.section.workflow-rules.create-workflow-rule",
+      "Origin": "https://crm.zoho.com",
+      "DNT": "1",
+      "Sec-GPC": "1",
+      "Connection": "keep-alive",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-origin",
+      "Priority": "u=0",
+      "TE": "trailers"
+    },
+    "templates": [
+      {
+        "name": "pi",
+        "id": "6911720000000595003"
+      }
+    ],
+    "created_at": "2025-08-04T15:36:30.837637",
+    "created_by": 1,
+    "template_info": [
+      {
+        "number": 2,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template2/actions/test",
+        "function_name": "Send_Email_Template2",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      },
+      {
+        "number": 3,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template3/actions/test",
+        "function_name": "Send_Email_Template3",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      },
+      {
+        "number": 4,
+        "url": "https://crm.zoho.com/crm/v7/settings/functions/send_email_template4/actions/test",
+        "function_name": "Send_Email_Template4",
+        "status": "available",
+        "zoho_templates": [],
+        "template_mapping": {}
+      }
+    ],
+    "zoho_templates": [],
+    "template_mapping": {}
   }
 ]

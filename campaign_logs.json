@@ -132,5 +132,139 @@
         "account_name": "robachalabi@outlook.com"
       }
     }
+  ],
+  "12": [
+    {
+      "timestamp": "2025-08-04T15:20:31.604344",
+      "status": "error",
+      "message": "Email 1/6 failed to salssapp@gmail.com: HTTP 429",
+      "email": "salssapp@gmail.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "xvgdf <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:20:33.206653",
+      "status": "error",
+      "message": "Email 2/6 failed to jetalpha@outlook.fr: HTTP 429",
+      "email": "jetalpha@outlook.fr",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "xvgdf <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:20:34.801940",
+      "status": "error",
+      "message": "Email 3/6 failed to lesgavasimind@gmx.com: HTTP 429",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "xvgdf <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:20:36.397946",
+      "status": "error",
+      "message": "Email 4/6 failed to abdo.charhamane@gmail.com: HTTP 429",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "xvgdf <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:20:37.986867",
+      "status": "error",
+      "message": "Email 5/6 failed to wbennettmary@gmail.com: HTTP 429",
+      "email": "wbennettmary@gmail.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "xvgdf <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:20:39.601655",
+      "status": "error",
+      "message": "Email 6/6 failed to pamela.rod@yahoo.com: HTTP 429",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "xvgdf <895363434@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:20:39.610140",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 0 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 0, Failed: 6",
+        "emails_sent": 0,
+        "emails_failed": 6,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "dsvsdfv dfbvfdgsb",
+        "from_used": "xvgdf <895363434@zoho.com>",
+        "account_name": "pro domain"
+      }
+    }
+  ],
+  "13": [
+    {
+      "timestamp": "2025-08-04T15:21:47.118786",
+      "status": "success",
+      "message": "Email 1/6 sent successfully to salssapp@gmail.com",
+      "email": "salssapp@gmail.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "awsssss <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:21:50.850471",
+      "status": "success",
+      "message": "Email 2/6 sent successfully to jetalpha@outlook.fr",
+      "email": "jetalpha@outlook.fr",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "awsssss <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:21:54.671940",
+      "status": "success",
+      "message": "Email 3/6 sent successfully to lesgavasimind@gmx.com",
+      "email": "lesgavasimind@gmx.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "awsssss <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:21:58.444061",
+      "status": "success",
+      "message": "Email 4/6 sent successfully to abdo.charhamane@gmail.com",
+      "email": "abdo.charhamane@gmail.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "awsssss <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:22:02.144093",
+      "status": "success",
+      "message": "Email 5/6 sent successfully to wbennettmary@gmail.com",
+      "email": "wbennettmary@gmail.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "awsssss <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:22:05.884557",
+      "status": "success",
+      "message": "Email 6/6 sent successfully to pamela.rod@yahoo.com",
+      "email": "pamela.rod@yahoo.com",
+      "subject": "dsvsdfv dfbvfdgsb",
+      "sender": "awsssss <894798836@zoho.com>"
+    },
+    {
+      "timestamp": "2025-08-04T15:22:05.895612",
+      "type": "success",
+      "message": "Campaign completed successfully. Sent to 6 recipients.",
+      "details": {
+        "success": true,
+        "message": "Sequential email sending completed. Sent: 6, Failed: 0",
+        "emails_sent": 6,
+        "emails_failed": 0,
+        "total_attempted": 6,
+        "template_used": 2,
+        "function_used": "Send_Email_Template2",
+        "subject_used": "dsvsdfv dfbvfdgsb",
+        "from_used": "awsssss <894798836@zoho.com>",
+        "account_name": "robachalabi@outlook.com"
+      }
+    }
   ]
 }
