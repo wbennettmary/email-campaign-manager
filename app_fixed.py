@@ -224,6 +224,16 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     users = read_json_file(USERS_FILE)
+    # Ensure users is a dictionary, not a list
+    if isinstance(users, list):
+        # Convert list to dictionary format
+        users_dict = {}
+        for i, user_data in enumerate(users, 1):
+            users_dict[str(i)] = user_data
+        # Save the corrected format
+        write_json_file(USERS_FILE, users_dict)
+        users = users_dict
+    
     user_data = users.get(str(user_id))
     if user_data:
         return User(user_data)
@@ -476,6 +486,16 @@ def init_data_files():
     for filename, default_data in files.items():
         if not os.path.exists(filename):
             write_json_file(filename, default_data)
+        else:
+            # Fix existing files if they have wrong format
+            if filename == USERS_FILE:
+                current_data = read_json_file(filename)
+                if isinstance(current_data, list):
+                    # Convert list to dictionary
+                    users_dict = {}
+                    for i, user_data in enumerate(current_data, 1):
+                        users_dict[str(i)] = user_data
+                    write_json_file(filename, users_dict)
 
 if __name__ == '__main__':
     init_data_files()
