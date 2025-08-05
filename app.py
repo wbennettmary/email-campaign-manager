@@ -2623,11 +2623,11 @@ def clear_campaign_logs_api(campaign_id):
         
         # Get campaign name for notification
         try:
-        with open(CAMPAIGNS_FILE, 'r') as f:
-            campaigns = json.load(f)
-        
-        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-        campaign_name = campaign['name'] if campaign else f'Campaign {campaign_id}'
+            with open(CAMPAIGNS_FILE, 'r') as f:
+                campaigns = json.load(f)
+            
+            campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+            campaign_name = campaign['name'] if campaign else f'Campaign {campaign_id}'
         except:
             campaign_name = f'Campaign {campaign_id}'
         
