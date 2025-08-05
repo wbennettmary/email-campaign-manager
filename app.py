@@ -2035,8 +2035,8 @@ def api_campaign(campaign_id):
         write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
         if write_success:
-        add_notification(f"Campaign '{campaign['name']}' updated successfully", 'success', campaign_id)
-        return jsonify(campaign)
+            add_notification(f"Campaign '{campaign['name']}' updated successfully", 'success', campaign_id)
+            return jsonify(campaign)
         else:
             return jsonify({'error': 'Failed to save campaign'}), 500
     
@@ -2050,7 +2050,7 @@ def api_campaign(campaign_id):
         write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
         if write_success:
-        add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
+            add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
             return jsonify({'message': 'Campaign deleted successfully'})
         else:
             return jsonify({'error': 'Failed to delete campaign'}), 500
@@ -2093,9 +2093,9 @@ def start_campaign(campaign_id):
         print(f"📧 Multi-account campaign: Using {len(campaign_accounts)} accounts")
     else:
         # Single account campaign
-    account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
-    if not account:
-        return jsonify({'error': 'Account not found'}), 404
+        account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
         campaign_accounts = [account]
     
     # Check if campaign uses new universal system
@@ -2133,9 +2133,9 @@ def start_campaign(campaign_id):
             ))
         else:
             # Single account campaign
-        thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
-        thread.daemon = True
-        thread.start()
+            thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
+            thread.daemon = True
+            thread.start()
         
         add_notification(f"Campaign '{campaign['name']}' started successfully", 'success', campaign_id)
         return jsonify({'message': 'Campaign started successfully'})
