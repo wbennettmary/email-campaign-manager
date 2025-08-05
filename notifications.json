@@ -1,5 +1,13 @@
 [
   {
+    "id": "dbcf43c6-95a7-41e0-bee4-b087026efca9",
+    "message": "User 'admin' logged in successfully",
+    "type": "info",
+    "timestamp": "2025-08-05T17:09:48.786992",
+    "read": false,
+    "campaign_id": null
+  },
+  {
     "id": "e4fe1551-ea76-49cb-9161-54abae073436",
     "message": "User 'admin' updated successfully",
     "type": "success",

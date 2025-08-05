@@ -405,7 +405,7 @@ def get_scheduled_campaigns():
 def execute_scheduled_campaign(schedule):
     """Execute a scheduled campaign with duplicate prevention"""
     campaign_id = schedule['campaign_id']
-    
+        
     # Get or create execution lock for this campaign
     if campaign_id not in execution_locks:
         execution_locks[campaign_id] = threading.Lock()
@@ -435,7 +435,7 @@ def execute_scheduled_campaign(schedule):
                 return False
             
             print(f"🚀 Executing scheduled campaign: {campaign['name']} (ID: {campaign_id})")
-            
+                
             # Mark campaign as running to prevent duplicate execution
             campaign['status'] = 'running'
             campaign['started_at'] = datetime.now().isoformat()
@@ -454,12 +454,12 @@ def execute_scheduled_campaign(schedule):
             else:
                 error_msg = result.get('message', 'Unknown error') if result else 'No result returned'
                 print(f"❌ Scheduled campaign {campaign_id} failed: {error_msg}")
-                
+                    
                 # Reset campaign status on failure
                 campaign['status'] = 'ready'
                 campaign['started_at'] = None
                 write_json_file_simple(CAMPAIGNS_FILE, campaigns)
-                
+                    
                 try:
                     add_notification(f"Scheduled campaign '{campaign['name']}' failed: {error_msg}", 'error', campaign_id)
                 except:
@@ -2134,8 +2134,8 @@ def start_campaign(campaign_id):
         else:
             # Single account campaign
             thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
-        thread.daemon = True
-        thread.start()
+            thread.daemon = True
+            thread.start()
         
         add_notification(f"Campaign '{campaign['name']}' started successfully", 'success', campaign_id)
         return jsonify({'message': 'Campaign started successfully'})
@@ -4388,7 +4388,7 @@ def read_json_file_simple(file_path):
         # Only log errors, not every read operation
         if 'ERROR' not in str(e):
             return {}
-        return {}
+            return {}
 
 def write_json_file_simple(file_path, data):
     """Optimized JSON file writing with cache invalidation"""
@@ -4402,7 +4402,7 @@ def write_json_file_simple(file_path, data):
         
         return True
     except Exception as e:
-        return False
+            return False
 
 # Optimized data loading functions
 def get_accounts_optimized():

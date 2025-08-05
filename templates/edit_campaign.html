@@ -13,9 +13,9 @@
             <button class="btn btn-success me-2" onclick="duplicateCampaign()">
                 <i class="fas fa-copy"></i> Duplicate Campaign
             </button>
-            <a href="/campaigns" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Campaigns
-            </a>
+        <a href="/campaigns" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Campaigns
+        </a>
         </div>
     </div>
 
@@ -59,17 +59,17 @@
 
                         <!-- Single Account Selection -->
                         <div id="singleAccountSection">
-                            <div class="mb-3">
-                                <label for="accountId" class="form-label">Account</label>
+                                <div class="mb-3">
+                                    <label for="accountId" class="form-label">Account</label>
                                 <select class="form-select" id="accountId" onchange="loadAccountTemplates()">
-                                    <option value="">Select Account</option>
-                                    {% for account in accounts %}
-                                    <option value="{{ account.id }}" {% if account.id == campaign.account_id %}selected{% endif %}>
-                                        {{ account.name }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                                        <option value="">Select Account</option>
+                                        {% for account in accounts %}
+                                        <option value="{{ account.id }}" {% if account.id == campaign.account_id %}selected{% endif %}>
+                                            {{ account.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                         </div>
 
                         <!-- Multiple Account Selection -->
@@ -116,7 +116,7 @@
                             <label for="message" class="form-label">Email Message</label>
                             <textarea class="form-control" id="message" rows="8" required>{{ campaign.message }}</textarea>
                             <div class="form-text">The HTML content of your email message</div>
-                        </div>
+                            </div>
 
                         <div class="mb-3">
                             <label for="dataListSelect" class="form-label">Data List</label>
@@ -127,7 +127,7 @@
                                     {{ data_list.name }} ({{ data_list.email_count }} emails - {{ data_list.geography or 'Unknown' }}/{{ data_list.isp or 'Unknown' }})
                                 </option>
                                 {% endfor %}
-                            </select>
+                                    </select>
                             <div id="dataListInfo" class="mt-2" style="display: none;">
                                 <div class="alert alert-info">
                                     <i class="fas fa-list"></i>
@@ -205,8 +205,8 @@
                                         Use Custom Rate Limits
                                     </label>
                                     <div class="form-text">Override default rate limits for this campaign</div>
-                                </div>
-                                
+                        </div>
+
                                 <div id="rateLimitOptions" style="display: none;">
                                     <div class="row">
                                         <div class="col-md-6">
@@ -245,7 +245,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="mb-3">
+                        <div class="mb-3">
                                                 <label for="cooldownPeriod" class="form-label">Cooldown (seconds)</label>
                                                 <input type="number" class="form-control" id="cooldownPeriod" value="5" min="1">
                                                 <div class="form-text">Wait time after burst limit is reached</div>
@@ -316,7 +316,7 @@
                     
                     <div class="mb-3">
                         <strong>Total Recipients:</strong><br>
-                        <span class="badge bg-info">{{ campaign.total_attempted or 0 }}</span>
+                            <span class="badge bg-info">{{ campaign.total_attempted or 0 }}</span>
                     </div>
                     
                     {% if campaign.total_sent %}
