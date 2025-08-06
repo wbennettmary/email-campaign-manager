@@ -17,7 +17,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 # Database and caching
@@ -393,6 +394,9 @@ app = FastAPI(
     version="2.0.0",
     lifespan=lifespan
 )
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Middleware
 app.add_middleware(
@@ -804,6 +808,27 @@ async def get_stats(
     await redis_client.setex(cache_key, 10, json.dumps(stats))
     
     return stats
+
+# Serve frontend
+@app.get("/", response_class=HTMLResponse)
+async def serve_frontend():
+    """Serve the main frontend application"""
+    try:
+        with open("frontend/index.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        return HTMLResponse(content="""
+        <!DOCTYPE html>
+        <html>
+        <head><title>Campaign Manager</title></head>
+        <body>
+            <h1>Campaign Manager Backend Running</h1>
+            <p>The backend is working! Frontend files not found.</p>
+            <p><a href="/health">Health Check</a></p>
+            <p><a href="/docs">API Documentation</a></p>
+        </body>
+        </html>
+        """)
 
 # WebSocket endpoint
 @app.websocket("/ws/{client_id}")
