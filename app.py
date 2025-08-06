@@ -404,8 +404,8 @@ def get_scheduled_campaigns():
 
 def execute_scheduled_campaign(schedule):
     """Execute a scheduled campaign with duplicate prevention"""
-    campaign_id = schedule['campaign_id']
-    
+        campaign_id = schedule['campaign_id']
+        
     # Get or create execution lock for this campaign
     if campaign_id not in execution_locks:
         execution_locks[campaign_id] = threading.Lock()
@@ -414,59 +414,59 @@ def execute_scheduled_campaign(schedule):
     with execution_locks[campaign_id]:
         try:
             # Double-check campaign status before execution
-            campaigns = read_json_file_simple(CAMPAIGNS_FILE)
-            campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-            
-            if not campaign:
-                print(f"❌ Campaign {campaign_id} not found")
-                return False
-            
+        campaigns = read_json_file_simple(CAMPAIGNS_FILE)
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        
+        if not campaign:
+            print(f"❌ Campaign {campaign_id} not found")
+            return False
+        
             # Check if campaign is already running or completed
             if campaign['status'] in ['running', 'completed']:
                 print(f"⚠️ Campaign {campaign_id} is already {campaign['status']}, skipping execution")
                 return False
             
-            # Load account data
-            accounts = read_json_file_simple(ACCOUNTS_FILE)
-            account = next((a for a in accounts if a['id'] == campaign['account_id']), None)
-            
-            if not account:
-                print(f"❌ Account {campaign['account_id']} not found")
-                return False
-            
-            print(f"🚀 Executing scheduled campaign: {campaign['name']} (ID: {campaign_id})")
+        # Load account data
+        accounts = read_json_file_simple(ACCOUNTS_FILE)
+        account = next((a for a in accounts if a['id'] == campaign['account_id']), None)
+        
+        if not account:
+            print(f"❌ Account {campaign['account_id']} not found")
+            return False
+        
+        print(f"🚀 Executing scheduled campaign: {campaign['name']} (ID: {campaign_id})")
             
             # Mark campaign as running to prevent duplicate execution
             campaign['status'] = 'running'
             campaign['started_at'] = datetime.now().isoformat()
             write_json_file_simple(CAMPAIGNS_FILE, campaigns)
-            
-            # Start the campaign
-            result = send_universal_campaign_emails(campaign, account)
-            
-            if result and result.get('success'):
-                print(f"✅ Scheduled campaign {campaign_id} executed successfully")
-                try:
-                    add_notification(f"Scheduled campaign '{campaign['name']}' executed successfully", 'success', campaign_id)
-                except:
-                    print(f"⚠️ Could not add notification for campaign {campaign_id}")
-                return True
-            else:
-                error_msg = result.get('message', 'Unknown error') if result else 'No result returned'
-                print(f"❌ Scheduled campaign {campaign_id} failed: {error_msg}")
+        
+        # Start the campaign
+        result = send_universal_campaign_emails(campaign, account)
+        
+        if result and result.get('success'):
+            print(f"✅ Scheduled campaign {campaign_id} executed successfully")
+            try:
+                add_notification(f"Scheduled campaign '{campaign['name']}' executed successfully", 'success', campaign_id)
+            except:
+                print(f"⚠️ Could not add notification for campaign {campaign_id}")
+            return True
+        else:
+            error_msg = result.get('message', 'Unknown error') if result else 'No result returned'
+            print(f"❌ Scheduled campaign {campaign_id} failed: {error_msg}")
                 
                 # Reset campaign status on failure
                 campaign['status'] = 'ready'
                 campaign['started_at'] = None
                 write_json_file_simple(CAMPAIGNS_FILE, campaigns)
                 
-                try:
-                    add_notification(f"Scheduled campaign '{campaign['name']}' failed: {error_msg}", 'error', campaign_id)
-                except:
-                    print(f"⚠️ Could not add notification for campaign {campaign_id}")
-                return False
-                
-        except Exception as e:
+            try:
+                add_notification(f"Scheduled campaign '{campaign['name']}' failed: {error_msg}", 'error', campaign_id)
+            except:
+                print(f"⚠️ Could not add notification for campaign {campaign_id}")
+            return False
+            
+    except Exception as e:
             print(f"❌ Error executing scheduled campaign {campaign_id}: {str(e)}")
             
             # Reset campaign status on error
@@ -482,9 +482,9 @@ def execute_scheduled_campaign(schedule):
             
             try:
                 add_notification(f"Error executing scheduled campaign: {str(e)}", 'error', campaign_id)
-            except:
-                print(f"⚠️ Could not add notification for error")
-            return False
+        except:
+            print(f"⚠️ Could not add notification for error")
+        return False
 
 def calculate_next_run(schedule):
     """Calculate the next run time for a recurring schedule"""
@@ -2035,8 +2035,8 @@ def api_campaign(campaign_id):
         write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
         if write_success:
-            add_notification(f"Campaign '{campaign['name']}' updated successfully", 'success', campaign_id)
-            return jsonify(campaign)
+        add_notification(f"Campaign '{campaign['name']}' updated successfully", 'success', campaign_id)
+        return jsonify(campaign)
         else:
             return jsonify({'error': 'Failed to save campaign'}), 500
     
@@ -2050,7 +2050,7 @@ def api_campaign(campaign_id):
         write_success = write_json_file_simple(CAMPAIGNS_FILE, campaigns)
         
         if write_success:
-            add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
+        add_notification(f"Campaign '{campaign_name}' deleted successfully", 'warning')
             return jsonify({'message': 'Campaign deleted successfully'})
         else:
             return jsonify({'error': 'Failed to delete campaign'}), 500
@@ -2093,9 +2093,9 @@ def start_campaign(campaign_id):
         print(f"📧 Multi-account campaign: Using {len(campaign_accounts)} accounts")
     else:
         # Single account campaign
-        account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
-        if not account:
-            return jsonify({'error': 'Account not found'}), 404
+    account = next((acc for acc in accounts if acc['id'] == campaign['account_id']), None)
+    if not account:
+        return jsonify({'error': 'Account not found'}), 404
         campaign_accounts = [account]
     
     # Check if campaign uses new universal system
@@ -2133,9 +2133,9 @@ def start_campaign(campaign_id):
             ))
         else:
             # Single account campaign
-            thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
-            thread.daemon = True
-            thread.start()
+        thread = threading.Thread(target=send_universal_campaign_emails, args=(campaign, account))
+        thread.daemon = True
+        thread.start()
         
         add_notification(f"Campaign '{campaign['name']}' started successfully", 'success', campaign_id)
         return jsonify({'message': 'Campaign started successfully'})
@@ -2623,11 +2623,11 @@ def clear_campaign_logs_api(campaign_id):
         
         # Get campaign name for notification
         try:
-            with open(CAMPAIGNS_FILE, 'r') as f:
-                campaigns = json.load(f)
-            
-            campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
-            campaign_name = campaign['name'] if campaign else f'Campaign {campaign_id}'
+        with open(CAMPAIGNS_FILE, 'r') as f:
+            campaigns = json.load(f)
+        
+        campaign = next((c for c in campaigns if c['id'] == campaign_id), None)
+        campaign_name = campaign['name'] if campaign else f'Campaign {campaign_id}'
         except:
             campaign_name = f'Campaign {campaign_id}'
         
