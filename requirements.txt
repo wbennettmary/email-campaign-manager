@@ -40,8 +40,7 @@ pytest==7.4.3
 pytest-asyncio==0.21.1
 httpx==0.25.2
 
-# Email sending
-smtplib2==0.2.1
+# Email sending (smtplib is built-in Python module)
 
 # File handling
 aiofiles==23.2.1
