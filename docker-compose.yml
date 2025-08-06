@@ -1,123 +1,150 @@
 version: '3.8'
 
 services:
-  # Redis for caching and real-time data
-  redis:
-    image: redis:7-alpine
-    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-    sysctls:
-      - net.core.somaxconn=65535
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-
-  # PostgreSQL for reliable data storage
+  # PostgreSQL Database
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
+    container_name: campaign_postgres
     environment:
-      POSTGRES_DB: campaign_manager
+      POSTGRES_DB: campaign_db
       POSTGRES_USER: campaign_user
-      POSTGRES_PASSWORD: campaign_password
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: campaign_pass_secure_123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
     restart: unless-stopped
-    command: postgres -c max_connections=1000 -c shared_buffers=256MB -c effective_cache_size=1GB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campaign_user -d campaign_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - campaign_network
 
-  # FastAPI application
-  app:
-    build: .
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: campaign_redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - campaign_network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: campaign_backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://campaign_user:campaign_pass_secure_123@postgres:5432/campaign_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      SECRET_KEY: ultra_secure_secret_key_change_in_production_abc123
+      PYTHONPATH: /app
     ports:
       - "8000:8000"
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgresql://campaign_user:campaign_password@postgres:5432/campaign_manager
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ./data_lists:/app/data_lists
       - ./logs:/app/logs
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
+    networks:
+      - campaign_network
 
-  # Celery worker for email processing
+  # Celery Worker
   celery_worker:
-    build: .
-    command: celery -A production_app.celery_app worker --loglevel=info --concurrency=50 --prefetch-multiplier=4
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: campaign_celery_worker
+    command: celery -A backend.tasks worker --loglevel=info --concurrency=4 --queues=email_queue,campaign_queue,stats_queue,cleanup_queue
     environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgresql://campaign_user:campaign_password@postgres:5432/campaign_manager
+      DATABASE_URL: postgresql+asyncpg://campaign_user:campaign_pass_secure_123@postgres:5432/campaign_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      SECRET_KEY: ultra_secure_secret_key_change_in_production_abc123
+      PYTHONPATH: /app
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
     volumes:
       - ./data_lists:/app/data_lists
       - ./logs:/app/logs
-    restart: unless-stopped
-    deploy:
-      replicas: 4
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 512M
+    networks:
+      - campaign_network
 
-  # Celery beat for scheduled tasks
+  # Celery Beat (Scheduler)
   celery_beat:
-    build: .
-    command: celery -A production_app.celery_app beat --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: campaign_celery_beat
+    command: celery -A backend.tasks beat --loglevel=info
     environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgresql://campaign_user:campaign_password@postgres:5432/campaign_manager
+      DATABASE_URL: postgresql+asyncpg://campaign_user:campaign_pass_secure_123@postgres:5432/campaign_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      SECRET_KEY: ultra_secure_secret_key_change_in_production_abc123
+      PYTHONPATH: /app
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
     volumes:
       - ./logs:/app/logs
-    restart: unless-stopped
+    networks:
+      - campaign_network
 
-  # Flower for monitoring Celery
-  flower:
-    build: .
-    command: celery -A production_app.celery_app flower --port=5555
-    ports:
-      - "5555:5555"
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - redis
-    restart: unless-stopped
-
-  # Nginx reverse proxy
+  # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
+    container_name: campaign_nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./static:/var/www/static
+      - ./frontend/build:/usr/share/nginx/html
     depends_on:
-      - app
+      - backend
     restart: unless-stopped
+    networks:
+      - campaign_network
 
-  # Prometheus for monitoring
+  # Monitoring - Prometheus
   prometheus:
     image: prom/prometheus:latest
+    container_name: campaign_prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -131,20 +158,44 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     restart: unless-stopped
+    networks:
+      - campaign_network
 
-  # Grafana for visualization
+  # Monitoring - Grafana
   grafana:
     image: grafana/grafana:latest
+    container_name: campaign_grafana
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
+    networks:
+      - campaign_network
+
+  # Redis Commander (Redis GUI)
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: campaign_redis_commander
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - campaign_network
 
 volumes:
-  redis_data:
   postgres_data:
+  redis_data:
   prometheus_data:
   grafana_data:
+
+networks:
+  campaign_network:
+    driver: bridge
